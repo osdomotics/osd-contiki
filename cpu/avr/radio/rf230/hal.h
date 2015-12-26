@@ -78,9 +78,10 @@
 #define RAVEN_D	        1
 #define RAVENUSB_C      2
 #define RCB_B	    	3
-#define ZIGBIT			4
-#define IRIS			5
-
+#define ZIGBIT		4
+#define IRIS		5
+#define ATMEGA128RFA1   6
+#define ATMEGA256RFR2   7
 
 
 
