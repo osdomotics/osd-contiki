@@ -906,8 +906,8 @@ void rf230_warm_reset(void) {
 
 /* Registers for fixed Antenna out - Diversity disabled */
 // hal_subregister_write(SR_ANT_DIV_EN, 0);
-// hal_subregister_write(SR_ANT_SET_ANT1, 1); //Set Antenna 1 RFOUT1-deRFmega256-23M12 
-   hal_subregister_write(SR_ANT_SET_ANT0, 1); //Set Antenna 0 RFOUT2-deRFmega256-23M12
+// hal_subregister_write(SR_SET_OUT_ANT1, 1); //Set Antenna 1 RFOUT1-deRFmega256-23M12 
+   hal_subregister_write(SR_SET_OUT_ANT0, 1); //Set Antenna 0 RFOUT2-deRFmega256-23M12
 
 #endif
 
