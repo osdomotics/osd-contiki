@@ -908,6 +908,8 @@ void rf230_warm_reset(void) {
 // hal_subregister_write(SR_ANT_DIV_EN, 0);
 // hal_subregister_write(SR_SET_OUT_ANT1, 1); //Set Antenna 1 RFOUT1-deRFmega256-23M12 
    hal_subregister_write(SR_SET_OUT_ANT0, 1); //Set Antenna 0 RFOUT2-deRFmega256-23M12
+   DDRD  |= (1<<PD6); // PIND6 High to wake amplifier
+   PORTD |= (1<<PD6); 
 
 #endif
 
