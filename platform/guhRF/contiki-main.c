@@ -138,8 +138,8 @@ SIGNATURE = {
 
 #if 1
 /* JTAG+SPI enabled, External osc 1kck4ms1 , Boot 4096 words @ $1F000, TXC1K+4,1msec delay, Brownout 1.9 volts */
-FUSES ={.low = 0xF6, .high = 0x98, .extended = 0xfd,};
-#define BOOTLOADER_START = 0x1F000
+FUSES ={.low = 0xF6, .high = 0x98, .extended = 0xfe,};
+#define BOOTLOADER_START = 0x3E000
 #else
 /* JTAG+SPI, Boot 4096 words @ $F000, Internal  oscillator, startup 6 CK +0 ms, Brownout 1.8 volts */
 FUSES ={.low = 0xC2, .high = 0x99, .extended = 0xfe,};

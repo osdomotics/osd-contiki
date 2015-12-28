@@ -39,9 +39,9 @@
 #ifndef __PROJECT_ERBIUM_CONF_H__
 #define __PROJECT_ERBIUM_CONF_H__
 
-   #define PLATFORM_HAS_LEDS   1
+   #define PLATFORM_HAS_LEDS    1
    #define PLATFORM_HAS_BATTERY 1
-
+   #define PLATFORM_HAS_BUTTON  1
 /* Custom channel and PAN ID configuration for your project. */
 /*
    #undef RF_CHANNEL

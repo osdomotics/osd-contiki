@@ -129,8 +129,10 @@ typedef unsigned short uip_stats_t;
  * On the RF230 a reduced rx power threshold will not prevent autoack if enabled and requested.
  * These numbers applied to both Raven and Jackdaw give a maximum communication distance of about 15 cm
  * and a 10 meter range to a full-sensitivity RF230 sniffer.
+
 #define RF230_MAX_TX_POWER 15
 #define RF230_MIN_RX_POWER 30
+
  */
   /* The rf231 and ATMEGA256RFR2 can use an rssi threshold for triggering rx_busy that saves 0.5ma in rx mode */
 /* 1 - 15 maps into -90 to -48 dBm; the register is written with RF230_MIN_RX_POWER/6 + 1. Undefine for -100dBm sensitivity */
@@ -142,7 +144,10 @@ typedef unsigned short uip_stats_t;
 /* TX routine does automatic cca and optional backoffs */
 #define RDC_CONF_HARDWARE_CSMA   1
 /* Allow MCU sleeping between channel checks */
-#define RDC_CONF_MCU_SLEEP         1
+#define RDC_CONF_MCU_SLEEP       1
+
+/* External Amplifier installed */
+#define _EXT_PA_ 		1
 
 #if NETSTACK_CONF_WITH_IPV6
 #define LINKADDR_CONF_SIZE        8

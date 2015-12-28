@@ -99,12 +99,17 @@ er-example-server.guhRF.eep: er-example-server.guhRF
 	    er-example-server.guhRF er-example-server.guhRF.eep
 
 flash-server: er-example-server.guhRF.hex er-example-server.guhRF.eep
-	avrdude -pm256rfr2 -c arduino -b57600 -P/dev/ttyUSB1 -e -U \
+	avrdude -pm256rfr2 -cstk500 -b57600 -P/dev/ttyUSB0 -D -U \
+	    flash:w:er-example-server.guhRF.hex:a -U \
+	    eeprom:w:er-example-server.guhRF.eep:a
+
+flash-server-jtag: er-example-server.guhRF.hex er-example-server.guhRF.eep
+	avrdude -pm256rfr2 -catmelice -P usb -U \
 	    flash:w:er-example-server.guhRF.hex:a -U \
 	    eeprom:w:er-example-server.guhRF.eep:a
 
 avr-size-client: er-example-client.guhRF
-	avr-size -C --mcu=MCU=atmega256rfr2 er-example-client.guhRF
+	avr-size -C --mcu=MCU=atmega256rfr2 er-example-client.guhRF 
 
 er-example-client.guhRF.hex: er-example-client.guhRF
 	avr-objcopy -j .text -j .data -O ihex er-example-client.guhRF \
