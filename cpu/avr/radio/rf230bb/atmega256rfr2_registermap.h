@@ -141,9 +141,10 @@
 
 #define SR_PA_EXT_EN			0x144, 0x80, 7
 #define SR_IRQ_2_EXT_EN			0x144, 0x40, 6
-#define SR_ANT_EXT_SW_EN		0x14D, 0x04, 2
-#define SR_ANT_DIV_EN			0x14D, 0x08, 3
-
+#define SR_ANT_EXT_SW_EN		0x14d, 0x04, 2
+#define SR_ANT_DIV_EN			0x14d, 0x08, 3
+#define SR_SET_OUT_ANT0			0x14d, 0x03, 1
+#define SR_SET_OUT_ANT1			0x14d, 0x03, 0
 
 /* RF230 register assignments, for reference */
 #if 0
