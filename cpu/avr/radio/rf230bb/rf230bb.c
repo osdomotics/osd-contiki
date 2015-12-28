@@ -898,11 +898,8 @@ void rf230_warm_reset(void) {
 
 /*set external PA in on state, used for Dresden Elektronik m12 modules*/
 /*needed for guhRF Modules and RaspBee Boarder Router*/
-#if defined(_EXT_PA_) 
-uint8_t reg_trx_ctrl_state;
-reg_trx_ctrl_state = hal_register_read(0x04);
-reg_trx_ctrl_state = (reg_trx_ctrl_state) | (0x80);
-hal_register_write(0x04, reg_trx_ctrl_state);
+#if defined( _EXT_PA_ )
+   hal_subregister_write(SR_PA_EXT_EN, 1);
 #endif
 
   /* Use automatic CRC unless manual is specified */

@@ -134,6 +134,13 @@
 #define TRAC_NO_ACK                     5
 #define TRAC_INVALID                    7
 
+/** Offset for register TRX_CTRL_0 */
+#define RG_TRX_CTRL_0                   0x143
+/** Offset for register TRX_CTRL_1 */
+#define RG_TRX_CTRL_1                   0x144
+
+#define SR_PA_EXT_EN			0x144, 0x80, 7
+
 
 /* RF230 register assignments, for reference */
 #if 0
