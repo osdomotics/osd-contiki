@@ -140,6 +140,7 @@
 #define RG_TRX_CTRL_1                   0x144
 
 #define SR_PA_EXT_EN			0x144, 0x80, 7
+#define SR_IRQ_2_EXT_EN			0x144, 0x40, 6
 #define SR_ANT_EXT_SW_EN		0x14D, 0x04, 2
 #define SR_ANT_DIV_EN			0x14D, 0x08, 3
 

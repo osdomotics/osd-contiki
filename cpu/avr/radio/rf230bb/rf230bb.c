@@ -900,6 +900,7 @@ void rf230_warm_reset(void) {
 /*needed for guhRF Modules and RaspBee Boarder Router*/
 #if defined( _EXT_PA_ )
    hal_subregister_write(SR_PA_EXT_EN, 1);
+   hal_subregister_write(SR_IRQ_2_EXT_EN, 0);
    hal_subregister_write(SR_ANT_EXT_SW_EN, 1);
    hal_subregister_write(SR_ANT_DIV_EN, 1);
 #endif
