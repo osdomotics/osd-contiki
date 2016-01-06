@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Authors Simon Stürz & Bernhard Trinnes
+# www.guh.io
+
 set -e
 #set -x
 
@@ -34,6 +37,9 @@ sleep 1
 
 printGreen "Set GPIO17 high"
 sudo echo "1" > /sys/class/gpio/gpio17/value
+
+printGreen "Waiting for Contiki"
+sleep 10
 
 printGreen "Start tunslib6"
 sudo systemctl restart tunslib6

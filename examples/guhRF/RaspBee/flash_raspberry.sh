@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Authors Simon Stürz & Bernhard Trinnes
+# www.guh.io
+
 set -e
 #set -x
 
