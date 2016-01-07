@@ -45,10 +45,10 @@
 
 /** @name Smart Grid Ready Functions */
 /** @{ */
-void relay_init(uint8_t pin);
-void set_state(uint8_t pin);
-uint8_t get_state();
-void switch_difference(uint8_t old, uint8_t new); 
+void sg_relay_init(uint8_t state);
+void sg_set_state(uint8_t pin);
+uint8_t sg_get_state();
+void sg_switch_difference(uint8_t old, uint8_t new); 
 
 /** @} */
 

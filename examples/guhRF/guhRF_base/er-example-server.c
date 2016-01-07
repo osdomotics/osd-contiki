@@ -47,7 +47,7 @@
 #include "dev/button-sensor.h"
 #endif
 
-#define DEBUG 0
+#define DEBUG 1
 #if DEBUG
 #include <stdio.h>
 #define PRINTF(...) printf(__VA_ARGS__)
@@ -63,8 +63,9 @@
  * Resources to be activated need to be imported through the extern keyword.
  * The build system automatically compiles the resources in the corresponding sub-directory.
  */
+
 extern resource_t
-  res_hello,
+//  res_hello,
   res_mirror,
   res_chunks,
   res_separate,
@@ -72,38 +73,35 @@ extern resource_t
   res_event,
   res_sub,
   res_b1_sep_b2;
-#if PLATFORM_HAS_LEDS
+
+
 #include "dev/leds.h"
 extern resource_t res_leds, res_toggle;
-#endif
-#if PLATFORM_HAS_LIGHT
-#include "dev/light-sensor.h"
-extern resource_t res_light;
-#endif
-#if PLATFORM_HAS_BATTERY
+
 #include "dev/battery-sensor.h"
 extern resource_t res_battery;
-#endif
+
+#include "dev/sg-ready.h"
+extern resource_t res_sg_ready;
 /*
-#if PLATFORM_HAS_RADIO
 #include "dev/radio-sensor.h"
 extern resource_t res_radio;
-#endif
-#if PLATFORM_HAS_SHT11
-#include "dev/sht11/sht11-sensor.h"
-extern resource_t res_sht11;
-#endif
-*/
 
+extern resource_t res_button;
+*/
 void 
 hw_init()
 {
-#if defined (PLATFORM_HAS_LEDS)
+ uint8_t mode = 1; 
  leds_off(LEDS_RED);
-#endif
+
+ //Sg-Ready Module Haredware Init
+ PRINTF("Init SG Relays\n");
+ sg_relay_init(mode);
+ PRINTF("Mode set to: %u\n", mode)
 }
 
-PROCESS(er_example_server, "Erbium Example Server");
+PROCESS(er_example_server, "CoaP guhRF Server");
 AUTOSTART_PROCESSES(&er_example_server);
 
 PROCESS_THREAD(er_example_server, ev, data)
@@ -112,7 +110,7 @@ PROCESS_THREAD(er_example_server, ev, data)
 
   PROCESS_PAUSE();
 
-  PRINTF("Starting Erbium Example Server\n");
+  PRINTF("Starting Erbium Server\n");
 
 #ifdef RF_CHANNEL
   PRINTF("RF channel: %u\n", RF_CHANNEL);
@@ -126,7 +124,9 @@ PROCESS_THREAD(er_example_server, ev, data)
   PRINTF("IP+UDP header: %u\n", UIP_IPUDPH_LEN);
   PRINTF("REST max chunk: %u\n", REST_MAX_CHUNK_SIZE);
 
+  /*Initialize the IO Ports*/
   hw_init();
+
   /* Initialize the REST engine. */
   rest_init_engine();
 
@@ -135,53 +135,42 @@ PROCESS_THREAD(er_example_server, ev, data)
    * WARNING: Activating twice only means alternate path, not two instances!
    * All static variables are the same for each URI path.
    */
-  rest_activate_resource(&res_hello, "test/hello");
-/*  rest_activate_resource(&res_mirror, "debug/mirror"); */
-/*  rest_activate_resource(&res_chunks, "test/chunks"); */
-/*  rest_activate_resource(&res_separate, "test/separate"); */
-  rest_activate_resource(&res_push, "test/push");
-/*  rest_activate_resource(&res_event, "s/button"); */
-/*  rest_activate_resource(&res_sub, "test/sub"); */
-/*  rest_activate_resource(&res_b1_sep_b2, "test/b1sepb2"); */
-#if PLATFORM_HAS_LEDS
-/*  rest_activate_resource(&res_leds, "a/leds"); */
+/*
+  rest_activate_resource(&res_event, "s/button");
+  SENSORS_ACTIVATE(button_sensor);
+*/
   rest_activate_resource(&res_toggle, "a/toggle");
-#endif
-#if PLATFORM_HAS_LIGHT
-  rest_activate_resource(&res_light, "s/light"); 
-  SENSORS_ACTIVATE(light_sensor);  
-#endif
 
-#if PLATFORM_HAS_BATTERY
   rest_activate_resource(&res_battery, "s/battery");  
   SENSORS_ACTIVATE(battery_sensor);  
-#endif
 /*
-#if PLATFORM_HAS_RADIO
+  rest_activate_resource(&res_sg_ready, "a/sg_mode");
+*/
+
+/*
   rest_activate_resource(&res_radio, "s/radio");  
   SENSORS_ACTIVATE(radio_sensor);  
-#endif
-#if PLATFORM_HAS_SHT11
-  rest_activate_resource(&res_sht11, "s/sht11");  
-  SENSORS_ACTIVATE(sht11_sensor);  
-#endif
 */
+
+
 
   /* Define application-specific events here. */
   while(1) {
+    PRINTF("enter while loop\n");
     PROCESS_WAIT_EVENT();
-#if PLATFORM_HAS_BUTTON
-    if(ev == sensors_event && data == &button_sensor) {
-      PRINTF("*******BUTTON*******\n");
-	leds_on(LEDS_RED);
+    PRINTF("passed wait event\n");
+    
+    //if(ev == sensors_event && data == &button_sensor) {
+      //PRINTF("*******BUTTON*******\n");
+	//leds_on(LEDS_RED);
 
-      /* Call the event_handler for this application-specific event. */
-      res_event.trigger();
-
-      /* Also call the separate response example handler. */
-      res_separate.resume();
-    }
-#endif /* PLATFORM_HAS_BUTTON */
+//      /* Call the event_handler for this application-specific event. */
+//     res_event.trigger();
+//
+ //     /* Also call the separate response example handler. */
+  //    res_separate.resume();
+   // }
+	
   }                             /* while (1) */
 
   PROCESS_END();

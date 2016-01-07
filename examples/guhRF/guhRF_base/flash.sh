@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo make flash-server
+sudo make flash-server-jtag

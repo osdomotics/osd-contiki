@@ -19,14 +19,14 @@
 
 #define CONTIKI_CONF_RANDOM_MAC 1        //adds 78 bytes
 #define CONTIKI_CONF_SETTINGS_MANAGER 0  //adds 1696 bytes
-#define BOOTLOADER_GET_MAC 0             // get mac form boolaoder, need bootlaoder bonsai, PARAMETER_STORAGE 0
+#define BOOTLOADER_GET_MAC 0             // get mac from booloader, need bootloader bonsai, PARAMETER_STORAGE 0
 
 #if CONTIKI_CONF_SETTINGS_MANAGER
 //#define PARAMETER_STORAGE 2
 #define PARAMETER_STORAGE 2
 #else
 //#define PARAMETER_STORAGE 1
-#define PARAMETER_STORAGE 1           // get mac form boolaoder, need bootlaoder bonsai, PARAMETER_STORAGE 0
+#define PARAMETER_STORAGE 1           // get mac from booloader, need bootloader bonsai, PARAMETER_STORAGE 0
 #endif
 
 /* Include settings.h, then dummy out the write routines */

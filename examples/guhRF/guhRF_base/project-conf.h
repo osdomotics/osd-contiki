@@ -51,6 +51,9 @@
    #define IEEE802154_CONF_PANID          0xABCD
  */
 
+/* External Amplifier installed */
+   //#define _EXT_PA_ 		1
+
 /* IP buffer size must match all other hops, in particular the border router. */
 
    #undef UIP_CONF_BUFFER_SIZE

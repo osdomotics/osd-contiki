@@ -70,10 +70,6 @@
 #include "dev/serial-line.h"
 #include "dev/slip.h"
 
-#ifdef RAVEN_LCD_INTERFACE
-#include "raven-lcd.h"
-#endif
-
 #if AVR_WEBSERVER
 #include "httpd-fs.h"
 #include "httpd-cgi.h"
@@ -148,8 +144,8 @@ FUSES ={.low = 0xC2, .high = 0x99, .extended = 0xfe,};
 #include "lib/sensors.h"
 #include "dev/button-sensor.h"
 #include "dev/battery-sensor.h"
-#include "dev/pir-sensor.h"
-SENSORS(&button_sensor, &pir_sensor);
+//#include "dev/pir-sensor.h"
+//SENSORS(&button_sensor, &pir_sensor);
 
 uint8_t
 rng_get_uint8(void) {
@@ -187,27 +183,17 @@ void initialize(void)
   watchdog_init();
   watchdog_start();
 
-/* The Raven implements a serial command and data interface via uart0 to a 3290p,
- * which could be duplicated using another host computer.
- */
-#if !RF230BB_CONF_LEDONPORTE1   //Conflicts with USART0
-#ifdef RAVEN_LCD_INTERFACE
-  rs232_init(RS232_PORT_0, USART_BAUD_38400,USART_PARITY_NONE | USART_STOP_BITS_1 | USART_DATA_BITS_8);
-  rs232_set_input(0,raven_lcd_serial_input);
-#else
   /* Generic or slip connection on uart0 */
   rs232_init(RS232_PORT_0, USART_BAUD_38400,USART_PARITY_NONE | USART_STOP_BITS_1 | USART_DATA_BITS_8);
-#endif
-#endif
+
 
   /* Second rs232 port for debugging or slip alternative */
 //  rs232_init(RS232_PORT_1, USART_BAUD_57600,USART_PARITY_NONE | USART_STOP_BITS_1 | USART_DATA_BITS_8);
+
   /* Redirect stdout */
-#if RF230BB_CONF_LEDONPORTE1 || defined(RAVEN_LCD_INTERFACE)
-  rs232_redirect_stdout(RS232_PORT_1);
-#else
   rs232_redirect_stdout(RS232_PORT_0);
-#endif
+
+
   clock_init();
 
   if(MCUSR & (1<<PORF )) PRINTD("Power-on reset.\n");
@@ -328,10 +314,6 @@ uint8_t i;
   process_start(&tcpip_process, NULL);
 #endif
 
-#ifdef RAVEN_LCD_INTERFACE
-  process_start(&raven_lcd_process, NULL);
-#endif
-
   process_start(&sensors_process, NULL);
 
   /* Autostart other processes */
@@ -404,11 +386,6 @@ uint8_t i;
 #endif
 #endif /* ANNOUNCE_BOOT */
 
-#if RF230BB_CONF_LEDONPORTE1
-  /* NB: PORTE1 conflicts with UART0 */
-  DDRE|=(1<<DDE1);  //set led pin to output (Micheal Hatrtman board)
-  PORTE&=~(1<<PE1); //and low to turn led off
-#endif
 }
 
 #if ROUTES && NETSTACK_CONF_WITH_IPV6
@@ -452,14 +429,6 @@ main(void)
     /* Turn off LED after a while */
     if (ledtimer) {
       if (--ledtimer==0) {
-#if RF230BB_CONF_LEDONPORTE1
-        PORTE&=~(1<<PE1);
-#endif
-#if defined(RAVEN_LCD_INTERFACE)&&0
-       /* ledtimer can be set by received ping; ping the other way for testing */
-       extern void raven_ping6(void);         
-       raven_ping6();
-#endif
       }
     }
 #endif

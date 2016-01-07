@@ -1,12 +1,11 @@
 ifeq ($(TARGET), guhRF)
 PLATFORM_FILES= avr-size-server er-example-server.guhRF.hex \
     er-example-server.guhRF.eep                             \
-    avr-size-client er-example-client.guhRF.hex             \
-    er-example-client.guhRF.eep
+
 endif
 
 
-all: er-example-server er-example-client $(PLATFORM_FILES)
+all: er-example-server $(PLATFORM_FILES)
 
 # use target "er-plugtest-server" explicitly when requried 
 
@@ -40,6 +39,9 @@ SMALL=1
 # REST Engine shall use Erbium CoAP implementation
 APPS += er-coap
 APPS += rest-engine
+#APPS += er-coap-13
+#APPS += erbium
+
 
 # optional rules to get assembly
 #CUSTOM_RULE_C_TO_OBJECTDIR_O = 1

@@ -49,6 +49,7 @@
 #define F_CPU          16000000UL
 #endif
 
+
 #include <stdint.h>
 
 #define IEEE802154_CONF_PANID     0xABCD // default panid
@@ -80,15 +81,9 @@ void clock_adjust_ticks(clock_time_t howmany);
 /* The sleep timer requires the crystal and adds a TIMER2 interrupt routine if not already define by clock.c */
 #define AVR_CONF_USE32KCRYSTAL 0
 
-/* However this results in disabling UART0. */
-#define RF230BB_CONF_LEDONPORTE1  0
 
 /* COM port to be used for SLIP connection. This is usually UART0, but see above */
-#if RF230BB_CONF_LEDONPORTE1
-#define SLIP_PORT RS232_PORT_1
-#else
 #define SLIP_PORT RS232_PORT_0
-#endif
 
 /* Pre-allocated memory for loadable modules heap space (in bytes)*/
 /* Default is 4096. Currently used only when elfloader is present. Not tested on Raven */
@@ -143,6 +138,7 @@ typedef unsigned short uip_stats_t;
 #define RDC_CONF_HARDWARE_CSMA   1
 /* Allow MCU sleeping between channel checks */
 #define RDC_CONF_MCU_SLEEP         1
+
 
 #if NETSTACK_CONF_WITH_IPV6
 #define LINKADDR_CONF_SIZE        8

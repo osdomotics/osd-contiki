@@ -25,10 +25,10 @@ CONTIKI_TARGET_SOURCEFILES += servo.c servo-sensor.c
 #Needed for Timer4 Servo
 #CONTIKI_TARGET_SOURCEFILES += t4-servo.c t4-servo-sensor.c
 #Needed for Relay 1 to 4
-CONTIKI_TARGET_SOURCEFILES += relay.c relay-sensor.c
+#CONTIKI_TARGET_SOURCEFILES += relay.c relay-sensor.c
 # Arduino
-CONTIKI_TARGET_SOURCEFILES += wiring_digital.c
-CONTIKI_TARGET_SOURCEFILES += LED_Strip_Suli.c
+#CONTIKI_TARGET_SOURCEFILES += wiring_digital.c
+#CONTIKI_TARGET_SOURCEFILES += LED_Strip_Suli.c
 
 SULI_DIR=$(CONTIKI)/platform/$(TARGET)/dev/LED_Strip_Suli
 

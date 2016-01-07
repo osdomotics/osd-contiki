@@ -43,3 +43,5 @@ sleep 10
 
 printGreen "Start tunslib6"
 sudo systemctl restart tunslib6
+
+sudo service tunslib6 status | grep "IPv6" -A1

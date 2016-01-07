@@ -57,7 +57,7 @@
  * \brief  init RELAY PINS - direction & pull-ups
 */
 void
-releay_init()
+sg_relay_init(uint8_t state)
 {
    /*2 latching dual coal relay
    RELAY 1 Coil 1   PB4 - ON
@@ -74,7 +74,7 @@ releay_init()
    DDRD &= ~(RELAY1_FB | RELAY2_FB);
    PORTD |= (RELAY1_FB | RELAY2_FB);
 
-   set_state(1); // set default state - heat pump normal operation
+   sg_set_state(state); // set default state - heat pump normal operation
 }
 
 /**
@@ -82,7 +82,7 @@ releay_init()
 */
 
 void
-set_state(uint8_t state)
+sg_set_state(uint8_t state)
 {
    /* State 1 - Relays 1:0
       State 2 - Relays 0:0  
@@ -91,11 +91,11 @@ set_state(uint8_t state)
    */
    uint8_t i = 0;
    uint8_t current_state;
-   current_state = get_state();
+   current_state = sg_get_state();
    while ( i<=3 || (current_state != state)){
       i++;
-      switch_difference(current_state, state);
-      current_state = get_state();  
+      sg_switch_difference(current_state, state);
+      current_state = sg_get_state();  
    } 
 }
 /**
@@ -104,7 +104,7 @@ set_state(uint8_t state)
 
 
 uint8_t
-get_state()
+sg_get_state()
 {
    uint8_t state;
    /* Pull up -> Pin high = Relay Open */
@@ -124,7 +124,7 @@ get_state()
 */
 
 void 
-switch_difference(uint8_t old, uint8_t new)
+sg_switch_difference(uint8_t old, uint8_t new)
 {
    switch(old) {
       case 1: 

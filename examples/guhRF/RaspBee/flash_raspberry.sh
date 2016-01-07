@@ -54,3 +54,6 @@ sudo echo "0" > /sys/class/gpio/gpio18/value
 
 printGreen "Start tunslib6"
 sudo systemctl restart tunslib6
+
+sudo service tunslib6 status | grep "IPv6" -A1
+
