@@ -212,7 +212,7 @@ static unsigned long total_time_for_transmission, total_transmission_len;
 static int num_transmissions;
 #endif
 
-#if defined(__AVR_ATmega128RFA1__)
+#if defined(__AVR_ATmega128RFA1__) || defined(__AVR_ATmega256RFR2__)
 volatile uint8_t rf230_wakewait, rf230_txendwait, rf230_ccawait;
 #endif
 
@@ -585,7 +585,7 @@ radio_on(void)
 #if RF230BB_CONF_LEDONPORTE1
     PORTE|=(1<<PE1); //ledon
 #endif
-#if defined(__AVR_ATmega128RFA1__)
+#if defined(__AVR_ATmega128RFA1__) || defined(__AVR_ATmega256RFR2__)
     /* Use the poweron interrupt for delay */
     rf230_wakewait=1;
     {
@@ -909,6 +909,24 @@ void rf230_warm_reset(void) {
 #endif
 #endif
 
+
+/*set external PA in on state, used for Dresden Elektronik m12 modules*/
+/*needed for guhRF Modules and RaspBee Boarder Router*/
+#if defined( _EXT_PA_ )
+   hal_subregister_write(SR_PA_EXT_EN, 1);
+   hal_subregister_write(SR_IRQ_2_EXT_EN, 0); //Must be disabled for antenna diversity
+   hal_subregister_write(SR_ANT_EXT_SW_EN, 1);
+//   hal_subregister_write(SR_ANT_DIV_EN, 1);
+
+/* Registers for fixed Antenna out - Diversity disabled */
+// hal_subregister_write(SR_ANT_DIV_EN, 0);
+// hal_subregister_write(SR_SET_OUT_ANT1, 1); //Set Antenna 1 RFOUT1-deRFmega256-23M12 
+   hal_subregister_write(SR_SET_OUT_ANT0, 1); //Set Antenna 0 RFOUT2-deRFmega256-23M12
+   DDRD  |= (1<<PD6); // PIND6 High to wake amplifier
+   PORTD |= (1<<PD6); 
+
+#endif
+
   /* Use automatic CRC unless manual is specified */
 #if RF230_CONF_CHECKSUM
   hal_subregister_write(SR_TX_AUTO_CRC_ON, 0);
@@ -937,7 +955,7 @@ rf230_transmit(unsigned short payload_len)
   /* If radio is sleeping we have to turn it on first */
   /* This automatically does the PLL calibrations */
   if (hal_get_slptr()) {
-#if defined(__AVR_ATmega128RFA1__)
+#if defined(__AVR_ATmega128RFA1__) || defined(__AVR_ATmega256RFR2__)
 	ENERGEST_ON(ENERGEST_TYPE_LED_RED);
 #if RF230BB_CONF_LEDONPORTE1
     PORTE|=(1<<PE1); //ledon
@@ -1658,7 +1676,7 @@ rf230_cca(void)
 
   /* Start the CCA, wait till done, return result */
   /* Note reading the TRX_STATUS register clears both CCA_STATUS and CCA_DONE bits */
-#if defined(__AVR_ATmega128RFA1__)
+#if defined(__AVR_ATmega128RFA1__) || defined(__AVR_ATmega256RFR2__)
 #if 1  //interrupt method
     /* Disable rx transitions to busy (RX_PDT_BIT) */
     /* Note: for speed this resets rx threshold to the compiled default */
