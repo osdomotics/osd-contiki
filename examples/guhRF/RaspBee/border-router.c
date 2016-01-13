@@ -105,8 +105,8 @@ PROCESS_THREAD(webserver_nogui_process, ev, data)
 }
 AUTOSTART_PROCESSES(&border_router_process,&webserver_nogui_process);
 
-static const char *TOP = "<html><head><title>ContikiRPL</title></head><body>\n";
-static const char *BOTTOM = "</body></html>\n";
+/*static const char *TOP = "<html><head><title>ContikiRPL</title></head><body>\n";
+static const char *BOTTOM = "</body></html>\n";*/
 #if BUF_USES_STACK
 static char *bufptr, *bufend;
 #define ADD(...) do {                                                   \
@@ -156,18 +156,18 @@ PT_THREAD(generate_routes(struct httpd_state *s))
 
   PSOCK_BEGIN(&s->sout);
 
-  SEND_STRING(&s->sout, TOP);
+  //SEND_STRING(&s->sout, TOP);
 #if BUF_USES_STACK
   bufptr = buf;bufend=bufptr+sizeof(buf);
 #else
   blen = 0;
 #endif
-  ADD("Neighbors<pre>");
+  //ADD("Neighbors<pre>");
 
   for(nbr = nbr_table_head(ds6_neighbors);
       nbr != NULL;
       nbr = nbr_table_next(ds6_neighbors, nbr)) {
-
+/*
 #if WEBSERVER_CONF_NEIGHBOR_STATUS
 #if BUF_USES_STACK
 {char* j=bufptr+25;
@@ -199,6 +199,7 @@ PT_THREAD(generate_routes(struct httpd_state *s))
 #endif
 
       ADD("\n");
+*/
 #if BUF_USES_STACK
       if(bufptr > bufend - 45) {
         SEND_STRING(&s->sout, buf);
@@ -211,8 +212,8 @@ PT_THREAD(generate_routes(struct httpd_state *s))
       }
 #endif
   }
-  ADD("</pre>Routes<pre>");
-  SEND_STRING(&s->sout, buf);
+  //ADD("</pre>Routes<pre>");
+  //SEND_STRING(&s->sout, buf);
 #if BUF_USES_STACK
   bufptr = buf; bufend = bufptr + sizeof(buf);
 #else
@@ -244,21 +245,23 @@ PT_THREAD(generate_routes(struct httpd_state *s))
     ipaddr_add(&r->ipaddr);
 #endif
 #endif
-    ADD("/%u (via ", r->length);
-    ipaddr_add(uip_ds6_route_nexthop(r));
+    ADD("/%u\n", r->length);
+    /*ipaddr_add(uip_ds6_route_nexthop(r));
     if(1 || (r->state.lifetime < 600)) {
       ADD(") %lus\n", (unsigned long)r->state.lifetime);
     } else {
       ADD(")\n");
     }
+    */
     SEND_STRING(&s->sout, buf);
+
 #if BUF_USES_STACK
     bufptr = buf; bufend = bufptr + sizeof(buf);
 #else
     blen = 0;
 #endif
   }
-  ADD("</pre>");
+  /*ADD("</pre>");
 
 #if WEBSERVER_CONF_FILESTATS
   static uint16_t numtimes;
@@ -272,7 +275,7 @@ PT_THREAD(generate_routes(struct httpd_state *s))
 
   SEND_STRING(&s->sout, buf);
   SEND_STRING(&s->sout, BOTTOM);
-
+  */
   PSOCK_END(&s->sout);
 }
 /*---------------------------------------------------------------------------*/

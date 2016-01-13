@@ -18,8 +18,7 @@ if [ "$UID" -ne 0 ]; then
     exit
 fi
 
-printGreen "Stop tunslib6..."
-
+printGreen "Stop tunslib6 service..."
 systemctl stop tunslib6
 
 if [ ! -d /sys/class/gpio/gpio18 ]; then
@@ -45,14 +44,17 @@ sleep 1
 printGreen "Set GPIO17 high"
 echo "1" > /sys/class/gpio/gpio17/value
 
-printGreen "Flash firmware"
+printGreen "Flash firmware..."
 avrdude -pm256rfr2 -c stk500 -P/dev/ttyAMA0 -b57600 -D -U flash:w:border-router.RaspBee.hex:a -U eeprom:w:border-router.RaspBee.eep:a || true
 
 printGreen "Set GPIO18 low"
 echo "0" > /sys/class/gpio/gpio18/value
 
-printGreen "Start tunslib6"
+printGreen "Start tunslib6 service..."
 systemctl restart tunslib6
+
+printGreen "Restart guhd service..."
+systemctl restart guhd
 
 service tunslib6 status | grep "IPv6" -A1
 
