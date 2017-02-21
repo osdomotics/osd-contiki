@@ -50,7 +50,7 @@ float Adafruit_HTU21DF::readTemperature(void) {
   Wire.write(HTU21DF_READTEMP);
   Wire.endTransmission();
   
-  delay(50); // add delay between request and actual read!
+  delay(60); // add delay between request and actual read!
   
   Wire.requestFrom(HTU21DF_I2CADDR, 3);
   while (!Wire.available()) {}
