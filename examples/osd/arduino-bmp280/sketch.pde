@@ -24,12 +24,10 @@ float bmptemp;
 float bmppress;
 float bmpatm;
 float bmpalt;
-float bmphum;
 char  bmptemp_s[8];
 char  bmppress_s[10];
 char  bmpatm_s[8];
-char  bmpalt_s[8];
-char  bmphum_s[8];
+char  bmpalt_s[8];;
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 Adafruit_BMP280 bme; // I2C
@@ -39,12 +37,11 @@ Adafruit_BMP280 bme; // I2C
 
 void setup (void)
 {
+    bool status;
+    
     // switch off the led
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, HIGH);
-
-    bool status;
-    
     // default settings
     status = bme.begin(0x76);
     if (!status) {
