@@ -18,7 +18,7 @@ extern "C" {
 #include "arduino-process.h"
 #include "rest-engine.h"
 
-extern resource_t res_bmptemp,res_bmppress,res_bmpatm,res_bmpalt, res_battery;
+extern resource_t res_bmptemp, res_bmphum, res_bmppress,res_bmpatm,res_bmpalt, res_battery;
 
 float bmptemp;
 float bmppress;
@@ -26,7 +26,7 @@ float bmpatm;
 float bmpalt;
 float bmphum;
 char  bmptemp_s[8];
-char  bmppress_s[8];
+char  bmppress_s[10];
 char  bmpatm_s[8];
 char  bmpalt_s[8];
 char  bmphum_s[8];
