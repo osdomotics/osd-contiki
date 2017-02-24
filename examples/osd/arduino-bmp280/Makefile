@@ -12,7 +12,7 @@ CONTIKI_WITH_IPV6 = 1
 CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
 LFLAGS += -lm
 
-PROJECT_SOURCEFILES += ${SKETCH}.cpp Adafruit_BME280.cpp
+PROJECT_SOURCEFILES += ${SKETCH}.cpp Adafruit_BMP280.cpp
 
 # automatically build RESTful resources
 REST_RESOURCES_DIR = ./resources

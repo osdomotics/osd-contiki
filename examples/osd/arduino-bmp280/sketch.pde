@@ -12,7 +12,7 @@
 
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
-#include <Adafruit_BME280.h>
+#include <Adafruit_BMP280.h>
 
 extern "C" {
 #include "arduino-process.h"
@@ -24,31 +24,28 @@ float bmptemp;
 float bmppress;
 float bmpatm;
 float bmpalt;
-float bmphum;
 char  bmptemp_s[8];
-char  bmppress_s[8];
+char  bmppress_s[10];
 char  bmpatm_s[8];
-char  bmpalt_s[8];
-char  bmphum_s[8];
+char  bmpalt_s[8];;
 
 #define SEALEVELPRESSURE_HPA (1013.25)
-Adafruit_BME280 bme; // I2C
+Adafruit_BMP280 bme; // I2C
 
 #define LED_PIN 4
 }
 
 void setup (void)
 {
+    bool status;
+    
     // switch off the led
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, HIGH);
-
-    bool status;
-    
     // default settings
-    status = bme.begin(0x77);
+    status = bme.begin(0x76);
     if (!status) {
-        printf("Could not find a valid BME280 sensor, check wiring!");
+        printf("Could not find a valid BMP280 sensor, check wiring!");
     }
     // init coap resourcen
     rest_init_engine ();
@@ -69,13 +66,12 @@ void loop (void)
     bmppress = bme.readPressure();
     bmpalt = bme.readAltitude(SEALEVELPRESSURE_HPA);
     bmpatm = bme.readPressure() / 100.0F;
-    bmphum = bme.readHumidity();
     
     dtostrf(bmptemp , 6, 2, bmptemp_s );   
     dtostrf(bmppress , 6, 2, bmppress_s );
     dtostrf(bmpalt , 6, 2, bmpalt_s );
     dtostrf(bmpatm , 6, 2, bmpatm_s );
-    dtostrf(bmphum , 6, 2, bmphum_s );
+   
     
     // remove space
     if(bmptemp_s[0]==' '){
@@ -90,14 +86,10 @@ void loop (void)
     if(bmpatm_s[0]==' '){
       memcpy (bmpatm_s,bmpatm_s+1,strlen(bmpatm_s)+1);
     }
-    if(bmphum_s[0]==' '){
-      memcpy (bmphum_s,bmphum_s+1,strlen(bmphum_s)+1);
-    }
-         
+
 // Debug Print
 	printf("Temp: %s\n",bmptemp_s);
     printf("Press: %s\n",bmppress_s);
     printf("Altitude: %s\n",bmpalt_s);
-    printf("atm: %s\n",bmpatm_s);
-    printf("hum: %s\n",bmphum_s);   
+    printf("atm: %s\n",bmpatm_s);   
 }
