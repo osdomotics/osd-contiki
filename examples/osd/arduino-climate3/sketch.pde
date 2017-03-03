@@ -129,35 +129,19 @@ void setup (void)
 // at project-conf.h
 // LOOP_INTERVAL		(20 * CLOCK_SECOND)
 void loop (void)
-{
-	  mcu_sleep_off();  
-      // call sensors.requestTemperatures() to issue a global temperature 
-      // request to all devices on the bus
-//      printf("Requesting temperatures...");
+{  
       dsensors.requestTemperatures();
-//      printf("DONE\n");
       // print the device information
-      printData(outsideThermometer,0);
+      //printData(outsideThermometer,0);
       
       htu21d_temp = htu.readTemperature();
       htu21d_hum = htu.readHumidity();
      
-      dtostrf(htu21d_temp , 6, 2, htu21d_temp_s );   
-      dtostrf(htu21d_hum , 6, 2, htu21d_hum_s );
-      // remove space
-      if(htu21d_temp_s[0]==' '){
-        memcpy (htu21d_temp_s,htu21d_temp_s+1,strlen(htu21d_temp_s)+1);
-      }
-      if(htu21d_hum_s[0]==' '){
-        memcpy (htu21d_hum_s,htu21d_hum_s+1,strlen(htu21d_hum_s)+1);
-      }
-      if(d_temp_s[0]==' '){
-        memcpy (d_temp_s,d_temp_s+1,strlen(d_temp_s)+1);
-      }
+      dtostrf(htu21d_temp , 0, 2, htu21d_temp_s );   
+      dtostrf(htu21d_hum , 0, 2, htu21d_hum_s );
       
 //  debug only   
-	printf("Temp: %s",htu21d_temp_s);
-    printf("\t\tHum: %s\n",htu21d_hum_s);
-    
-    mcu_sleep_on();
+//	printf("Temp: %s",htu21d_temp_s);
+//  printf("\t\tHum: %s\n",htu21d_hum_s);
+
 }
