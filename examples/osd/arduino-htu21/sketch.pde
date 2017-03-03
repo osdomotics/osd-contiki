@@ -39,10 +39,11 @@ void setup (void)
     }
     // init coap resourcen
     rest_init_engine ();
+#pragma GCC diagnostic ignored "-Wwrite-strings"
     rest_activate_resource (&res_htu21dtemp, "s/temp");
     rest_activate_resource (&res_htu21dhum, "s/hum");
     rest_activate_resource (&res_battery, "s/battery");
-    
+#pragma GCC diagnostic pop    
     mcu_sleep_set(128); // Power consumtion 278uA; average over 20 minutes
 }
 
