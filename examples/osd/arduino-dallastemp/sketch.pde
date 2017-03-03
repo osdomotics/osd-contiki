@@ -61,7 +61,7 @@ void printAddress(uint8_t* adress)
 void printTemperature(DeviceAddress deviceAddress,int index)
 {
  d_temp = dsensors.getTempC(deviceAddress);
- dtostrf(d_temp , 6, 2, d_temp_s );
+ dtostrf(d_temp , 0, 2, d_temp_s );
  printf("Temp C: ");
  printf("%s",d_temp_s);
  // copy to structure
@@ -152,9 +152,11 @@ void setup (void)
   printf("\n");
     // init coap resourcen
     rest_init_engine ();
+    #pragma GCC diagnostic ignored "-Wwrite-strings"
     rest_activate_resource (&res_dtemp1, "s/t1/temp");
     rest_activate_resource (&res_dtemp2, "s/t2/temp");
     rest_activate_resource (&res_battery, "s/batter");
+    #pragma GCC diagnostic pop
 }
 
 // at project-conf.h

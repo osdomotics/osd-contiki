@@ -66,7 +66,7 @@ void printAddress(uint8_t* adress)
 void printTemperature(DeviceAddress deviceAddress,int index)
 {
  d_temp = dsensors.getTempC(deviceAddress);
- dtostrf(d_temp , 6, 2, d_temp_s );
+ dtostrf(d_temp , 0, 2, d_temp_s );
  printf("Temp C: ");
  printf("%s",d_temp_s);
  // copy to structure

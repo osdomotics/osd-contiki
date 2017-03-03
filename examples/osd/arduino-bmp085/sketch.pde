@@ -42,11 +42,13 @@ void setup (void)
     myBarometer.init();
     // init coap resourcen
     rest_init_engine ();
+    #pragma GCC diagnostic ignored "-Wwrite-strings"
     rest_activate_resource (&res_bmp085temp, "s/temp");
     rest_activate_resource (&res_bmp085press, "s/press");
     rest_activate_resource (&res_bmp085atm, "s/atm");
     rest_activate_resource (&res_bmp085alt, "s/alt");
     rest_activate_resource (&res_battery, "s/battery");
+    #pragma GCC diagnostic pop
 }
 
 // at project-conf.h
@@ -59,23 +61,10 @@ void loop (void)
     bmp085alt = myBarometer.calcAltitude(bmp085press); //Uncompensated caculation - in Meters 
     bmp085atm = bmp085press / 101325;
     
-    dtostrf(bmp085temp , 6, 2, bmp085temp_s );   
-    dtostrf(bmp085press , 6, 2, bmp085press_s );
-    dtostrf(bmp085alt , 6, 2, bmp085alt_s );
-    dtostrf(bmp085atm , 6, 2, bmp085atm_s );
-    // remove space
-    if(bmp085temp_s[0]==' '){
-      memcpy (bmp085temp_s,bmp085temp_s+1,strlen(bmp085temp_s)+1);
-    }
-    if(bmp085press_s[0]==' '){
-      memcpy (bmp085press_s,bmp085press_s+1,strlen(bmp085press_s)+1);
-    }
-    if(bmp085alt_s[0]==' '){
-      memcpy (bmp085alt_s,bmp085alt_s+1,strlen(bmp085alt_s)+1);
-    }
-    if(bmp085atm_s[0]==' '){
-      memcpy (bmp085atm_s,bmp085atm_s+1,strlen(bmp085atm_s)+1);
-    }
+    dtostrf(bmp085temp , 0, 2, bmp085temp_s );   
+    dtostrf(bmp085press , 0, 2, bmp085press_s );
+    dtostrf(bmp085alt , 0, 2, bmp085alt_s );
+    dtostrf(bmp085atm , 0, 2, bmp085atm_s );
          
 // Debug Print
 	printf("Temp: %s",bmp085temp_s);
