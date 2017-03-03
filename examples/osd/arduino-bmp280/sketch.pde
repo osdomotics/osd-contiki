@@ -67,28 +67,14 @@ void loop (void)
     bmpalt = bme.readAltitude(SEALEVELPRESSURE_HPA);
     bmpatm = bme.readPressure() / 100.0F;
     
-    dtostrf(bmptemp , 6, 2, bmptemp_s );   
-    dtostrf(bmppress , 6, 2, bmppress_s );
-    dtostrf(bmpalt , 6, 2, bmpalt_s );
-    dtostrf(bmpatm , 6, 2, bmpatm_s );
+    dtostrf(bmptemp , 0, 2, bmptemp_s );   
+    dtostrf(bmppress , 0, 2, bmppress_s );
+    dtostrf(bmpalt , 0, 2, bmpalt_s );
+    dtostrf(bmpatm , 0, 2, bmpatm_s );
    
-    
-    // remove space
-    if(bmptemp_s[0]==' '){
-      memcpy (bmptemp_s,bmptemp_s+1,strlen(bmptemp_s)+1);
-    }
-    if(bmppress_s[0]==' '){
-      memcpy (bmppress_s,bmppress_s+1,strlen(bmppress_s)+1);
-    }
-    if(bmpalt_s[0]==' '){
-      memcpy (bmpalt_s,bmpalt_s+1,strlen(bmpalt_s)+1);
-    }
-    if(bmpatm_s[0]==' '){
-      memcpy (bmpatm_s,bmpatm_s+1,strlen(bmpatm_s)+1);
-    }
 
 // Debug Print
-	printf("Temp: %s\n",bmptemp_s);
+    printf("Temp: %s\n",bmptemp_s);
     printf("Press: %s\n",bmppress_s);
     printf("Altitude: %s\n",bmpalt_s);
     printf("atm: %s\n",bmpatm_s);   
