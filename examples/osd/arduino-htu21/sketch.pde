@@ -50,21 +50,12 @@ void setup (void)
 // LOOP_INTERVAL		(30 * CLOCK_SECOND)
 void loop (void)
 {
-	mcu_sleep_off();
     htu21d_temp = htu.readTemperature();
     htu21d_hum = htu.readHumidity();
-  	mcu_sleep_on();    
-    dtostrf(htu21d_temp , 6, 2, htu21d_temp_s );   
-	dtostrf(htu21d_hum , 6, 2, htu21d_hum_s );
-    // remove space
-    if(htu21d_temp_s[0]==' '){
-      memcpy (htu21d_temp_s,htu21d_temp_s+1,strlen(htu21d_temp_s)+1);
-    }
-    if(htu21d_hum_s[0]==' '){
-        memcpy (htu21d_hum_s,htu21d_hum_s+1,strlen(htu21d_hum_s)+1);
-    }
+    dtostrf(htu21d_temp , 0, 2, htu21d_temp_s );   
+    dtostrf(htu21d_hum , 0, 2, htu21d_hum_s );
       
 //  debug only   
-//	  printf("Temp: %s",htu21d_temp_s);
-//    printf("\t\tHum: %s\n",htu21d_hum_s);
+//  printf("Temp: '%s'",htu21d_temp_s);
+//  printf("\t\tHum: '%s'\n",htu21d_hum_s);
 }
