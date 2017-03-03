@@ -62,6 +62,7 @@ void setup (void)
     }
     // init coap resourcen
     rest_init_engine ();
+    #pragma GCC diagnostic ignored "-Wwrite-strings"
     rest_activate_resource (&res_bmp085press, "s/press");
     rest_activate_resource (&res_bmp085atm, "s/atm");
     rest_activate_resource (&res_bmp085alt, "s/alt");
@@ -69,48 +70,30 @@ void setup (void)
     rest_activate_resource (&res_htu21dhum, "s/hum");
     rest_activate_resource (&res_bh1750, "s/lux");
     rest_activate_resource (&res_battery, "s/battery");
+    #pragma GCC diagnostic ignored "-Wwrite-strings"
 }
 
 // at project-conf.h
 // LOOP_INTERVAL		(10 * CLOCK_SECOND)
 void loop (void)
 {
-	mcu_sleep_off();
 	// BMP085 Sensor
     bmp085temp = myBarometer.bmp085GetTemperature(myBarometer.bmp085ReadUT()); //Get the temperature, bmp085ReadUT MUST be called first
     bmp085press = myBarometer.bmp085GetPressure(myBarometer.bmp085ReadUP());//Get the temperature
     bmp085alt = myBarometer.calcAltitude(bmp085press); //Uncompensated caculation - in Meters 
     bmp085atm = bmp085press / 101325;
     
-    dtostrf(bmp085temp , 6, 2, bmp085temp_s );   
-    dtostrf(bmp085press , 6, 2, bmp085press_s );
-    dtostrf(bmp085alt , 6, 2, bmp085alt_s );
-    dtostrf(bmp085atm , 6, 2, bmp085atm_s );
-    // remove space
-    if(bmp085temp_s[0]==' '){
-      memcpy (bmp085temp_s,bmp085temp_s+1,strlen(bmp085temp_s)+1);
-    }
-    if(bmp085press_s[0]==' '){
-      memcpy (bmp085press_s,bmp085press_s+1,strlen(bmp085press_s)+1);
-    }
-    if(bmp085alt_s[0]==' '){
-      memcpy (bmp085alt_s,bmp085alt_s+1,strlen(bmp085alt_s)+1);
-    }
-    if(bmp085atm_s[0]==' '){
-      memcpy (bmp085atm_s,bmp085atm_s+1,strlen(bmp085atm_s)+1);
-    }
+    dtostrf(bmp085temp , 0, 2, bmp085temp_s );   
+    dtostrf(bmp085press , 0, 2, bmp085press_s );
+    dtostrf(bmp085alt , 0, 2, bmp085alt_s );
+    dtostrf(bmp085atm , 0, 2, bmp085atm_s );
+    
     // HTU21d Sensor
     htu21d_temp = htu.readTemperature();
     htu21d_hum = htu.readHumidity();
-       dtostrf(htu21d_temp , 6, 2, htu21d_temp_s );   
-	dtostrf(htu21d_hum , 6, 2, htu21d_hum_s );
-    // remove space
-    if(htu21d_temp_s[0]==' '){
-      memcpy (htu21d_temp_s,htu21d_temp_s+1,strlen(htu21d_temp_s)+1);
-    }
-    if(htu21d_hum_s[0]==' '){
-        memcpy (htu21d_hum_s,htu21d_hum_s+1,strlen(htu21d_hum_s)+1);
-    }
+    dtostrf(htu21d_temp , 0, 2, htu21d_temp_s );   
+	dtostrf(htu21d_hum , 0, 2, htu21d_hum_s );
+    
     // BH1750
     lux = lightMeter.getLightLevel();     
     
@@ -124,5 +107,4 @@ void loop (void)
     printf("Hum: %s\n",htu21d_hum_s);
     printf("BH1750\n");    
     printf("Lux: %d\n",lux);
-  	mcu_sleep_on();    
 }
