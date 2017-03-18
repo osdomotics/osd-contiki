@@ -56,10 +56,11 @@ void setup (void)
     rest_activate_resource (&res_bmpalt, "s/alt");
     rest_activate_resource (&res_battery, "s/battery");
     #pragma GCC diagnostic pop
+    mcu_sleep_set(128);
 }
 
 // at project-conf.h
-// LOOP_INTERVAL		(10 * CLOCK_SECOND)
+// LOOP_INTERVAL		(30 * CLOCK_SECOND)
 void loop (void)
 {
     bmptemp = bme.readTemperature();
@@ -74,8 +75,10 @@ void loop (void)
    
 
 // Debug Print
+/*
     printf("Temp: %s\n",bmptemp_s);
     printf("Press: %s\n",bmppress_s);
     printf("Altitude: %s\n",bmpalt_s);
     printf("atm: %s\n",bmpatm_s);   
+*/
 }
