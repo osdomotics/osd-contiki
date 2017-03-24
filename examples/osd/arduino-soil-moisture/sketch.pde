@@ -32,8 +32,8 @@ char   soillight_s[8];
 
 I2CSoilMoistureSensor sensor;
 
-
 #define LED_PIN 4
+
 }
 
 void setup (void)
@@ -63,25 +63,39 @@ void setup (void)
 }
 
 // at project-conf.h
-// LOOP_INTERVAL		(10 * CLOCK_SECOND)
+// LOOP_INTERVAL		(1 * CLOCK_SECOND)
+#define MEASURE_INTERVALL   10
+
 void loop (void)
 {
 
-  if(!sensor.isBusy()){ // available since FW 2.3
-    soilcap   = sensor.getCapacitance(); //read capacitance register
-    soiltemp  = sensor.getTemperature()/(float)10; //temperature register
-    soillight = sensor.getLight(0); //request light measurement, read light register
-    sensor.startMeasureLight();
-
-    dtostrf(soilcap , 0, 2, soilcap_s );   
-    dtostrf(soiltemp , 0, 2, soiltemp_s );
-    dtostrf(soillight , 0, 2, soillight_s );
+  static int count=0;
   
-//    sensor.sleep(); // available since FW 2.3
-         
-// Debug Print
-    printf("Temp: %s",soiltemp_s);
-    printf("\t\tSoil: %s",soilcap_s);
-    printf("\t\tLight: %s\n",soillight_s);
-  }  
+  count ++;
+  switch(count){
+    case 1 :
+      sensor.startMeasureLight();
+    
+    break;
+    case 4 :
+    if(!sensor.isBusy()){ // available since FW 2.3
+      // measure the sensors
+      soilcap   = sensor.getCapacitance(); //read capacitance register
+      soiltemp  = sensor.getTemperature()/(float)10; //temperature register
+      soillight = sensor.getLight(0); //request light measurement, read light register
+      sensor.sleep(); // available since FW 2.3
+      // convert to string
+      dtostrf(soilcap , 0, 2, soilcap_s );   
+      dtostrf(soiltemp , 0, 2, soiltemp_s );
+      dtostrf(soillight , 0, 2, soillight_s );
+      // Debug Print
+      printf("Temp: %s",soiltemp_s);
+      printf("\t\tSoil: %s",soilcap_s);
+      printf("\t\tLight: %s\n",soillight_s);
+    }      
+    break;
+    case (MEASURE_INTERVALL+1) :
+      count = 0;
+    break;
+  } 
 }
