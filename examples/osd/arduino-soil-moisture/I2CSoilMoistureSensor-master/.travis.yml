@@ -1,0 +1,45 @@
+os: linux
+
+language: c
+
+before_install:
+  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16"
+  - sleep 3
+  - export DISPLAY=:1.0
+  - wget http://downloads.arduino.cc/arduino-${ARDUINO_IDE_VERSION}-linux64.tar.xz
+  - tar xf arduino-${ARDUINO_IDE_VERSION}-linux64.tar.xz
+  - sudo mv arduino-${ARDUINO_IDE_VERSION} /usr/local/share/arduino
+  - sudo ln -s /usr/local/share/arduino/arduino /usr/local/bin/arduino
+
+install:
+  - ln -s $PWD /usr/local/share/arduino/libraries/I2CSoilMoistureSensor
+
+script:
+  - arduino --verify --board ${BOARD} $PWD/examples/ChangeSensorI2CAddress/ChangeSensorI2CAddress.ino
+  - arduino --verify --board ${BOARD} $PWD/examples/ReadSensorData/ReadSensorData.ino
+
+env:
+ - ARDUINO_IDE_VERSION=1.6.5 BOARD=arduino:avr:uno
+ - ARDUINO_IDE_VERSION=1.6.10 BOARD=arduino:avr:uno
+ - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:uno
+# - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:yun
+# - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:diecimila:cpu=atmega168
+# - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:diecimila:cpu=atmega328
+ - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:nano:cpu=atmega168
+ - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:nano:cpu=atmega328
+ - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:mega:cpu=atmega1280
+ - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:mega:cpu=atmega2560
+# - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:megaADK
+ - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:leonardo
+# - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:micro
+# - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:esplora
+# - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:mini:cpu=atmega168
+# - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:mini:cpu=atmega328
+# - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:ethernet
+# - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:bt:cpu=atmega168
+# - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:bt:cpu=atmega328
+# - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:lilypad:cpu=atmega168
+# - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:lilypad:cpu=atmega328
+# - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:pro:cpu=atmega168
+# - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:avr:pro:cpu=atmega328
+# - ARDUINO_IDE_VERSION=1.6.13 BOARD=arduino:sam:arduino_due_x
