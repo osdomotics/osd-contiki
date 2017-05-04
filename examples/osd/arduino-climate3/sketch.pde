@@ -132,7 +132,7 @@ void loop (void)
 {  
       dsensors.requestTemperatures();
       // print the device information
-      //printData(outsideThermometer,0);
+      printData(outsideThermometer,0);
       
       htu21d_temp = htu.readTemperature();
       htu21d_hum = htu.readHumidity();
@@ -141,7 +141,6 @@ void loop (void)
       dtostrf(htu21d_hum , 0, 2, htu21d_hum_s );
       
 //  debug only   
-//	printf("Temp: %s",htu21d_temp_s);
-//  printf("\t\tHum: %s\n",htu21d_hum_s);
-
+      printf("Temp: %s",htu21d_temp_s);
+      printf("\t\tHum: %s\n",htu21d_hum_s);
 }
