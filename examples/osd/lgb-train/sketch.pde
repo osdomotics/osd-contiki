@@ -19,7 +19,32 @@ extern resource_t res_led, res_battery, res_cputemp;
 
 uint8_t led_pin=4;
 uint8_t led_status;
+
 }
+
+// Merkurboard and BB-L298 connected to it.
+//      |---------------------------------------------------------------------------|
+//      |            The connections were as follows:                               |
+//      |--------------------------------|------------------------------------------|
+//      |Connector at Merkurboard Grove 4|      Connector at BB-L298                |
+//      |--------------------------------|------------------------------------------|
+//      |    Power<3>, 3V                |          CTRL<1>,  +5V                   |
+//      |    Power<4>, GND               |          CTRL<8>,  GND                   |
+//      |    Power<5>, GND               |          PWR<2>,   GND                   |
+//      |    Power<6>, VIN(@12VDC)       |          PWR<1>,   VIN                   |
+//      |    DIGITAL<3>,  D3             |          CTRL<5>,  Enable_B              |
+//      |    DIGITAL<17>, D17            |          CTRL<6>,  IN3                   |
+//      |    DIGITAL<18>, D18            |          CTRL<7>,  IN4                   |
+//      |--------------------------------|------------------------------------------|
+
+#define BB_Enable_B	3
+#define BB_IN3		17
+#define BB_IN4		18
+
+#define IN3_L    digitalWrite(BB_IN3, LOW);
+#define IN3_H    digitalWrite(BB_IN3, HIGH);
+#define IN4_L    digitalWrite(BB_IN4, LOW);
+#define IN4_H    digitalWrite(BB_IN4, HIGH);
 
 #include <Grove_LED_Bar.h>
 
@@ -27,6 +52,12 @@ Grove_LED_Bar bar(9, 8, 1);  // Clock pin, Data pin, Orientation
 
 void setup (void)
 {
+    // BB-L298
+    pinMode(BB_IN3, OUTPUT);
+    pinMode(BB_IN4, OUTPUT);
+    IN3_L;
+    IN4_L;
+    analogWrite(BB_Enable_B, 0); 
     // switch off the led
     pinMode(led_pin, OUTPUT);
     digitalWrite(led_pin, HIGH);
@@ -47,12 +78,17 @@ void setup (void)
 
 void loop (void)
 {
-  static int i = 0;
+  static int vbar = 0;
+  int sensorValue1 = analogRead(A4);
+  int sensorValue2 = analogRead(A5);
 
+  vbar = sensorValue2/100;
   // Walk through the levels
-  bar.setLevel(i++);
-  if (i >= 10){
-   i=0;
+  bar.setLevel(10-vbar);
+  if (vbar >= 10){
+   vbar=0;
   }  
+
+  printf("x: %d , y: %d \n",sensorValue1,sensorValue2);
 
 }
