@@ -93,6 +93,7 @@ void loop (void)
   speed = (1023-sensorValue2) >> 2;
 
   IN3_L; IN4_H; analogWrite(BB_Enable_B, speed); 
+  analogWrite(led_pin, speed);
 
   printf("x: %d , y: %d bar: %d speed: %d\n",sensorValue1 ,sensorValue2, vbar, speed);
 
