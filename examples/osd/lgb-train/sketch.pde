@@ -21,24 +21,38 @@ uint8_t led_pin=4;
 uint8_t led_status;
 }
 
+#include <Grove_LED_Bar.h>
+
+Grove_LED_Bar bar(9, 8, 1);  // Clock pin, Data pin, Orientation
+
 void setup (void)
 {
     // switch off the led
     pinMode(led_pin, OUTPUT);
     digitalWrite(led_pin, HIGH);
     led_status=0;
+    // led bar
+    bar.begin();
     // init coap resourcen
     rest_init_engine ();
+    #pragma GCC diagnostic ignored "-Wwrite-strings"
     rest_activate_resource (&res_led, "s/led");
     rest_activate_resource (&res_battery, "s/battery");
     rest_activate_resource (&res_cputemp, "s/cputemp");
+    #pragma GCC diagnostic pop
     
  //   NETSTACK_MAC.off(1);
-    mcu_sleep_set(128);
+ //   mcu_sleep_set(128);
 }
 
 void loop (void)
 {
+  static int i = 0;
 
+  // Walk through the levels
+  bar.setLevel(i++);
+  if (i >= 10){
+   i=0;
+  }  
 
 }

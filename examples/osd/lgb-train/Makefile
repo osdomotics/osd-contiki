@@ -11,7 +11,7 @@ CONTIKI_WITH_IPV6 = 1
 
 CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
 
-PROJECT_SOURCEFILES += ${SKETCH}.cpp
+PROJECT_SOURCEFILES += ${SKETCH}.cpp Grove_LED_Bar.cpp
 
 # automatically build RESTful resources
 REST_RESOURCES_DIR = ./resources
