@@ -79,16 +79,21 @@ void setup (void)
 void loop (void)
 {
   static int vbar = 0;
+  static int speed = 0;
   int sensorValue1 = analogRead(A4);
   int sensorValue2 = analogRead(A5);
 
-  vbar = sensorValue2/100;
-  // Walk through the levels
-  bar.setLevel(10-vbar);
-  if (vbar >= 10){
+  vbar = (1023-sensorValue2)/100;
+  if (vbar > 10){
    vbar=0;
   }  
+  
+  bar.setLevel(vbar);
 
-  printf("x: %d , y: %d \n",sensorValue1,sensorValue2);
+  speed = (1023-sensorValue2) >> 2;
+
+  IN3_L; IN4_H; analogWrite(BB_Enable_B, speed); 
+
+  printf("x: %d , y: %d bar: %d speed: %d\n",sensorValue1 ,sensorValue2, vbar, speed);
 
 }
