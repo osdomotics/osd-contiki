@@ -53,6 +53,7 @@ Grove_LED_Bar bar(9, 8, 1);  // Clock pin, Data pin, Orientation
 void setup (void)
 {
     // BB-L298
+    arduino_pwm_timer_init ();
     pinMode(BB_IN3, OUTPUT);
     pinMode(BB_IN4, OUTPUT);
     IN3_L;
