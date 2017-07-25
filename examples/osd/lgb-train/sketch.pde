@@ -46,6 +46,8 @@ uint8_t led_status;
 #define IN4_L    digitalWrite(BB_IN4, LOW);
 #define IN4_H    digitalWrite(BB_IN4, HIGH);
 
+#define button 7
+
 #include <Grove_LED_Bar.h>
 
 Grove_LED_Bar bar(9, 8, 1);  // Clock pin, Data pin, Orientation
@@ -59,6 +61,9 @@ void setup (void)
     IN3_L;
     IN4_L;
     analogWrite(BB_Enable_B, 0); 
+	// button
+	pinMode(button,INPUT_PULLUP);
+	//pinMode(button,INPUT);
     // switch off the led
     pinMode(led_pin, OUTPUT);
     digitalWrite(led_pin, HIGH);
@@ -81,6 +86,9 @@ void loop (void)
 {
   static int vbar = 0;
   static int speed = 0;
+  static int direction = 1;
+  
+  int buttondir = digitalRead(button);
   int sensorValue1 = analogRead(A4);
   int sensorValue2 = analogRead(A5);
 
@@ -93,9 +101,18 @@ void loop (void)
 
   speed = (1023-sensorValue2) >> 2;
 
-  IN3_L; IN4_H; analogWrite(BB_Enable_B, speed); 
-  analogWrite(led_pin, speed);
+  //direction
+  if (speed == 0){
+	direction = buttondir;
+  }
+  if (direction == 1){
+    IN3_L; IN4_H; analogWrite(BB_Enable_B, speed);
+  } 
+  if (direction == 0){
+    IN3_H; IN4_L; analogWrite(BB_Enable_B, speed);
+  } 
+  analogWrite(led_pin, 255-speed);
 
-  printf("x: %d , y: %d bar: %d speed: %d\n",sensorValue1 ,sensorValue2, vbar, speed);
+  printf("x: %d , y: %d bar: %d speed: %d bdir: %d direc.: %d\n",sensorValue1 ,sensorValue2, vbar, speed, buttondir, direction);
 
 }
