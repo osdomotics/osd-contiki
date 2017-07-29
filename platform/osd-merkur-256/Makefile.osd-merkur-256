@@ -77,8 +77,10 @@ AVRDUDE_MCU=m256rfr2
 # For newer bootloaders we have a jump table at the end of the bootloader
 # section: guhRF Bootloader MAC Address
 BOOTLOADER_GET_MAC=0x0003ff80
+BOOTLOADER_WRITE_PAGE_TO_FLASH=0x0003ff84
 
-LDFLAGS  += -Wl,--defsym,bootloader_get_mac=$(BOOTLOADER_GET_MAC)
+LDFLAGS  += -Wl,--defsym,bootloader_get_mac=$(BOOTLOADER_GET_MAC) \
+            -Wl,--defsym,bootloader_write_page_to_flash=$(BOOTLOADER_WRITE_PAGE_TO_FLASH)
 
 
 include $(CONTIKIAVR)/Makefile.avr
