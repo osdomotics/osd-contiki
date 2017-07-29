@@ -43,13 +43,13 @@
 #include <string.h>
 #include "contiki.h"
 #include "rest-engine.h"
-#include "dev/leds.h"
+#include "dev/leds-arch.h"
 
 static void res_post_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 
-/* A simple actuator example. Toggles the red led */
+/* A simple actuator example. Toggles the led */
 RESOURCE(res_toggle,
-         "title=\"Red LED\";rt=\"Control\"",
+         "title=\"LED\";rt=\"Control\"",
          NULL,
          res_post_handler,
          NULL,
@@ -58,6 +58,6 @@ RESOURCE(res_toggle,
 static void
 res_post_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
 {
-  leds_toggle(LEDS_RED);
+  LED_GREEN_TOGGLE (); 
 }
 #endif /* PLATFORM_HAS_LEDS */
