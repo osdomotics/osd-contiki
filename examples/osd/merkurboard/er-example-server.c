@@ -71,7 +71,7 @@ extern resource_t
   res_event,
   res_sub;
 #if PLATFORM_HAS_LEDS
-#include "dev/leds.h"
+#include "dev/leds-arch.h"
 extern resource_t res_leds, res_toggle;
 #endif
 #if PLATFORM_HAS_LIGHT
@@ -89,11 +89,13 @@ extern resource_t res_radio;
 #endif
 */
 
+
 void 
 hw_init()
 {
 #if defined (PLATFORM_HAS_LEDS)
- leds_off(LEDS_RED);
+leds_arch_init();
+LEDS_OFF();
 #endif
 }
 

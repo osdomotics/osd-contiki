@@ -14,8 +14,8 @@
 
 #define LED_GREEN_TOGGLE() LED_OUT ^= BIT_GREEN
 
-#define LEDS_OFF() LED_OUT &= ~BIT_GREEN
-#define LEDS_ON() LED_OUT |=   BIT_GREEN
+#define LEDS_ON() LED_OUT &= ~BIT_GREEN
+#define LEDS_OFF() LED_OUT |=   BIT_GREEN
 
 
 void leds_arch_init(void);
