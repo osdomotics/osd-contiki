@@ -482,6 +482,7 @@ const struct rest_implementation coap_rest_implementation = {
     NOT_FOUND_4_04,
     METHOD_NOT_ALLOWED_4_05,
     NOT_ACCEPTABLE_4_06,
+    REQUEST_ENTITY_INCOMPLETE_4_08,
     REQUEST_ENTITY_TOO_LARGE_4_13,
     UNSUPPORTED_MEDIA_TYPE_4_15,
     INTERNAL_SERVER_ERROR_5_00,

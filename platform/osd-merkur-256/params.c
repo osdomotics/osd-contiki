@@ -39,6 +39,7 @@
 #endif
 
 #include "contiki.h"
+#include "bootloader_if.h"
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
 #include <stdio.h>
@@ -84,8 +85,6 @@ const uint8_t default_domain_name[] PROGMEM = PARAMS_DOMAINNAME;
 
 #if PARAMETER_STORAGE==0
 /* 0 Hard coded, minmal program and eeprom usage. */
-
-extern uint8_t bootloader_get_mac(uint8_t);
 
 uint8_t
 params_get_eui64(uint8_t *eui64) {

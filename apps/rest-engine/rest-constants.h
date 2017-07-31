@@ -56,6 +56,7 @@ struct rest_implementation_status {
   const unsigned int NOT_FOUND;                 /* NOT_FOUND_4_04,                NOT_FOUND_404 */
   const unsigned int METHOD_NOT_ALLOWED;        /* METHOD_NOT_ALLOWED_4_05,       METHOD_NOT_ALLOWED_405 */
   const unsigned int NOT_ACCEPTABLE;            /* NOT_ACCEPTABLE_4_06,           NOT_ACCEPTABLE_406 */
+  const unsigned int REQUEST_ENTITY_INCOMPLETE; /* REQUEST_ENTITY_INCOMPLETE_4_08, REQUEST_ENTITY_INCOMPLETE_408 */
   const unsigned int REQUEST_ENTITY_TOO_LARGE;  /* REQUEST_ENTITY_TOO_LARGE_4_13, REQUEST_ENTITY_TOO_LARGE_413 */
   const unsigned int UNSUPPORTED_MEDIA_TYPE;    /* UNSUPPORTED_MEDIA_TYPE_4_15,   UNSUPPORTED_MEDIA_TYPE_415 */
 
