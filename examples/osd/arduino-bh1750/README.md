@@ -1,3 +1,22 @@
+BH1750 Digital Light Sensor
+===========================
+
+Simple demo to read out sensors from the BH1750 sensor.
+
+Demo uses the BH1750FVI Arduino library.
+This library interfaces with the BH1750FVI ambient light sensor.
+
+Build
+-----
+make clean TARGET=osd-merkur-256 flash
+
+Bebug Serial Line
+-----------------
+
+screen /dev/ttyUSB0 38400
+
+
+
 Arduino compatibility example
 =============================
 
@@ -9,3 +28,4 @@ a `main` function (in C). For contiki we define a process that does the
 same.
 
 See the documentation file in apps/contiki-compat/README.md
+
