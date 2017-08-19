@@ -61,7 +61,7 @@
 // We allocate this statically, otherwise we cannot flash a new image
 // when ram is exhausted!
 static uint8_t current_page [256];
-static size_t current_offset = 0;
+static uint32_t current_offset = 0;
 #define PAGESIZE (sizeof (current_page))
 
 static void
@@ -171,8 +171,11 @@ res_put_handler(void *request, void *response, uint8_t *buffer, uint16_t preferr
 
   if (!packet->block1_more) {
     // we are finished
+    sreg = SREG;
+    cli ();
     bootloader_backup_irq_table (1); // FIXME: 1 is hardcoded
     bootloader_set_boot_next (1);
+    SREG = sreg;
   }
 
   REST.set_response_status(response, REST.status.CHANGED);
