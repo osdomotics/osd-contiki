@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Marcus Priesch, Ralf Schlatterbeck
+ * Copyright (C) 2017, Marcus Priesch, Ralf Schlatterbeck
  * with code from the res-plugtest-large-update.c by
  * Copyright (c) 2013, Institute for Pervasive Computing, ETH Zurich
  * All rights reserved.
@@ -149,16 +149,31 @@ res_put_handler(void *request, void *response, uint8_t *buffer, uint16_t preferr
   }
 
   memcpy (current_page + current_offset % PAGESIZE, in_data, len);
-  if (current_offset % PAGESIZE == 0 || !packet->block1_more) {
-    // WRITE Flash here
-    PRINTF (("Flashing: %lu\n", (uint32_t)len));
+  current_offset += len;
+
+  if (current_offset % PAGESIZE == 0) {
+    uint32_t dst_address = partition_start + current_offset - PAGESIZE;
+    PRINTF (("Flashing: %lu to %lu\n", (uint32_t)PAGESIZE, dst_address));
     sreg = SREG;
     cli ();
-    bootloader_write_page_to_flash
-        (partition_start + current_offset, len, current_page);
+    bootloader_write_page_to_flash (dst_address, PAGESIZE, current_page);
+    SREG = sreg;
+  } else if (!packet->block1_more) {
+    uint32_t dst_address =
+        partition_start + (current_offset / PAGESIZE) * PAGESIZE;
+    PRINTF (("Flashing: last page %lu to %lu\n", (uint32_t)PAGESIZE, dst_address));
+    sreg = SREG;
+    cli ();
+    bootloader_write_page_to_flash (dst_address, PAGESIZE, current_page);
     SREG = sreg;
   }
-  current_offset += len;
+
+
+  if (!packet->block1_more) {
+    // we are finished
+    bootloader_backup_irq_table (1); // FIXME: 1 is hardcoded
+    bootloader_set_boot_next (1);
+  }
 
   REST.set_response_status(response, REST.status.CHANGED);
   coap_set_header_block1(response, packet->block1_num, 0, packet->block1_size);
