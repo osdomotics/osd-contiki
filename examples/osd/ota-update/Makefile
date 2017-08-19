@@ -12,7 +12,7 @@ CONTIKI_WITH_IPV6 = 1
 
 CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
 
-PROJECT_SOURCEFILES += res_upload_image.c ${SKETCH}.cpp
+PROJECT_SOURCEFILES += res_upload_image.c res_bootloader.c ${SKETCH}.cpp
 
 # variable for Makefile.include
 ifneq ($(TARGET), minimal-net)
@@ -34,7 +34,7 @@ SMALL=1
 # REST Engine shall use Erbium CoAP implementation
 APPS += er-coap
 APPS += rest-engine
-APPS += arduino #json-resource #time json arduino 
+APPS += arduino json-resource json #time
 
 include $(CONTIKI)/Makefile.include
 include $(CONTIKI)/apps/arduino/Makefile.include

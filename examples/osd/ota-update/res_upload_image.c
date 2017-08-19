@@ -57,8 +57,6 @@
 #define PRINTF(x)
 #endif
 
-static const uint32_t partition_start = 0x1ef00; //bootloader_get_part_start ();
-static const uint32_t partition_size  = 5000;    //bootloader_get_part_size  ();
 
 // We allocate this statically, otherwise we cannot flash a new image
 // when ram is exhausted!
@@ -73,6 +71,8 @@ res_put_handler(void *request, void *response, uint8_t *buffer, uint16_t preferr
   uint8_t *in_data = NULL;
   size_t len = 0;
   uint8_t sreg = SREG;
+  const uint32_t partition_start = bootloader_get_part_start (1);
+  const uint32_t partition_size  = bootloader_get_part_size  ();
 
   unsigned int ct = -1;
 
