@@ -70,7 +70,6 @@ res_put_handler(void *request, void *response, uint8_t *buffer, uint16_t preferr
   coap_packet_t *const packet = (coap_packet_t *)request;
   uint8_t *in_data = NULL;
   size_t len = 0;
-  uint8_t sreg = SREG;
   const uint32_t partition_start = bootloader_get_part_start (1);
   const uint32_t partition_size  = bootloader_get_part_size  ();
 
@@ -154,28 +153,19 @@ res_put_handler(void *request, void *response, uint8_t *buffer, uint16_t preferr
   if (current_offset % PAGESIZE == 0) {
     uint32_t dst_address = partition_start + current_offset - PAGESIZE;
     PRINTF (("Flashing: %lu to %lu\n", (uint32_t)PAGESIZE, dst_address));
-    sreg = SREG;
-    cli ();
     bootloader_write_page_to_flash (dst_address, PAGESIZE, current_page);
-    SREG = sreg;
   } else if (!packet->block1_more) {
     uint32_t dst_address =
         partition_start + (current_offset / PAGESIZE) * PAGESIZE;
     PRINTF (("Flashing: last page %lu to %lu\n", (uint32_t)PAGESIZE, dst_address));
-    sreg = SREG;
-    cli ();
     bootloader_write_page_to_flash (dst_address, PAGESIZE, current_page);
-    SREG = sreg;
   }
 
 
   if (!packet->block1_more) {
     // we are finished
-    sreg = SREG;
-    cli ();
     bootloader_backup_irq_table (1); // FIXME: 1 is hardcoded
     bootloader_set_boot_next (1);
-    SREG = sreg;
   }
 
   REST.set_response_status(response, REST.status.CHANGED);

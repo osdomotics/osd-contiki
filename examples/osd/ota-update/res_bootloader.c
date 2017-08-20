@@ -54,7 +54,7 @@
  * The build system automatically compiles the resources in the
  * corresponding sub-directory.
  */
- 
+
 static size_t
 part_count (const char *name, const char *uri, char *buf, size_t bsize)
 {
@@ -85,3 +85,66 @@ GENERIC_RESOURCE
   , part_size
   );
 
+static size_t
+get_boot_default (const char *name, const char *uri, char *buf, size_t bsize)
+{
+    return snprintf (buf, bsize, "%ld", bootloader_get_boot_default ());
+}
+
+static int
+set_boot_default (const char *name, const char *uri, const char *s)
+{
+    uint32_t tmp = strtoul (s, NULL, 10);
+    bootloader_set_boot_default (tmp);
+    return 0;
+}
+
+GENERIC_RESOURCE
+  ( boot_default
+  , Default boot partition
+  , count
+  , 0
+  , set_boot_default
+  , get_boot_default
+  );
+
+static size_t
+get_boot_next (const char *name, const char *uri, char *buf, size_t bsize)
+{
+    return snprintf (buf, bsize, "%ld", bootloader_get_boot_next ());
+}
+
+static int
+set_boot_next (const char *name, const char *uri, const char *s)
+{
+    uint32_t tmp = strtoul (s, NULL, 10);
+    bootloader_set_boot_next (tmp);
+    return 0;
+}
+
+GENERIC_RESOURCE
+  ( boot_next
+  , Next boot partition
+  , count
+  , 0
+  , set_boot_next
+  , get_boot_next
+  );
+
+static size_t
+get_callers_part (const char *name, const char *uri, char *buf, size_t bsize)
+{
+    return snprintf (buf, bsize, "%ld", bootloader_get_callers_part ());
+}
+
+GENERIC_RESOURCE
+  ( callers_part
+  , Currently booted partition
+  , count
+  , 0
+  , NULL
+  , get_callers_part
+  );
+
+// FIXME: Find out how to pass two parameters, for set/clr_part_ok and
+// for get_part_start

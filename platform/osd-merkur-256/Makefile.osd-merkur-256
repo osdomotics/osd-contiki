@@ -100,15 +100,15 @@ TEXT_SECTION_START=0x1ef00
 endif
 
 LDFLAGS  += -Wl,--defsym,bootloader_get_mac=$(BOOTLOADER_GET_MAC) \
-            -Wl,--defsym,bootloader_write_page_to_flash=$(BOOTLOADER_WRITE_PAGE_TO_FLASH) \
+            -Wl,--defsym,_bootloader_write_page_to_flash=$(BOOTLOADER_WRITE_PAGE_TO_FLASH) \
             -Wl,--defsym,bootloader_get_part_count=$(BOOTLOADER_GET_PART_COUNT) \
             -Wl,--defsym,bootloader_get_part_size=$(BOOTLOADER_GET_PART_SIZE) \
             -Wl,--defsym,bootloader_get_part_start=$(BOOTLOADER_GET_PART_START) \
-            -Wl,--defsym,bootloader_set_part_ok=$(BOOTLOADER_SET_PART_OK) \
-            -Wl,--defsym,bootloader_clr_part_ok=$(BOOTLOADER_CLR_PART_OK) \
-            -Wl,--defsym,bootloader_set_boot_default=$(BOOTLOADER_SET_BOOT_DEFAULT) \
-            -Wl,--defsym,bootloader_set_boot_next=$(BOOTLOADER_SET_BOOT_NEXT) \
-            -Wl,--defsym,bootloader_backup_irq_table=$(BOOTLOADER_BACKUP_IRQ_TABLE) \
+            -Wl,--defsym,_bootloader_set_part_ok=$(BOOTLOADER_SET_PART_OK) \
+            -Wl,--defsym,_bootloader_clr_part_ok=$(BOOTLOADER_CLR_PART_OK) \
+            -Wl,--defsym,_bootloader_set_boot_default=$(BOOTLOADER_SET_BOOT_DEFAULT) \
+            -Wl,--defsym,_bootloader_set_boot_next=$(BOOTLOADER_SET_BOOT_NEXT) \
+            -Wl,--defsym,_bootloader_backup_irq_table=$(BOOTLOADER_BACKUP_IRQ_TABLE) \
             -Wl,--defsym,bootloader_get_boot_default=$(BOOTLOADER_GET_BOOT_DEFAULT) \
             -Wl,--defsym,bootloader_get_boot_next=$(BOOTLOADER_GET_BOOT_NEXT) \
             -Wl,--defsym,bootloader_get_callers_part=$(BOOTLOADER_GET_CALLERS_PART) \
