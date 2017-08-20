@@ -98,6 +98,11 @@ res_put_handler(void *request, void *response, uint8_t *buffer, uint16_t preferr
     return;
   }
 
+  /* if the block1_offset is 0 a new transmission has started */
+  if (!packet->block1_offset) {
+    current_offset = 0;
+  }
+
   if (packet->block1_offset > current_offset) {
     REST.set_response_status(response, REST.status.REQUEST_ENTITY_INCOMPLETE);
     const char *error_msg = "OutOfSequence";
@@ -106,7 +111,7 @@ res_put_handler(void *request, void *response, uint8_t *buffer, uint16_t preferr
   }
 
   /* Old packet or retransmission, immediately confirm */
-  if (packet->block1_offset + len <= current_offset) {
+  if (packet->block1_offset && packet->block1_offset + len <= current_offset) {
     REST.set_response_status(response, REST.status.CHANGED);
     coap_set_header_block1
       (response, packet->block1_num, 0, packet->block1_size);
@@ -166,6 +171,7 @@ res_put_handler(void *request, void *response, uint8_t *buffer, uint16_t preferr
     // we are finished
     bootloader_backup_irq_table (1); // FIXME: 1 is hardcoded
     bootloader_set_boot_next (1);
+    current_offset = 0;
   }
 
   REST.set_response_status(response, REST.status.CHANGED);
