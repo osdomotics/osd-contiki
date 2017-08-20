@@ -2,7 +2,6 @@
 SKETCH=sketch
 EXE=ota
 
-
 all: $(EXE)
 
 CONTIKI=../../..
@@ -38,12 +37,5 @@ APPS += arduino json-resource json #time
 
 include $(CONTIKI)/Makefile.include
 include $(CONTIKI)/apps/arduino/Makefile.include
-
-avr-size: $(EXE).$(TARGET).sz
-
-flash: $(EXE).$(TARGET).u # $(EXE).$(TARGET).eu
-
-.PHONY: flash avr-size
-.PRECIOUS: $(EXE).$(TARGET).hex $(EXE).$(TARGET).eep
 
 AVRDUDE_PORT=/dev/ttyUSB1

@@ -220,12 +220,12 @@ symbols.c:
 	cp ${CONTIKI}/tools/empty-symbols.h symbols.h
 
 # Generic rules for .hex, .eep and .sz (size) file:
-%.$(TARGET).hex: %.$(TARGET)
+%.$(TARGET)$(CUSTOM_SUFFIX).hex: %.$(TARGET)$(CUSTOM_SUFFIX)
 	$(OBJCOPY) -j .text -j .data -O ihex $< $@
 
-%.$(TARGET).eep: %.$(TARGET)
+%.$(TARGET)$(CUSTOM_SUFFIX).eep: %.$(TARGET)$(CUSTOM_SUFFIX)
 	$(OBJCOPY) -j .eeprom --set-section-flags=.eeprom="alloc,load" \
 	--change-section-lma .eeprom=0 -O ihex $< $@
 
-%.$(TARGET).sz: %.$(TARGET)
+%.$(TARGET)$(CUSTOM_SUFFIX).sz: %.$(TARGET)$(CUSTOM_SUFFIX)
 	$(ELF_SIZE) $<

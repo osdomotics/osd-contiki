@@ -99,6 +99,8 @@ else
 TEXT_SECTION_START=0x1ef00
 endif
 
+CUSTOM_SUFFIX=.$(BOOTLOADER_PARTITION)
+
 LDFLAGS  += -Wl,--defsym,bootloader_get_mac=$(BOOTLOADER_GET_MAC) \
             -Wl,--defsym,_bootloader_write_page_to_flash=$(BOOTLOADER_WRITE_PAGE_TO_FLASH) \
             -Wl,--defsym,bootloader_get_part_count=$(BOOTLOADER_GET_PART_COUNT) \
@@ -123,3 +125,31 @@ MODULES += core/net/mac  core/net core/net/mac/sicslowmac \
 #     core/net/ipv6 core/net/ipv4 core/net/ip \
 #     core/net/rime \
 #     core/net/rpl \
+
+
+CUSTOM_RULE_LINK=1
+
+%.$(TARGET)$(CUSTOM_SUFFIX): %.co $(PROJECT_OBJECTFILES) \
+    $(PROJECT_LIBRARIES) contiki-$(TARGET).a
+	$(TRACE_LD)
+	$(Q)$(LD) $(LDFLAGS) $(TARGET_STARTFILES) ${filter-out %.a,$^} \
+	    ${filter %.a,$^} $(TARGET_LIBFILES) -o $@
+
+%: %.$(TARGET)
+
+%: %.$(TARGET)$(CUSTOM_SUFFIX)
+	@
+
+%.$(TARGET)$(CUSTOM_SUFFIX)-combined.hex: %.$(TARGET)$(CUSTOM_SUFFIX).hex
+	$(CONTIKI)/tools/genbackupisr.py $< > $@
+
+flash: $(EXE).$(TARGET)$(CUSTOM_SUFFIX)-combined.u
+
+avr-size: $(EXE).$(TARGET)$(CUSTOM_SUFFIX).sz
+
+.PHONY: flash avr-size
+
+.PRECIOUS: %.$(TARGET)$(CUSTOM_SUFFIX) \
+    $(EXE).$(TARGET)$(CUSTOM_SUFFIX).hex \
+    $(EXE).$(TARGET)$(CUSTOM_SUFFIX).eep \
+    $(EXE).$(TARGET)$(CUSTOM_SUFFIX)-combined.hex
