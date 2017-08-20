@@ -31,4 +31,5 @@ void setup (void)
 
 void loop (void)
 {
+    printf ("Hello\n");
 }

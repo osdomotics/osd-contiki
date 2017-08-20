@@ -56,6 +56,7 @@
 #include "adc.h"
 #include "hw-arduino.h"
 #include "contiki.h"
+#include "project-conf.h"
 
 #define DEBUG 0
 #if DEBUG

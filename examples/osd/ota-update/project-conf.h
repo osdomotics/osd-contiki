@@ -98,4 +98,6 @@
 #define SICSLOWPAN_CONF_FRAG	1
 */
 
+#define LOOP_INTERVAL (20 * CLOCK_SECOND)
+
 #endif /* PROJECT_RPL_WEB_CONF_H_ */
