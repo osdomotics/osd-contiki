@@ -56,7 +56,13 @@
  */
 
 static size_t
-part_count (const char *name, const char *uri, char *buf, size_t bsize)
+part_count
+    ( const char *name
+    , const char *uri
+    , const char *query
+    , char *buf
+    , size_t bsize
+    )
 {
     return snprintf (buf, bsize, "%ld", bootloader_get_part_count ());
 }
@@ -71,7 +77,13 @@ GENERIC_RESOURCE
   );
 
 static size_t
-part_size (const char *name, const char *uri, char *buf, size_t bsize)
+part_size
+    ( const char *name
+    , const char *uri
+    , const char *query
+    , char *buf
+    , size_t bsize
+    )
 {
     return snprintf (buf, bsize, "%ld", bootloader_get_part_size ());
 }
@@ -86,13 +98,20 @@ GENERIC_RESOURCE
   );
 
 static size_t
-get_boot_default (const char *name, const char *uri, char *buf, size_t bsize)
+get_boot_default
+    ( const char *name
+    , const char *uri
+    , const char *query
+    , char *buf
+    , size_t bsize
+    )
 {
     return snprintf (buf, bsize, "%ld", bootloader_get_boot_default ());
 }
 
 static int
-set_boot_default (const char *name, const char *uri, const char *s)
+set_boot_default
+    (const char *name, const char *uri, const char *query, const char *s)
 {
     uint32_t tmp = strtoul (s, NULL, 10);
     bootloader_set_boot_default (tmp);
@@ -109,13 +128,20 @@ GENERIC_RESOURCE
   );
 
 static size_t
-get_boot_next (const char *name, const char *uri, char *buf, size_t bsize)
+get_boot_next
+    ( const char *name
+    , const char *uri
+    , const char *query
+    , char *buf
+    , size_t bsize
+    )
 {
     return snprintf (buf, bsize, "%ld", bootloader_get_boot_next ());
 }
 
 static int
-set_boot_next (const char *name, const char *uri, const char *s)
+set_boot_next
+    (const char *name, const char *uri, const char *query, const char *s)
 {
     uint32_t tmp = strtoul (s, NULL, 10);
     bootloader_set_boot_next (tmp);
@@ -132,7 +158,13 @@ GENERIC_RESOURCE
   );
 
 static size_t
-get_callers_part (const char *name, const char *uri, char *buf, size_t bsize)
+get_callers_part
+    ( const char *name
+    , const char *uri
+    , const char *query
+    , char *buf
+    , size_t bsize
+    )
 {
     return snprintf (buf, bsize, "%ld", bootloader_get_callers_part ());
 }
@@ -144,6 +176,73 @@ GENERIC_RESOURCE
   , 0
   , NULL
   , get_callers_part
+  );
+
+/*
+ * Parse query info. We insist that the query starts with 'part='
+ * Then we parse the integer following the part= string and return the
+ * number. The number is always positive, if something goes wrong we
+ * return a negative number.
+ */
+static int get_query_partition (const char *query)
+{
+    if (strncmp (query, "part=", 5)) {
+        return -1;
+    }
+    return strtoul (query + 5, NULL, 10);
+}
+
+static size_t
+get_part_start
+    ( const char *name
+    , const char *uri
+    , const char *query
+    , char *buf
+    , size_t bsize
+    )
+{
+    int idx = get_query_partition (query);
+    printf ("part: %d", idx);
+    if (idx < 0) {
+        return snprintf (buf, bsize, "Invalid: %s", query);
+    }
+    return snprintf (buf, bsize, "%ld", bootloader_get_part_start (idx));
+}
+
+GENERIC_RESOURCE
+  ( part_start
+  , Start of partition
+  , count
+  , 0
+  , NULL
+  , get_part_start
+  );
+
+static int
+set_part_ok
+    (const char *name, const char *uri, const char *query, const char *s)
+{
+    uint32_t tmp = strtoul (s, NULL, 10);
+    int idx = get_query_partition (query);
+    printf ("part: %d", idx);
+    if (idx < 0) {
+        return -1;
+    }
+    if (tmp) {
+        bootloader_set_part_ok (idx);
+    } else {
+        bootloader_clr_part_ok (idx);
+    }
+    return 0;
+}
+
+GENERIC_RESOURCE
+  ( part_ok
+  , Set/Clear Partition OK flag
+  , count
+  , 0
+  , set_part_ok
+  , NULL
   );
 
 // FIXME: Find out how to pass two parameters, for set/clr_part_ok and

@@ -119,6 +119,20 @@ static const char *get_uri (void *request)
   return buf;
 }
 
+static const char *get_query (void *request)
+{
+  static char buf [MAX_QUERY_STRING_LENGTH];
+  const char *query;
+  size_t len = coap_get_header_uri_query (request, &query);
+  if (len > sizeof (buf) - 1) {
+    *buf = '\0';
+  } else {
+    strncpy (buf, query, len);
+    buf [len] = '\0';
+  }
+  return buf;
+}
+
 void generic_get_handler
   ( void *request
   , void *response
@@ -127,14 +141,20 @@ void generic_get_handler
   , int32_t *offset
   , char *name
   , int is_str
-  , size_t (*to_str)(const char *name, const char *uri, char *buf, size_t bsize)
+  , size_t (*to_str)
+    ( const char *name
+    , const char *uri
+    , const char *query
+    , char *buf, size_t bsize
+    )
   )
 {
   int success = 1;
   char temp [MAX_GET_STRING_LENGTH];
   size_t len = 0;
   unsigned int accept = -1;
-  const char *uri = get_uri (request);
+  const char *uri   = get_uri   (request);
+  const char *query = get_query (request);
 
   REST.get_header_accept (request, &accept);
   if (  accept != -1
@@ -160,7 +180,7 @@ void generic_get_handler
       success = 0;
       goto out;
     }
-    len += to_str (name, uri, temp + len, sizeof (temp) - len);
+    len += to_str (name, uri, query, temp + len, sizeof (temp) - len);
     if (len > sizeof (temp)) {
       success = 0;
       goto out;
@@ -176,7 +196,7 @@ void generic_get_handler
       goto out;
     }
   } else { // TEXT Format
-    len += to_str (name, uri, temp + len, sizeof (temp) - len);
+    len += to_str (name, uri, query, temp + len, sizeof (temp) - len);
     if (len > sizeof (temp)) {
       success = 0;
       goto out;
@@ -203,7 +223,8 @@ void generic_put_handler
   , uint16_t preferred_size
   , int32_t *offset
   , char *name
-  , int (*from_str)(const char *name, const char *uri, const char *s)
+  , int (*from_str)
+    (const char *name, const char *uri, const char *query, const char *s)
   )
 {
   int success = 1;
@@ -212,6 +233,7 @@ void generic_put_handler
   const uint8_t  *bytes  = NULL;
   unsigned int c_ctype;
   const char *uri = get_uri (request);
+  const char *query = get_query (request);
   REST.get_header_content_type (request, &c_ctype);
 
   if (from_str && (len = coap_get_payload (request, &bytes))) {
@@ -226,7 +248,7 @@ void generic_put_handler
         goto out;
       }
     }
-    if (from_str (name, uri, temp) < 0) {
+    if (from_str (name, uri, query, temp) < 0) {
       success = 0;
     } else {
       REST.set_response_status (response, REST.status.CHANGED);

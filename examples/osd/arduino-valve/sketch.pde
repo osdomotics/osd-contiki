@@ -25,7 +25,7 @@ void setup (void)
     digitalWrite (BRIDGE2_PIN, LOW);
 
     rest_init_engine ();
-    rest_activate_resource (&res_valve, "valve");
+    rest_activate_resource (&res_valve, (char *)"valve");
 }
 
 void loop (void)

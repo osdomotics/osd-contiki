@@ -25,10 +25,10 @@ void setup (void)
 {
     arduino_pwm_timer_init ();
     rest_init_engine ();
-    rest_activate_resource (&res_led_pwm,         "led/pwm");
-    rest_activate_resource (&res_led_period,      "led/period");
-    rest_activate_resource (&res_analog2_voltage, "analog/2");
-    rest_activate_resource (&res_analog5_voltage, "analog/5");
+    rest_activate_resource (&res_led_pwm,         (char *)"led/pwm");
+    rest_activate_resource (&res_led_period,      (char *)"led/period");
+    rest_activate_resource (&res_analog2_voltage, (char *)"analog/2");
+    rest_activate_resource (&res_analog5_voltage, (char *)"analog/5");
 }
 
 void loop (void)
@@ -37,7 +37,7 @@ void loop (void)
     analogWrite (LED_PIN, 255 - pwm);
     analog2_voltage = analogRead (A2) * 1600L / 1023L;
     analog5_voltage = analogRead (A5) * 1600L / 1023L;
-    printf ("clock : %u\nmillis: %lu\n", clock_time (), millis ());
+    printf ("clock : %lu\nmillis: %lu\n", clock_time (), millis ());
     delay (period_100ms * 100);
     analogWrite (LED_PIN, 255); /* OFF: LED on merkur-board is wired to +3.3V */
     delay (period_100ms * 100);

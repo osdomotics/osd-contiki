@@ -17,7 +17,8 @@
 #include "generic_resource.h"
 #include "led_pwm.h"
 
-int pwm_from_string (const char *name, const char *uri, const char *s)
+int pwm_from_string
+  (const char *name, const char *uri, const char *query, const char *s)
 {
     uint32_t tmp = strtoul (s, NULL, 10);
     if (tmp > 255) {
@@ -28,7 +29,13 @@ int pwm_from_string (const char *name, const char *uri, const char *s)
 }
 
 size_t
-pwm_to_string (const char *name, const char *uri, char *buf, size_t bufsize)
+pwm_to_string
+  ( const char *name
+  , const char *uri
+  , const char *query
+  , char *buf
+  , size_t bufsize
+  )
 {
   return snprintf (buf, bufsize, "%d", pwm);
 }
@@ -42,7 +49,8 @@ GENERIC_RESOURCE \
     , pwm_to_string
     );
 
-int period_from_string (const char *name, const char *uri, const char *s)
+int period_from_string
+  (const char *name, const char *uri, const char *query, const char *s)
 {
     uint32_t tmp = (strtoul (s, NULL, 10) + 50) / 100;
     if (tmp > 10) {
@@ -56,7 +64,13 @@ int period_from_string (const char *name, const char *uri, const char *s)
 }
 
 size_t
-period_to_string (const char *name, const char *uri, char *buf, size_t bufsize)
+period_to_string
+  ( const char *name
+  , const char *uri
+  , const char *query
+  , char *buf
+  , size_t bufsize
+  )
 {
   return snprintf (buf, bufsize, "%d", period_100ms * 100);
 }
@@ -71,7 +85,13 @@ GENERIC_RESOURCE \
     );
 
 size_t
-analog2_v (const char *name, const char *uri, char *buf, size_t bufsize)
+analog2_v
+  ( const char *name
+  , const char *uri
+  , const char *query
+  , char *buf
+  , size_t bufsize
+  )
 {
   return snprintf
     (buf, bufsize, "%d.%03d", analog2_voltage / 1000, analog2_voltage % 1000);
@@ -87,7 +107,13 @@ GENERIC_RESOURCE \
     );
 
 size_t
-analog5_v (const char *name, const char *uri, char *buf, size_t bufsize)
+analog5_v
+  ( const char *name
+  , const char *uri
+  , const char *query
+  , char *buf
+  , size_t bufsize
+  )
 {
   return snprintf
     (buf, bufsize, "%d.%03d", analog5_voltage / 1000, analog5_voltage % 1000);

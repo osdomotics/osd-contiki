@@ -17,7 +17,8 @@
 #include "er-coap.h"
 #include "generic_resource.h"
 
-size_t time_to_string (const char *name, const char *uri, char *buf, size_t bs)
+size_t time_to_string
+  (const char *name, const char *uri, const char *query, char *buf, size_t bs)
 {
     struct xtimeval tv;
     struct xtm tm;

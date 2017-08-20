@@ -35,7 +35,8 @@ static size_t get_index_from_uri (const char *uri)
   return idx;
 }
 
-int crontab_from_string (const char *name, const char *uri, const char *s)
+int crontab_from_string
+  (const char *name, const char *uri, const char *query, const char *s)
 {
   const char *err;
   int res;
@@ -52,7 +53,13 @@ int crontab_from_string (const char *name, const char *uri, const char *s)
 }
 
 size_t
-crontab_to_string (const char *name, const char *uri, char *buf, size_t bsize)
+crontab_to_string
+  ( const char *name
+  , const char *uri
+  , const char *query
+  , char *buf
+  , size_t bsize
+  )
 {
   /* FIXME: For now we only return "valid" or "invalid" until someone
    * comes up with a clever algorithm to reconstruct a crontab string

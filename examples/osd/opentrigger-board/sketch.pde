@@ -68,13 +68,20 @@ name_to_offset (const char * name)
 }
 
 extern "C" size_t
-color_to_string (const char *name, const char *uri, char *buf, size_t bsize)
+color_to_string
+    ( const char *name
+    , const char *uri
+    , const char *query
+    , char *buf
+    , size_t bsize
+    )
 {
   return snprintf (buf, bsize, "%d", color_rgb [name_to_offset (name)]);
 }
 
 extern "C" int 
-color_from_string (const char *name, const char *uri, const char *s)
+color_from_string
+    (const char *name, const char *uri, const char *query, const char *s)
 {
     color_rgb [name_to_offset (name)] = atoi (s);
     leds.setColorRGB(0,color_rgb [0], color_rgb [1], color_rgb [2]);
@@ -93,7 +100,13 @@ color_rgb_from_string (const char *r, const char *g, const char *b)
 }
 
 static size_t
-ip_to_string (const char *name, const char *uri, char *buf, size_t bsize)
+ip_to_string
+    ( const char *name
+    , const char *uri
+    , const char *query
+    , char *buf
+    , size_t bsize
+    )
 {
     #define IP(x) UIP_NTOHS(server_ipaddr.u16[x])
     return snprintf
@@ -102,7 +115,8 @@ ip_to_string (const char *name, const char *uri, char *buf, size_t bsize)
         );
 }
 
-int ip_from_string (const char *name, const char *uri, const char *s)
+int ip_from_string
+    (const char *name, const char *uri, const char *query, const char *s)
 {
     /* Returns 1 if successful, only copy valid address */
     if (uiplib_ip6addrconv (s, &tmp_addr)) {

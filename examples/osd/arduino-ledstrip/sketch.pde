@@ -46,12 +46,19 @@ static uint8_t name_to_offset (const char * name)
 }
 
 static size_t
-color_to_string (const char *name, const char *uri, char *buf, size_t bsize)
+color_to_string
+    ( const char *name
+    , const char *uri
+    , const char *query
+    , char *buf
+    , size_t bsize
+    )
 {
   return snprintf (buf, bsize, "%d", color_rgb [name_to_offset (name)]);
 }
 
-int color_from_string (const char *name, const char *uri, const char *s)
+int color_from_string
+    (const char *name, const char *uri, const char *query, const char *s)
 {
     color_rgb [name_to_offset (name)] = atoi (s);
     Driver.begin();
@@ -97,9 +104,9 @@ void setup (void)
     
     NETSTACK_MAC.off(1);
 
-    rest_activate_resource (&res_red,   "led/R");
-    rest_activate_resource (&res_green, "led/G");
-    rest_activate_resource (&res_blue,  "led/B");
+    rest_activate_resource (&res_red,   (char *)"led/R");
+    rest_activate_resource (&res_green, (char *)"led/G");
+    rest_activate_resource (&res_blue,  (char *)"led/B");
 
     Driver.begin();
     Driver.SetColor(color_rgb [0], color_rgb [1], color_rgb [2]);

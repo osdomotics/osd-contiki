@@ -11,7 +11,6 @@ extern "C" {
 #include "contiki.h"
 #include "contiki-net.h"
 #include "er-coap.h"
-#include "bootloader_if.h"
 #include "resources.h"
 char resname[] = "update";
 }
@@ -26,15 +25,10 @@ void setup (void)
     rest_activate_resource (&res_boot_default,   (char *)"boot_default");
     rest_activate_resource (&res_boot_next,      (char *)"boot_next");
     rest_activate_resource (&res_callers_part,   (char *)"callers_part");
+    rest_activate_resource (&res_part_start,     (char *)"part_start");
+    rest_activate_resource (&res_part_ok,        (char *)"part_ok");
 }
 
 void loop (void)
 {
-    printf ("part-count: %ld\n",      bootloader_get_part_count   ());
-    printf ("part-size: %ld\n",       bootloader_get_part_size    ());
-    printf ("part-start 0: 0x%lx\n",  bootloader_get_part_start   (0));
-    printf ("part-start 1: 0x%lx\n",  bootloader_get_part_start   (1));
-    printf ("boot-default: %ld\n",    bootloader_get_boot_default ());
-    printf ("boot-next: %ld\n",       bootloader_get_boot_next    ());
-    printf ("callers-part: %ld\n",    bootloader_get_callers_part ());
 }

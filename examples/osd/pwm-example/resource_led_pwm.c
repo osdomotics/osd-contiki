@@ -36,7 +36,8 @@ void led_pwm_init (void)
     DDRE  |= (1<<PINE5);
 }
 
-void pwm_from_string (const char *name, const char *s)
+int pwm_from_string
+    (const char *name, const char *uri, const char *query, const char *s)
 {
     pwm = atoi (s);
     if (pwm > max_ticks) {
@@ -50,9 +51,16 @@ void pwm_from_string (const char *name, const char *s)
         ( "TCNT3: %04X TCCR3A: %04X TCCR3B: %04X TCCR3C: %04X OCR3C: %04X\n"
         , TCNT3, TCCR3A, TCCR3B, TCCR3C, OCR3C
         );
+    return 0;
 }
 
-size_t pwm_to_string (const char *n, uint8_t is_json, char *buf, size_t bufsize)
+size_t pwm_to_string
+    ( const char *n
+    , const char *uri
+    , const char *query
+    , char *buf
+    , size_t bufsize
+    )
 {
     return snprintf (buf, bufsize, "%d", pwm);
 }
@@ -61,6 +69,7 @@ GENERIC_RESOURCE \
     ( led_pwm
     , LED PWM
     , duty-cycle
+    , 0
     , pwm_from_string
     , pwm_to_string
     );

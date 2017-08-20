@@ -20,7 +20,8 @@
 
 uint8_t valve;
 
-int valve_from_string (const char *name, const char *uri, const char *s)
+int valve_from_string
+    (const char *name, const char *uri, const char *query, const char *s)
 {
     uint32_t tmp = strtoul (s, NULL, 10);
     if (tmp) {
@@ -49,7 +50,13 @@ int valve_from_string (const char *name, const char *uri, const char *s)
 }
 
 size_t
-valve_to_string (const char *name, const char *uri, char *buf, size_t bufsize)
+valve_to_string
+    ( const char *name
+    , const char *uri
+    , const char *query
+    , char *buf
+    , size_t bufsize
+    )
 {
   return snprintf (buf, bufsize, "%d", valve);
 }

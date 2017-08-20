@@ -77,7 +77,13 @@ char         server_resource [20] = "led/G";
 int          interval = 10; /* Retransmit interval after no change in value */
 
 static size_t
-ip_to_string (const char *name, const char *uri, char *buf, size_t bsize)
+ip_to_string
+    ( const char *name
+    , const char *uri
+    , const char *query
+    , char *buf
+    , size_t bsize
+    )
 {
     #define IP(x) UIP_NTOHS(server_ipaddr.u16[x])
     return snprintf
@@ -86,7 +92,8 @@ ip_to_string (const char *name, const char *uri, char *buf, size_t bsize)
         );
 }
 
-int ip_from_string (const char *name, const char *uri, const char *s)
+int ip_from_string
+    (const char *name, const char *uri, const char *query, const char *s)
 {
     /* Returns 1 if successful, only copy valid address */
     if (uiplib_ip6addrconv (s, &tmp_addr)) {
@@ -106,12 +113,19 @@ GENERIC_RESOURCE
   );
 
 static size_t
-resource_to_string (const char *name, const char *uri, char *buf, size_t bsize)
+resource_to_string
+    ( const char *name
+    , const char *uri
+    , const char *query
+    , char *buf
+    , size_t bsize
+    )
 {
     return snprintf (buf, bsize, "%s", server_resource);
 }
 
-int resource_from_string (const char *name, const char *uri, const char *s)
+int resource_from_string
+    (const char *name, const char *uri, const char *query, const char *s)
 {
     strncpy (server_resource, s, sizeof (server_resource));
     server_resource [sizeof (server_resource) - 1] = 0;
@@ -128,12 +142,19 @@ GENERIC_RESOURCE
   );
 
 static size_t
-interval_to_string (const char *name, const char *uri, char *buf, size_t bsize)
+interval_to_string
+    ( const char *name
+    , const char *uri
+    , const char *query
+    , char *buf
+    , size_t bsize
+    )
 {
     return snprintf (buf, bsize, "%d", interval);
 }
 
-int interval_from_string (const char *name, const char *uri, const char *s)
+int interval_from_string
+    (const char *name, const char *uri, const char *query, const char *s)
 {
     interval = atoi (s);
     return 0;

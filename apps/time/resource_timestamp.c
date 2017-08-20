@@ -21,7 +21,8 @@
 #include "er-coap.h"
 #include "generic_resource.h"
 
-int timestamp_from_string (const char *name, const char *uri, const char *s)
+int timestamp_from_string
+  (const char *name, const char *uri, const char *query, const char *s)
 {
   struct xtimeval tv;
   // FIXME: Platform has no strtoll (long long)?
@@ -31,7 +32,13 @@ int timestamp_from_string (const char *name, const char *uri, const char *s)
 }
 
 size_t
-timestamp_to_string (const char *name, const char *uri, char *buf, size_t bsize)
+timestamp_to_string
+  ( const char *name
+  , const char *uri
+  , const char *query
+  , char *buf
+  , size_t bsize
+  )
 {
   struct xtimeval tv;
   xgettimeofday (&tv, NULL);

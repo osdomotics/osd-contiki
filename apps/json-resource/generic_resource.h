@@ -50,8 +50,9 @@
 #define STR__(s) #s
 #define STR_(s) STR__(s)
 
-#define MAX_GET_STRING_LENGTH 100
-#define MAX_URI_STRING_LENGTH  30
+#define MAX_GET_STRING_LENGTH   100
+#define MAX_URI_STRING_LENGTH    30
+#define MAX_QUERY_STRING_LENGTH  30
 
 /*
  * A macro that extends the resource definition and also sets up the
@@ -124,11 +125,8 @@ extern int8_t json_parse_variable
  *
  * The callback functions get the name of the parameter as a first
  * argument, this allows to re-use the same function for different
- * parameters.
- * For the to_str function the is_json flag allows to generate a
- * different string depending on the content-type. In addition it gets a
- * buffer and the size of the buffer. It needs to return the number of
- * bytes output, similar to sprintf.
+ * parameters.  In addition it gets a buffer and the size of the buffer.
+ * It needs to return the number of bytes output, similar to sprintf.
  */
 extern void generic_get_handler
   ( void *request
@@ -138,7 +136,13 @@ extern void generic_get_handler
   , int32_t *offset
   , char *name
   , int is_str
-  , size_t (*to_str)(const char *name, const char *uri, char *buf, size_t bsize)
+  , size_t (*to_str)
+    ( const char *name
+    , const char *uri
+    , const char *query
+    , char *buf
+    , size_t bsize
+    )
   );
 
 /**
@@ -161,7 +165,8 @@ extern void generic_put_handler
   , uint16_t preferred_size
   , int32_t *offset
   , char *name
-  , int (*from_str)(const char *name, const char *uri, const char *s)
+  , int (*from_str)
+    (const char *name, const char *uri, const char *query, const char *s)
   );
 
 /*
