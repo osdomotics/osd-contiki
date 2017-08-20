@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from __future__ import print_function
 import sys
 import intelhex
 from   subprocess import Popen
@@ -13,6 +14,10 @@ class Upload_Info (object) :
 
     def read_hex (self) :
         self.ihex = intelhex.IntelHex (self.filename)
+        print \
+            ( "0x%x 0x%x" % (self.ihex.minaddr (), self.ihex.maxaddr ())
+            , file = sys.stderr
+            )
     # end def read_hex
 
     def get_coap_int (self, path) :
