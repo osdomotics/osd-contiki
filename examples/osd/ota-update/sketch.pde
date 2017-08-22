@@ -24,7 +24,7 @@ void setup (void)
     rest_activate_resource (&res_part_size,      (char *)"part_size");
     rest_activate_resource (&res_boot_default,   (char *)"boot_default");
     rest_activate_resource (&res_boot_next,      (char *)"boot_next");
-    rest_activate_resource (&res_callers_part,   (char *)"callers_part");
+    rest_activate_resource (&res_active_part,    (char *)"active_part");
     rest_activate_resource (&res_part_start,     (char *)"part_start");
     rest_activate_resource (&res_part_ok,        (char *)"part_ok");
 }

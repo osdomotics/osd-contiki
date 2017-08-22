@@ -91,7 +91,7 @@ BOOTLOADER_SET_BOOT_NEXT=0x0003ffa0
 BOOTLOADER_BACKUP_IRQ_TABLE=0x0003ffa4
 BOOTLOADER_GET_BOOT_DEFAULT=0x0003ffa8
 BOOTLOADER_GET_BOOT_NEXT=0x0003ffac
-BOOTLOADER_GET_CALLERS_PART=0x0003ffb0
+BOOTLOADER_GET_ACTIVE_PART=0x0003ffb0
 BOOTLOADER_PARTITION=0
 
 TEXT_SECTION_LENGTH=0x1ef00
@@ -122,7 +122,7 @@ LDFLAGS  += -Wl,--defsym,bootloader_get_mac=$(BOOTLOADER_GET_MAC) \
             -Wl,--defsym,_bootloader_backup_irq_table=$(BOOTLOADER_BACKUP_IRQ_TABLE) \
             -Wl,--defsym,bootloader_get_boot_default=$(BOOTLOADER_GET_BOOT_DEFAULT) \
             -Wl,--defsym,bootloader_get_boot_next=$(BOOTLOADER_GET_BOOT_NEXT) \
-            -Wl,--defsym,bootloader_get_callers_part=$(BOOTLOADER_GET_CALLERS_PART) \
+            -Wl,--defsym,bootloader_get_active_part=$(BOOTLOADER_GET_ACTIVE_PART) \
             -Wl,--defsym,__TEXT_SECTION_OFFSET__=$(TEXT_SECTION_START) \
             -T $(THISPLATFORM)/custom-avr6.xm
 

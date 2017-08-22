@@ -7,7 +7,7 @@ extern uint32_t bootloader_get_part_size     (void);
 extern uint32_t bootloader_get_part_start    (uint32_t part_index);
 extern uint32_t bootloader_get_boot_default  (void);
 extern uint32_t bootloader_get_boot_next     (void);
-extern uint32_t bootloader_get_callers_part  (void);
+extern uint32_t bootloader_get_active_part   (void);
 
 /* These write to flash and need to turn off interrupts before start */
 extern void     _bootloader_set_part_ok      (uint32_t part_index);

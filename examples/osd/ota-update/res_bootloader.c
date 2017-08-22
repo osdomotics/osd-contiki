@@ -158,7 +158,7 @@ GENERIC_RESOURCE
   );
 
 static size_t
-get_callers_part
+get_active_part
     ( const char *name
     , const char *uri
     , const char *query
@@ -166,16 +166,16 @@ get_callers_part
     , size_t bsize
     )
 {
-    return snprintf (buf, bsize, "%ld", bootloader_get_callers_part ());
+    return snprintf (buf, bsize, "%ld", bootloader_get_active_part ());
 }
 
 GENERIC_RESOURCE
-  ( callers_part
-  , Currently booted partition
+  ( active_part
+  , Currently active partition
   , count
   , 0
   , NULL
-  , get_callers_part
+  , get_active_part
   );
 
 /*
@@ -202,9 +202,8 @@ get_part_start
     )
 {
     int idx = get_query_partition (query);
-    printf ("part: %d", idx);
     if (idx < 0) {
-        return snprintf (buf, bsize, "Invalid: %s", query);
+        return snprintf (buf, bsize, "Invalid: \"%s\" use part=N query", query);
     }
     return snprintf (buf, bsize, "%ld", bootloader_get_part_start (idx));
 }
@@ -224,7 +223,6 @@ set_part_ok
 {
     uint32_t tmp = strtoul (s, NULL, 10);
     int idx = get_query_partition (query);
-    printf ("part: %d", idx);
     if (idx < 0) {
         return -1;
     }
