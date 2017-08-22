@@ -37,6 +37,7 @@ CONTIKI_TARGET_SOURCEFILES += HardwareSerial.cpp HardwareSerial1.cpp
 CONTIKI_TARGET_SOURCEFILES += sg-ready.c
 
 CONTIKIAVR=$(CONTIKI)/cpu/avr
+THISPLATFORM=$(CONTIKI)/platform/osd-merkur-256
 
 CONTIKIBOARD=.
 BOOTLOADER_START = 0x3E000
@@ -93,11 +94,19 @@ BOOTLOADER_GET_BOOT_NEXT=0x0003ffac
 BOOTLOADER_GET_CALLERS_PART=0x0003ffb0
 BOOTLOADER_PARTITION=0
 
+TEXT_SECTION_LENGTH=0x1ef00
+PART_IRQVEC_SIZE=$(shell echo $$((0x800)))
+
 ifeq ($(BOOTLOADER_PARTITION),0)
 TEXT_SECTION_START=0x0
+LOW_PARTITIONS=--only-section=.customlowtext --only-section=.text
 else
-TEXT_SECTION_START=0x1ef00
+TEXT_SECTION_START=$(TEXT_SECTION_LENGTH)
+LOW_PARTITIONS=--only-section=.customlowtext
 endif
+
+PART_IRQVEC_BACKUP_START:=$(shell printf "0x%x" \
+    $$(($(TEXT_SECTION_START) + $(TEXT_SECTION_LENGTH) - $(PART_IRQVEC_SIZE))))
 
 CUSTOM_SUFFIX=.$(BOOTLOADER_PARTITION)
 
@@ -114,7 +123,8 @@ LDFLAGS  += -Wl,--defsym,bootloader_get_mac=$(BOOTLOADER_GET_MAC) \
             -Wl,--defsym,bootloader_get_boot_default=$(BOOTLOADER_GET_BOOT_DEFAULT) \
             -Wl,--defsym,bootloader_get_boot_next=$(BOOTLOADER_GET_BOOT_NEXT) \
             -Wl,--defsym,bootloader_get_callers_part=$(BOOTLOADER_GET_CALLERS_PART) \
-            -Wl,--section-start=.text=$(TEXT_SECTION_START)
+            -Wl,--defsym,__TEXT_SECTION_OFFSET__=$(TEXT_SECTION_START) \
+            -T $(THISPLATFORM)/custom-avr6.xm
 
 
 include $(CONTIKIAVR)/Makefile.avr
@@ -140,8 +150,31 @@ CUSTOM_RULE_LINK=1
 %: %.$(TARGET)$(CUSTOM_SUFFIX)
 	@
 
-%.$(TARGET)$(CUSTOM_SUFFIX)-combined.hex: %.$(TARGET)$(CUSTOM_SUFFIX).hex
-	$(CONTIKI)/tools/genbackupisr.py $< > $@
+# Generic rules for .hex, .eep and .sz (size) file:
+%.$(TARGET)$(CUSTOM_SUFFIX).hex: %.$(TARGET)$(CUSTOM_SUFFIX)
+	$(OBJCOPY) -j .customlowtext -j .text -j .data -O ihex $< $@
+
+%.$(TARGET)$(CUSTOM_SUFFIX).eep: %.$(TARGET)$(CUSTOM_SUFFIX)
+	$(OBJCOPY) -j .eeprom --set-section-flags=.eeprom="alloc,load" \
+	--change-section-lma .eeprom=0 -O ihex $< $@
+
+%.$(TARGET)$(CUSTOM_SUFFIX).sz: %.$(TARGET)$(CUSTOM_SUFFIX)
+	$(ELF_SIZE) $<
+
+%.$(TARGET)$(CUSTOM_SUFFIX)-combined: %.$(TARGET)$(CUSTOM_SUFFIX)
+	cp $< $@.tmp
+	$(OBJCOPY) -O binary $(LOW_PARTITIONS) $< tmp.bin
+	truncate -s $(PART_IRQVEC_SIZE) tmp.bin
+	$(OBJCOPY) --add-section .upperlowtext=tmp.bin \
+            --change-section-address .upperlowtext=$(PART_IRQVEC_BACKUP_START) \
+            --set-section-flags .upperlowtext=alloc,load,contents,readonly \
+            $@.tmp
+	mv $@.tmp $@
+	rm -f tmp.bin
+
+%.$(TARGET)$(CUSTOM_SUFFIX)-combined.hex: %.$(TARGET)$(CUSTOM_SUFFIX)-combined
+	$(OBJCOPY) -j .upperlowtext -j .customlowtext -j .text -j .data \
+	-O ihex $< $@
 
 flash: $(EXE).$(TARGET)$(CUSTOM_SUFFIX)-combined.u
 
@@ -152,4 +185,5 @@ avr-size: $(EXE).$(TARGET)$(CUSTOM_SUFFIX).sz
 .PRECIOUS: %.$(TARGET)$(CUSTOM_SUFFIX) \
     $(EXE).$(TARGET)$(CUSTOM_SUFFIX).hex \
     $(EXE).$(TARGET)$(CUSTOM_SUFFIX).eep \
+    $(EXE).$(TARGET)$(CUSTOM_SUFFIX)-combined \
     $(EXE).$(TARGET)$(CUSTOM_SUFFIX)-combined.hex
