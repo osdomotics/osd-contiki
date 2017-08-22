@@ -11,19 +11,7 @@ CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
 
 PROJECT_SOURCEFILES += resource_led_pwm.c
 
-# variable for Makefile.include
-ifneq ($(TARGET), minimal-net)
 CFLAGS += -DUIP_CONF_IPV6_RPL=1
-else
-# minimal-net does not support RPL under Linux and is mostly used to test CoAP only
-${info INFO: compiling without RPL}
-CFLAGS += -DUIP_CONF_IPV6_RPL=0
-CFLAGS += -DHARD_CODED_ADDRESS=\"fdfd::10\"
-${info INFO: compiling with large buffers}
-CFLAGS += -DUIP_CONF_BUFFER_SIZE=2048
-CFLAGS += -DREST_MAX_CHUNK_SIZE=1024
-CFLAGS += -DCOAP_MAX_HEADER_SIZE=640
-endif
 
 # linker optimizations
 SMALL=1
@@ -46,10 +34,3 @@ connect-router-cooja:   $(CONTIKI)/tools/tunslip6
 
 connect-minimal:
 	sudo ip address add fdfd::1/64 dev tap0
-
-avr-size: $(EXE).$(TARGET).sz
-
-flash: $(EXE).$(TARGET).u $(EXE).$(TARGET).eu
-
-.PHONY: flash avr-size
-.PRECIOUS: $(EXE).$(TARGET).hex $(EXE).$(TARGET).eep

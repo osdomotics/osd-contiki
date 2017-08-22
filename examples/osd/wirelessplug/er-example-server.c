@@ -59,15 +59,6 @@
 #define REST_RES_BATTERY 0
 #define REST_RES_RADIO 0
 
-
-
-#if !UIP_CONF_IPV6_RPL && !defined (CONTIKI_TARGET_MINIMAL_NET) && !defined (CONTIKI_TARGET_NATIVE)
-#warning "Compiling with static routing!"
-#include "static-routing.h"
-#endif
-
-#include "erbium.h"
-
 // todo OSD-Testboard move to platform/dev
 #include "dev/led.h"
 #if REST_RES_DS1820
@@ -94,19 +85,6 @@
 #endif
 
 #include "relay.h"
-
-/* For CoAP-specific example: not required for normal RESTful Web service. */
-#if WITH_COAP == 3
-#include "er-coap-03.h"
-#elif WITH_COAP == 7
-#include "er-coap-07.h"
-#elif WITH_COAP == 12
-#include "er-coap-12.h"
-#elif WITH_COAP == 13
-#include "er-coap-13.h"
-#else
-#warning "Erbium example without CoAP-specifc functionality"
-#endif /* CoAP-specific example */
 
 #define DEBUG 0
 #if DEBUG

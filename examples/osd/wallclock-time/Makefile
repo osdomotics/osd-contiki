@@ -38,11 +38,3 @@ connect-router-cooja: $(CONTIKI)/tools/tunslip6
 
 connect-minimal:
 	sudo ip address add fdfd::1/64 dev tap0
-
-avr-size: $(EXE).$(TARGET).sz
-
-# At some point we may want to include the eeprom file
-flash: $(EXE).$(TARGET).u # $(EXE).$(TARGET).eu
-
-.PHONY: flash avr-size
-.PRECIOUS: $(EXE).$(TARGET).hex $(EXE).$(TARGET).eep

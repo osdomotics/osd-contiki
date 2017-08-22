@@ -76,15 +76,19 @@ connect-router-native:	$(CONTIKI)/examples/ipv6/native-border-router/border-rout
 connect-minimal:
 	sudo ip address add fdfd::1/64 dev tap0 
 
-avr-size-server: er-example-server.$(TARGET).sz
+avr-size-server: er-example-server.$(TARGET)$(CUSTOM_SUFFIX).sz
 
-avr-size-client: er-example-server.$(TARGET).sz
+avr-size-client: er-example-server.$(TARGET)$(CUSTOM_SUFFIX).sz
 
-flash-server: er-example-server.$(TARGET).u er-example-server.$(TARGET).eu
+flash-server: er-example-server.$(TARGET)$(CUSTOM_SUFFIX).u \
+    er-example-server.$(TARGET)$(CUSTOM_SUFFIX).eu
 
-flash-client: er-example-client.$(TARGET).u er-example-client.$(TARGET).eu
+flash-client: er-example-client.$(TARGET)$(CUSTOM_SUFFIX).u \
+    er-example-client.$(TARGET)$(CUSTOM_SUFFIX).eu
 
 .PHONY: flash-client avr-size-client flash-server avr-size-server
-.PRECIOUS: er-example-server.$(TARGET).hex er-example-server.$(TARGET).eep \
-           er-example-client.$(TARGET).hex er-example-client.$(TARGET).eep
+.PRECIOUS: er-example-server.$(TARGET)$(CUSTOM_SUFFIX).hex \
+    er-example-server.$(TARGET)$(CUSTOM_SUFFIX).eep \
+    er-example-client.$(TARGET)$(CUSTOM_SUFFIX).hex \
+    er-example-client.$(TARGET)$(CUSTOM_SUFFIX).eep
 

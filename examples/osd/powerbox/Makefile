@@ -31,19 +31,7 @@ SMALL=1
 APPS += er-coap
 APPS += rest-engine
 
-# optional rules to get assembly
-#CUSTOM_RULE_C_TO_OBJECTDIR_O = 1
-#CUSTOM_RULE_S_TO_OBJECTDIR_O = 1
-
 include $(CONTIKI)/Makefile.include
-
-# optional rules to get assembly
-#$(OBJECTDIR)/%.o: asmdir/%.S
-#	$(CC) $(CFLAGS) -MMD -c $< -o $@
-#	@$(FINALIZE_DEPENDENCY)
-#
-#asmdir/%.S: %.c
-#	$(CC) $(CFLAGS) -MMD -S $< -o $@
 
 # border router rules
 $(CONTIKI)/tools/tunslip6:	$(CONTIKI)/tools/tunslip6.c
@@ -57,10 +45,3 @@ connect-router-cooja:	$(CONTIKI)/tools/tunslip6
 
 connect-minimal:
 	sudo ip address add fdfd::1/64 dev tap0
-
-avr-size: $(EXE).$(TARGET).sz
-
-flash: $(EXE).$(TARGET).u $(EXE).$(TARGET).eu
-
-.PHONY: flash avr-size
-.PRECIOUS: $(EXE).$(TARGET).hex $(EXE).$(TARGET).eep

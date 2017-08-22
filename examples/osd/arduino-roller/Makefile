@@ -11,7 +11,7 @@ CONTIKI_WITH_IPV6 = 1
 
 CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
 
-PROJECT_SOURCEFILES += ${SKETCH}.cpp kexp.c
+PROJECT_SOURCEFILES += ${SKETCH}.cpp # kexp.c
 
 # automatically build RESTful resources
 REST_RESOURCES_DIR = ./resources
@@ -24,27 +24,12 @@ REST_RESOURCES_FILES= $(notdir \
 PROJECTDIRS += $(REST_RESOURCES_DIR) $(REST_RESOURCES_DIR_COMMON)
 PROJECT_SOURCEFILES += $(REST_RESOURCES_FILES)
 
-# variable for Makefile.include
-ifneq ($(TARGET), minimal-net)
-CFLAGS += -DUIP_CONF_IPV6_RPL=1
-else
-# minimal-net does not support RPL under Linux and is mostly used to test CoAP only
-${info INFO: compiling without RPL}
-CFLAGS += -DUIP_CONF_IPV6_RPL=0
-CFLAGS += -DHARD_CODED_ADDRESS=\"fdfd::10\"
-${info INFO: compiling with large buffers}
-CFLAGS += -DUIP_CONF_BUFFER_SIZE=2048
-CFLAGS += -DREST_MAX_CHUNK_SIZE=1024
-CFLAGS += -DCOAP_MAX_HEADER_SIZE=640
-endif
-
 # linker optimizations
 SMALL=1
 
-
 # REST Engine shall use Erbium CoAP implementation
 APPS += er-coap
-APPS += rest-engine
+APPS += rest-engine json
 APPS += arduino
 
 include $(CONTIKI)/Makefile.include
@@ -61,10 +46,3 @@ connect-router-cooja:   $(CONTIKI)/tools/tunslip6
 
 connect-minimal:
 	sudo ip address add fdfd::1/64 dev tap0
-
-avr-size: $(EXE).$(TARGET).sz
-
-flash: $(EXE).$(TARGET).u $(EXE).$(TARGET).eu
-
-.PHONY: flash avr-size
-.PRECIOUS: $(EXE).$(TARGET).hex $(EXE).$(TARGET).eep

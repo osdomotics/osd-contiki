@@ -72,7 +72,6 @@
 #define REST_RES_LED 1
 #define REST_RES_BATTERY 1
 
-#include "erbium.h"
 #include "pcintkey.h"
 #include "statusled.h"
 

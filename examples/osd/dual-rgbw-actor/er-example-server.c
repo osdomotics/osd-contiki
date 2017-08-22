@@ -43,22 +43,8 @@
 #include <string.h>
 #include "contiki.h"
 #include "contiki-net.h"
-#include "erbium.h"
 
 #include "dev/t4-servo-sensor.h"
-
-/* For CoAP-specific example: not required for normal RESTful Web service. */
-#if WITH_COAP == 3
-#include "er-coap-03.h"
-#elif WITH_COAP == 7
-#include "er-coap-07.h"
-#elif WITH_COAP == 12
-#include "er-coap-12.h"
-#elif WITH_COAP == 13
-#include "er-coap-13.h"
-#else
-#warning "Erbium example without CoAP-specifc functionality"
-#endif /* CoAP-specific example */
 
 #define DEBUG 1
 #if DEBUG
