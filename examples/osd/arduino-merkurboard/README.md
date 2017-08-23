@@ -1,6 +1,8 @@
 Arduino compatibility example
 =============================
 
+make clean TARGET=osd-merkur-256 flash
+
 This example shows that it is now possible to re-use arduino sketches in
 Contiki. This example documents the necessary magic. Arduino specifies
 two routines, `setup` and `loop`. Before `setup` is called, the

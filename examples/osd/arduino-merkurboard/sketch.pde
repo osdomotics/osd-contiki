@@ -29,9 +29,11 @@ void setup (void)
     led_status=0;
     // init coap resourcen
     rest_init_engine ();
+    #pragma GCC diagnostic ignored "-Wwrite-strings"
     rest_activate_resource (&res_led, "s/led");
     rest_activate_resource (&res_battery, "s/battery");
     rest_activate_resource (&res_cputemp, "s/cputemp");
+    #pragma GCC diagnostic pop
     
  //   NETSTACK_MAC.off(1);
     mcu_sleep_set(128);
