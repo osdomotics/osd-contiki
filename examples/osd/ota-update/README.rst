@@ -41,11 +41,11 @@ To upload an image via OTA:
 
 - Create the ``.hex`` file with::
 
-   make TARGET=osd-merkur-256 BOOTLOADER_PARTITION=1 ota.osd-merkur-256.0.hex
+   make TARGET=osd-merkur-256 BOOTLOADER_PARTITION=1 ota.osd-merkur-256.1.hex
 
 - Generate the ``.bin`` file with::
 
-  ./ota_uploader.py x ota.osd-merkur-256.0.hex > ota.osd-merkur-256.0.bin
+  ./ota_uploader.py x ota.osd-merkur-256.1.hex > ota.osd-merkur-256.1.bin
 
   Note that the ``ota_uploader.py`` tool is intended to turn into a
   full-fledged upgrade tool. This is work in progress. The first
