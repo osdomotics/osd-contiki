@@ -70,10 +70,16 @@ res_put_handler(void *request, void *response, uint8_t *buffer, uint16_t preferr
   coap_packet_t *const packet = (coap_packet_t *)request;
   uint8_t *in_data = NULL;
   size_t len = 0;
-  const uint32_t partition_start = bootloader_get_part_start (1);
+  uint32_t partition_start = 0;
   const uint32_t partition_size  = bootloader_get_part_size  ();
 
   unsigned int ct = -1;
+
+  if(bootloader_get_boot_default()){
+	  partition_start = bootloader_get_part_start (0);
+  }else{
+	  partition_start = bootloader_get_part_start (1);	  
+  }
 
   REST.get_header_content_type(request, &ct);
 
@@ -169,8 +175,13 @@ res_put_handler(void *request, void *response, uint8_t *buffer, uint16_t preferr
 
   if (!packet->block1_more) {
     // we are finished
-    bootloader_backup_irq_table (1); // FIXME: 1 is hardcoded
-    bootloader_set_boot_next (1);
+    if(bootloader_get_boot_default()){
+		bootloader_backup_irq_table (0);
+		bootloader_set_boot_next (0);
+	}else{
+		bootloader_backup_irq_table (1);
+		bootloader_set_boot_next (1);		
+	}
     current_offset = 0;
   }
 
