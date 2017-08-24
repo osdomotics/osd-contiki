@@ -38,4 +38,4 @@ APPS += arduino json-resource json #time
 include $(CONTIKI)/Makefile.include
 include $(CONTIKI)/apps/arduino/Makefile.include
 
-AVRDUDE_PORT=/dev/ttyUSB1
+AVRDUDE_PORT=/dev/ttyUSB0
