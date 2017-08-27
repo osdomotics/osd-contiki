@@ -234,14 +234,27 @@ set_part_ok
     return 0;
 }
 
+static size_t
+get_part_ok
+    ( const char *name
+    , const char *uri
+    , const char *query
+    , char *buf
+    , size_t bsize
+    )
+{
+    int idx = get_query_partition (query);
+    if (idx < 0) {
+        return snprintf (buf, bsize, "Invalid: \"%s\" use part=N query", query);
+    }
+    return snprintf (buf, bsize, "%ld", bootloader_get_part_ok (idx));
+}
+
 GENERIC_RESOURCE
   ( part_ok
   , Set/Clear Partition OK flag
   , count
   , 0
   , set_part_ok
-  , NULL
+  , get_part_ok
   );
-
-// FIXME: Find out how to pass two parameters, for set/clr_part_ok and
-// for get_part_start

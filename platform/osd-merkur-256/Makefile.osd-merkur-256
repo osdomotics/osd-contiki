@@ -88,7 +88,7 @@ BOOTLOADER_SET_PART_OK=0x0003ff94
 BOOTLOADER_CLR_PART_OK=0x0003ff98
 BOOTLOADER_SET_BOOT_DEFAULT=0x0003ff9c
 BOOTLOADER_SET_BOOT_NEXT=0x0003ffa0
-BOOTLOADER_BACKUP_IRQ_TABLE=0x0003ffa4
+BOOTLOADER_GET_PART_OK=0x0003ffa4
 BOOTLOADER_GET_BOOT_DEFAULT=0x0003ffa8
 BOOTLOADER_GET_BOOT_NEXT=0x0003ffac
 BOOTLOADER_GET_ACTIVE_PART=0x0003ffb0
@@ -96,6 +96,8 @@ BOOTLOADER_PARTITION=0
 
 TEXT_SECTION_LENGTH=0x1ef00
 PART_IRQVEC_SIZE=$(shell echo $$((0x800)))
+
+CFLAGS += -DPART_IRQVEC_SIZE=$(PART_IRQVEC_SIZE)
 
 ifeq ($(BOOTLOADER_PARTITION),0)
 TEXT_SECTION_START=0x0
@@ -119,7 +121,7 @@ LDFLAGS  += -Wl,--defsym,bootloader_get_mac=$(BOOTLOADER_GET_MAC) \
             -Wl,--defsym,_bootloader_clr_part_ok=$(BOOTLOADER_CLR_PART_OK) \
             -Wl,--defsym,_bootloader_set_boot_default=$(BOOTLOADER_SET_BOOT_DEFAULT) \
             -Wl,--defsym,_bootloader_set_boot_next=$(BOOTLOADER_SET_BOOT_NEXT) \
-            -Wl,--defsym,_bootloader_backup_irq_table=$(BOOTLOADER_BACKUP_IRQ_TABLE) \
+            -Wl,--defsym,bootloader_get_part_ok=$(BOOTLOADER_GET_PART_OK) \
             -Wl,--defsym,bootloader_get_boot_default=$(BOOTLOADER_GET_BOOT_DEFAULT) \
             -Wl,--defsym,bootloader_get_boot_next=$(BOOTLOADER_GET_BOOT_NEXT) \
             -Wl,--defsym,bootloader_get_active_part=$(BOOTLOADER_GET_ACTIVE_PART) \
