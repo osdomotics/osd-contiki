@@ -18,7 +18,9 @@
 // end default settings
 
 #define CONTIKI_CONF_RANDOM_MAC       0  //adds 78 bytes
+#ifndef CONTIKI_CONF_SETTINGS_MANAGER
 #define CONTIKI_CONF_SETTINGS_MANAGER 0  //adds 1696 bytes
+#endif
 #define BOOTLOADER_GET_MAC   0x0003ff80  // get mac from bootloader
 
 #if CONTIKI_CONF_SETTINGS_MANAGER

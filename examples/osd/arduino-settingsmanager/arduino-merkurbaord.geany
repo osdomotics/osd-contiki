@@ -1,0 +1,64 @@
+[file_prefs]
+final_new_line=true
+ensure_convert_new_lines=false
+strip_trailing_spaces=false
+replace_tabs=false
+
+[indentation]
+indent_width=4
+indent_type=1
+indent_hard_tab_width=8
+detect_indent=false
+detect_indent_width=false
+indent_mode=2
+
+[project]
+name=arduino-merkurbaord
+base_path=/home/harald/install/osd-contiki/examples/osd/arduino-merkurboard/
+description=
+file_patterns=
+
+[long line marker]
+long_line_behaviour=1
+long_line_column=72
+
+[files]
+current_page=11
+FILE_NAME_0=2281;None;0;EUTF-8;1;1;0;%2Fhome%2Fharald%2Finstall%2Fosd-contiki%2Fexamples%2Fosd%2Farduino-soil-moisture%2Fsketch.pde;0;4
+FILE_NAME_1=2895;C;0;EUTF-8;1;1;0;%2Fhome%2Fharald%2Finstall%2Fosd-contiki%2Fexamples%2Fosd%2Farduino-soil-moisture%2Fresources%2Fres-soillight.c;0;4
+FILE_NAME_2=2893;C;0;EUTF-8;1;1;0;%2Fhome%2Fharald%2Finstall%2Fosd-contiki%2Fexamples%2Fosd%2Farduino-soil-moisture%2Fresources%2Fres-soiltemp.c;0;4
+FILE_NAME_3=2177;C;0;EUTF-8;1;1;0;%2Fhome%2Fharald%2Finstall%2Fosd-contiki%2Fexamples%2Fosd%2Farduino-soil-moisture%2Fproject-conf.h;0;4
+FILE_NAME_4=5823;C++;0;EUTF-8;1;1;0;%2Fhome%2Fharald%2Finstall%2Fosd-contiki%2Fexamples%2Fosd%2Farduino-soil-moisture%2FI2CSoilMoistureSensor.cpp;0;4
+FILE_NAME_5=1931;C;0;EUTF-8;1;1;0;%2Fhome%2Fharald%2Finstall%2Fosd-contiki%2Fexamples%2Fosd%2Farduino-soil-moisture%2FI2CSoilMoistureSensor.h;0;4
+FILE_NAME_6=0;None;0;EUTF-8;1;1;0;%2Fhome%2Fharald%2Finstall%2Fsunrise%2FPCTools%2Fpowerconsumption%2FPICOTEST%2Ftemplate%2Fvob-ok%2Faverage2.awk;0;4
+FILE_NAME_7=0;XML;0;EUTF-8;1;1;0;%2Fhome%2Fharald%2Fprojekte%2Fairkey-ez2092%2FEZ2092.sch;0;4
+FILE_NAME_8=0;HTML;0;EUTF-8;1;1;0;%2Fhome%2Fharald%2FDownloads%2FSemesterplan.html;0;4
+FILE_NAME_9=1273;Sh;0;EUTF-8;1;1;0;%2Fhome%2Fharald%2Finstall%2Fpensi%2Fpensi.sh;0;4
+FILE_NAME_10=600;None;0;EUTF-8;1;1;0;%2Fhome%2Fharald%2Fprojekte%2Fairkey-commissioningtest%2FREADME;0;4
+FILE_NAME_11=451;None;0;EUTF-8;1;1;0;%2Fhome%2Fharald%2Fprojekte%2Fairkey-energieverbrauch%2Fpowerconsumption%2FPICOTEST%2Fez2092b%2Fez2092b-fw4.54%2Fstartup%2Fsperrung-vob-ok.gpl;0;4
+
+[VTE]
+last_dir=/home/harald
+
+[build-menu]
+NF_00_LB=_Make
+NF_00_CM=make TARGET=osd-merkur-256
+NF_00_WD=
+NF_01_LB=Make flash
+NF_01_CM=make TARGET=osd-merkur-256 flash
+NF_01_WD=
+NF_03_LB=Make Clean
+NF_03_CM=make clean TARGET=osd-merkur-256
+NF_03_WD=
+C++FT_00_LB=_Kompilieren
+C++FT_00_CM=make TARGET=osd-merkur-256
+C++FT_00_WD=
+C++FT_01_LB=_Erstellen
+C++FT_01_CM=make TARGET=osd-merkur-256 flash
+C++FT_01_WD=
+filetypes=C++;
+
+[editor]
+line_wrapping=false
+line_break_column=72
+auto_continue_multiline=true

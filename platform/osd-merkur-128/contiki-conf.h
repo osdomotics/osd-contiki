@@ -48,6 +48,12 @@
 #define F_CPU          16000000UL
 #endif
 
+#include <avr/eeprom.h>
+
+/* Skip the last four bytes of the EEPROM, to leave room for things
+ * like the avrdude erase count and bootloader signaling. */
+#define EEPROM_CONF_SIZE                ((E2END + 1) - 4)
+
 #include <stdint.h>
 
 #define IEEE802154_CONF_PANID     0xABCD // default panid
