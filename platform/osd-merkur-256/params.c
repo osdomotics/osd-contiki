@@ -216,7 +216,14 @@ params_get_eui64(uint8_t *eui64) {
   PRINTD("Generating random EUI64 MAC\n");
   generate_new_eui64(eui64);
 #else
-  {uint8_t i;for (i=0;i<8;i++) eui64[i] = pgm_read_byte_near(default_mac_address+i);} //test this
+    uint8_t i;
+#if BOOTLOADER_GET_MAC
+    for (i=0;i<sizeof(default_mac_address);i++){
+      eui64[i] =  bootloader_get_mac(i);
+    }
+#else
+    for (i=0;i<sizeof(default_mac_address);i++) eui64[i] = pgm_read_byte_near(default_mac_address+i);
+#endif
 #endif
   if (settings_add(SETTINGS_KEY_EUI64,(unsigned char*)eui64,8) == SETTINGS_STATUS_OK) {
     PRINTD("->Set EEPROM MAC address\n");
