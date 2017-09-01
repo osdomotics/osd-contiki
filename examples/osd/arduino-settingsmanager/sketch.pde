@@ -15,6 +15,8 @@ extern "C" {
 #include "rest-engine.h"
 #include "net/netstack.h"
 #include "lib/settings.h"
+#include "shell.h"
+#include "serial-shell.h"
 
 extern resource_t res_led, res_battery, res_cputemp;
 
@@ -42,7 +44,7 @@ void setup (void)
     if(SETTINGS_STATUS_OK != status) {
       printf("settings-example: `set` failed: %d\n", status);
     }
-    status = settings_set_uint8(SETTINGS_KEY_CHANNEL, 26);
+    status = settings_set_uint8(SETTINGS_KEY_CHANNEL, 11);
     if(SETTINGS_STATUS_OK != status) {
       printf("settings-example: `set` failed: %d\n", status);
     }
@@ -116,6 +118,20 @@ void setup (void)
   }
 
   printf("settings-example: Done.\n");
+    // Seriell Shell
+    serial_shell_init();
+    shell_blink_init();
+    shell_ps_init();
+    shell_reboot_init();
+    shell_text_init();
+    shell_time_init();
+  
+#if COFFEE
+  shell_coffee_init();
+  shell_file_init();
+#endif
+  
+
     // init coap resourcen
     rest_init_engine ();
     #pragma GCC diagnostic ignored "-Wwrite-strings"
@@ -125,7 +141,7 @@ void setup (void)
     #pragma GCC diagnostic pop
     
  //   NETSTACK_MAC.off(1);
-    mcu_sleep_set(128);
+ //   mcu_sleep_set(128);
 }
 
 void loop (void)

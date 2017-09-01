@@ -181,7 +181,7 @@ void initialize(void)
 {
   watchdog_init();
   watchdog_start();
-
+  
   /* Generic or slip connection on uart0 */
   rs232_init(RS232_PORT_0, USART_BAUD_38400,USART_PARITY_NONE | USART_STOP_BITS_1 | USART_DATA_BITS_8);
 
@@ -190,7 +190,15 @@ void initialize(void)
 
   /* Redirect stdout */
   rs232_redirect_stdout(RS232_PORT_0);
+#if 0
+  /* Do it my way... */
+  //UBRR0L =  8; UBRR0H = 0; UCSR0A = (0 << U2X0);  // 115.2k  err=-3.5%  
+  //UBRR0L = 16; UBRR0H = 0; UCSR0A = (1 << U2X0);  // 115.2k     2.1%  
+  //UBRR0L =  3; UBRR0H = 0; UCSR0A = (1 << U2X0);  // 500k         0%
+#endif
 
+  rs232_set_input(RS232_PORT_0, serial_line_input_byte);
+  
   clock_init();
 
   if(MCUSR & (1<<PORF )) PRINTD("Power-on reset.\n");
@@ -239,7 +247,7 @@ uint8_t i;
 
  /* Initialize process subsystem */
   process_init();
-
+  
   /* etimers must be started before ctimer_init */
   process_start(&etimer_process, NULL);
   ctimer_init();
@@ -312,7 +320,7 @@ uint8_t i;
 #endif
 
   process_start(&sensors_process, NULL);
-
+  serial_line_init();
   /* Autostart other processes */
   autostart_start(autostart_processes);
 

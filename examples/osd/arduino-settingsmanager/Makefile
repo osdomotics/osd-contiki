@@ -46,6 +46,7 @@ SMALL=1
 # REST Engine shall use Erbium CoAP implementation
 APPS += er-coap
 APPS += rest-engine
+APPS += serial-shell
 APPS += arduino
 
 include $(CONTIKI)/Makefile.include
