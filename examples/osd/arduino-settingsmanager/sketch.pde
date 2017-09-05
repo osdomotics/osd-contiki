@@ -215,13 +215,14 @@ void setup (void)
     shell_reboot_init();
 //    shell_text_init();
 //    shell_time_init();
-//    shell_merkur_init();
+    shell_merkur_init();
   
 #if COFFEE
   shell_coffee_init();
   shell_file_init();
 #endif
-  
+
+    get_rf_consts();  
     print_rf_values();
     // init coap resourcen
     rest_init_engine ();

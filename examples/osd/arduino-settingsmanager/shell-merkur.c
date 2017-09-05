@@ -48,7 +48,8 @@
 #include "net/rime/timesynch.h"
 #include "dev/radio.h"
 #include "sys/node-id.h"
-
+#include "lib/settings.h"
+#include "extended-rf-api.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -56,69 +57,66 @@
 PROCESS(shell_txpower_process, "txpower");
 SHELL_COMMAND(txpower_command,
 	      "txpower",
-	      "txpower <power>: change CC2420 transmission power (0 - 31)",
+	      "txpower <power>: change transmission power 0 (3dbm, default) to 15 (-17.2dbm)",
 	      &shell_txpower_process);
 PROCESS(shell_rfchannel_process, "rfchannel");
 SHELL_COMMAND(rfchannel_command,
 	      "rfchannel",
-	      "rfchannel <channel>: change CC2420 radio channel (11 - 26)",
+	      "rfchannel <channel>: change radio channel (11 - 26)",
 	      &shell_rfchannel_process);
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(shell_txpower_process, ev, data)
 {
-  struct {
-    uint16_t len;
-    uint16_t txpower;
-  } msg;
+  radio_value_t value;
+  char buf[20];
   const char *newptr;
   PROCESS_BEGIN();
 
-  msg.txpower = shell_strtolong(data, &newptr);
+  value = shell_strtolong(data, &newptr);
   
   /* If no transmission power was given on the command line, we print
      out the current txpower. */
-  
-  if(newptr == data) {
-    msg.txpower = rf230_get_txpower();
+    if(newptr == data) {
+	if(get_param(RADIO_PARAM_TXPOWER, &value) == RADIO_RESULT_OK) {
+
+    }
   } else {
-    rf230_set_txpower(msg.txpower);
+    set_param(RADIO_PARAM_TXPOWER, value);
   }
 
-  msg.len = 1;
-
-  shell_output(&txpower_command, &msg, sizeof(msg), "", 0);
+  snprintf(buf, sizeof(buf), "%3d", value);
+  shell_output_str(&txpower_command, "dBm: ", buf);
 
   PROCESS_END();
 }
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(shell_rfchannel_process, ev, data)
 {
-  struct {
-    uint16_t len;
-    uint16_t channel;
-  } msg;
+  radio_value_t value;
+  char buf[20];
   const char *newptr;
   PROCESS_BEGIN();
 
-  msg.channel = shell_strtolong(data, &newptr);
+  value = shell_strtolong(data, &newptr);
   
   /* If no channel was given on the command line, we print out the
      current channel. */
   if(newptr == data) {
-    msg.channel = rf230_get_channel();
+	if(get_param(RADIO_PARAM_CHANNEL, &value) == RADIO_RESULT_OK) {
+		
+    }
   } else {
-    rf230__set_channel(msg.channel);
+    set_param(RADIO_PARAM_CHANNEL, value);
   }
 
-  msg.len = 1;
-
-  shell_output(&rfchannel_command, &msg, sizeof(msg), "", 0);
+  snprintf(buf, sizeof(buf), "%d", value);
+  shell_output_str(&rfchannel_command, "Channel: ", buf);
 
   PROCESS_END();
 }
 /*---------------------------------------------------------------------------*/
 void
-shell_sky_init(void)
+shell_merkur_init(void)
 {
   shell_register_command(&txpower_command);
   shell_register_command(&rfchannel_command);

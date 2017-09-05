@@ -35,14 +35,6 @@
 #ifndef EXTENDED_RF_API_H_
 #define EXTENDED_RF_API_H_
 
-#include "contiki.h"
-#include "net/netstack.h"
-#include "dev/radio.h"
-
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
-
 void print_64bit_addr(const uint8_t *addr);
 radio_result_t get_object(radio_param_t param, void *dest, size_t size);
 radio_result_t set_object(radio_param_t param, void *src, size_t size);
