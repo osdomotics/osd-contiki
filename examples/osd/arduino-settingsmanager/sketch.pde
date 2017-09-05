@@ -17,6 +17,9 @@ extern "C" {
 #include "lib/settings.h"
 #include "shell.h"
 #include "serial-shell.h"
+#include "shell-merkur.h"
+#include "dev/radio.h"
+#include "extended-rf-api.h"
 
 extern resource_t res_led, res_battery, res_cputemp;
 
@@ -29,6 +32,93 @@ uint16_t panid;
 char hostname[30];
 uint16_t channel;
 
+struct rf_consts {
+  radio_value_t channel_min;
+  radio_value_t channel_max;
+  radio_value_t txpower_min;
+  radio_value_t txpower_max;
+};
+
+//static struct rf_consts consts;
+
+static radio_value_t value;
+static uint8_t ext_addr[8];
+
+
+/*---------------------------------------------------------------------------*/
+static void
+print_rf_values(void)
+{
+  printf("====================================\n");
+  printf("RF Values\n");
+
+  printf("Power: ");
+  if(get_param(RADIO_PARAM_POWER_MODE, &value) == RADIO_RESULT_OK) {
+    if(value == RADIO_POWER_MODE_ON) {
+      printf("On\n");
+    } else if(value == RADIO_POWER_MODE_OFF) {
+      printf("Off\n");
+    }
+  }
+
+  printf("Channel: ");
+  if(get_param(RADIO_PARAM_CHANNEL, &value) == RADIO_RESULT_OK) {
+    printf("%d\n", value);
+  }
+
+  printf("PAN ID: ");
+  if(get_param(RADIO_PARAM_PAN_ID, &value) == RADIO_RESULT_OK) {
+    printf("0x%02x%02x\n", (value >> 8) & 0xFF, value & 0xFF);
+  }
+
+  printf("16-bit Address: ");
+  if(get_param(RADIO_PARAM_16BIT_ADDR, &value) == RADIO_RESULT_OK) {
+    printf("0x%02x%02x\n", (value >> 8) & 0xFF, value & 0xFF);
+  }
+
+  printf("64-bit Address: ");
+  if(get_object(RADIO_PARAM_64BIT_ADDR, ext_addr, 8) == RADIO_RESULT_OK) {
+    print_64bit_addr(ext_addr);
+  }
+
+  printf("RX Mode: ");
+  if(get_param(RADIO_PARAM_RX_MODE, &value) == RADIO_RESULT_OK) {
+    printf("Address Filtering is ");
+    if(value & RADIO_RX_MODE_ADDRESS_FILTER) {
+      printf("On, ");
+    } else {
+      printf("Off, ");
+    }
+    printf("Auto ACK is ");
+    if(value & RADIO_RX_MODE_AUTOACK) {
+      printf("On, ");
+    } else {
+      printf("Off, ");
+    }
+
+    printf("(value=%d)\n", value);
+  }
+
+  printf("TX Mode: ");
+  if(get_param(RADIO_PARAM_TX_MODE, &value) == RADIO_RESULT_OK) {
+    printf("%d\n", value);
+  }
+
+  printf("TX Power: ");
+  if(get_param(RADIO_PARAM_TXPOWER, &value) == RADIO_RESULT_OK) {
+    printf("%d dBm [0x%04x]\n", value, (uint16_t)value);
+  }
+
+  printf("CCA Threshold: ");
+  if(get_param(RADIO_PARAM_CCA_THRESHOLD, &value) == RADIO_RESULT_OK) {
+    printf("%d dBm [0x%04x]\n", value, (uint16_t)value);
+  }
+
+  printf("RSSI: ");
+  if(get_param(RADIO_PARAM_RSSI, &value) == RADIO_RESULT_OK) {
+    printf("%d dBm [0x%04x]\n", value, (uint16_t)value);
+  }
+}
 
 void setup (void)
 {
@@ -120,18 +210,19 @@ void setup (void)
   printf("settings-example: Done.\n");
     // Seriell Shell
     serial_shell_init();
-    shell_blink_init();
+//    shell_blink_init();
     shell_ps_init();
     shell_reboot_init();
-    shell_text_init();
-    shell_time_init();
+//    shell_text_init();
+//    shell_time_init();
+//    shell_merkur_init();
   
 #if COFFEE
   shell_coffee_init();
   shell_file_init();
 #endif
   
-
+    print_rf_values();
     // init coap resourcen
     rest_init_engine ();
     #pragma GCC diagnostic ignored "-Wwrite-strings"
