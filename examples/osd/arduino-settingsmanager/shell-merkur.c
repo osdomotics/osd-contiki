@@ -32,9 +32,9 @@
 
 /**
  * \file
- *         Tmote Sky-specific Contiki shell commands
+ *         Merkurboard-specific Contiki shell commands
  * \author
- *         Adam Dunkels <adam@sics.se>
+ *         Harald Pichler <harald@the-develop.net>
  */
 
 #include "contiki.h"
@@ -64,6 +64,11 @@ SHELL_COMMAND(rfchannel_command,
 	      "rfchannel",
 	      "rfchannel <channel>: change radio channel (11 - 26)",
 	      &shell_rfchannel_process);
+PROCESS(shell_ccathresholds_process, "ccathresholds");
+SHELL_COMMAND(ccathresholds_command,
+	      "ccathresholds",
+	      "ccathresholds <threshold: change cca thresholds -91 to -61 dBm (default -77)",
+	      &shell_ccathresholds_process);
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(shell_txpower_process, ev, data)
 {
@@ -84,8 +89,8 @@ PROCESS_THREAD(shell_txpower_process, ev, data)
     set_param(RADIO_PARAM_TXPOWER, value);
   }
 
-  snprintf(buf, sizeof(buf), "%3d", value);
-  shell_output_str(&txpower_command, "dBm: ", buf);
+  snprintf(buf, sizeof(buf), "%3d dBm", value);
+  shell_output_str(&txpower_command, "TX Power: ", buf);
 
   PROCESS_END();
 }
@@ -115,10 +120,37 @@ PROCESS_THREAD(shell_rfchannel_process, ev, data)
   PROCESS_END();
 }
 /*---------------------------------------------------------------------------*/
+PROCESS_THREAD(shell_ccathresholds_process, ev, data)
+{
+  radio_value_t value;
+  char buf[20];
+  const char *newptr;
+  PROCESS_BEGIN();
+
+  value = shell_strtolong(data, &newptr);
+  
+  /* If no channel was given on the command line, we print out the
+     current channel. */
+  if(newptr == data) {
+	if(get_param(RADIO_PARAM_CCA_THRESHOLD, &value) == RADIO_RESULT_OK) {
+		
+    }
+  } else {
+    set_param(RADIO_PARAM_CCA_THRESHOLD, value);
+  }
+
+  snprintf(buf, sizeof(buf), "%d  dBm", value);
+  shell_output_str(&rfchannel_command, "CCA Threshold: ", buf);
+
+  PROCESS_END();
+}
+/*---------------------------------------------------------------------------*/
 void
 shell_merkur_init(void)
 {
   shell_register_command(&txpower_command);
   shell_register_command(&rfchannel_command);
+  shell_register_command(&ccathresholds_command);
+//  shell_register_command(&panid_command);
 }
 /*---------------------------------------------------------------------------*/
