@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, Loughborough University - Computer Science
+ * Copyright (c) 2017, Swedish Institute of Computer Science
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,74 +27,58 @@
  * SUCH DAMAGE.
  *
  * This file is part of the Contiki operating system.
- */
-
-/**
- * \file
- *         Definition of a fake RDC driver to be used with passive
- *         examples. The sniffer will never send packets and it will never
- *         push incoming packets up the stack. We do this by defining this
- *         driver as our RDC. We then drop everything
  *
- * \author
- *         George Oikonomou - <oikonomou@users.sourceforge.net>
+ * Author: Oliver Schmidt <ol.sc@web.de>
+ *
  */
 
-#include "net/mac/mac.h"
-#include "net/mac/rdc.h"
+#include <serial.h>
+#include <stdlib.h>
+
+#include "contiki-net.h"
+#include "sys/log.h"
+#include "lib/error.h"
+#include "lib/config.h"
+
+#include "dev/slip.h"
+
+#if WITH_SLIP
 /*---------------------------------------------------------------------------*/
-static void
-send(mac_callback_t sent, void *ptr)
+void
+slip_arch_init(unsigned long ubr)
 {
-  if(sent) {
-    sent(ptr, MAC_TX_OK, 1);
+  unsigned err;
+
+  err = ser_install(STATIC_DRIVER);
+  if(err == SER_ERR_OK) {
+    err = ser_open((struct ser_params *)config.slip);
+    if(err == SER_ERR_OK)
+      atexit((void (*)(void))ser_close);
   }
-}
-/*---------------------------------------------------------------------------*/
-static void
-send_list(mac_callback_t sent, void *ptr, struct rdc_buf_list *list)
-{
-  if(sent) {
-    sent(ptr, MAC_TX_OK, 1);
+  if(err != SER_ERR_OK) {
+    err += '0';
+    /* High byte of err serves as string termination. */
+    log_message("Serial init error code: ", (char *)&err);
+    error_exit();
   }
+
+  tcpip_set_outputfunc(slip_send);
 }
 /*---------------------------------------------------------------------------*/
-static void
-input(void)
+void
+slip_arch_writeb(unsigned char c)
 {
+  while(ser_put(c) == SER_ERR_OVERFLOW)
+    ;
 }
 /*---------------------------------------------------------------------------*/
-static int
-on(void)
+void
+slip_arch_poll(void)
 {
-  return 1;
+  static unsigned char c;
+
+  while(ser_get(&c) != SER_ERR_NO_DATA)
+    slip_input_byte(c);
 }
 /*---------------------------------------------------------------------------*/
-static int
-off(int keep_radio_on)
-{
-  return keep_radio_on;
-}
-/*---------------------------------------------------------------------------*/
-static unsigned short
-cca(void)
-{
-  return 0;
-}
-/*---------------------------------------------------------------------------*/
-static void
-init(void)
-{
-}
-/*---------------------------------------------------------------------------*/
-const struct rdc_driver stub_rdc_driver = {
-  "stub-rdc",
-  init,
-  send,
-  send_list,
-  input,
-  on,
-  off,
-  cca,
-};
-/*---------------------------------------------------------------------------*/
+#endif /* WITH_SLIP */
