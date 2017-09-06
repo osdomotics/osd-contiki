@@ -276,4 +276,19 @@ params_get_txpower(void) {
   }
   return x;
 }
+
+settings_status_t 
+params_save_channel(void) {
+  radio_value_t value;
+  settings_status_t x=SETTINGS_STATUS_OK;
+  	
+  if(NETSTACK_RADIO.get_value(RADIO_PARAM_CHANNEL, &value) == RADIO_RESULT_OK) {
+    printf("%d\n", value);
+    if(settings_set_uint8(SETTINGS_KEY_CHANNEL, value) != SETTINGS_STATUS_OK) {
+      printf("settings-example: `set` failed: \n");
+      x = SETTINGS_STATUS_FAILURE;
+    }
+  }
+  return x; 
+}
 #endif /* CONTIKI_CONF_SETTINGS_MANAGER */

@@ -101,6 +101,7 @@ uint8_t params_get_channel(void);
 uint16_t params_get_panid(void);
 uint16_t params_get_panaddr(void);
 uint8_t params_get_txpower(void);
+settings_status_t params_save_channel(void);
 #endif
 
 #endif /* PARAMS_H_ */

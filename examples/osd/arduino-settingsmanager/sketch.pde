@@ -130,52 +130,53 @@ void setup (void)
     led_status=0;
     // settings manager
     /* Basic setting of parameters */
-    status = settings_set_uint16(SETTINGS_KEY_PAN_ID, 0xABCD);
-    if(SETTINGS_STATUS_OK != status) {
-      printf("settings-example: `set` failed: %d\n", status);
-    }
-    status = settings_set_uint8(SETTINGS_KEY_CHANNEL, 11);
-    if(SETTINGS_STATUS_OK != status) {
-      printf("settings-example: `set` failed: %d\n", status);
-    }
-    status = settings_set_cstr(SETTINGS_KEY_HOSTNAME, "contiki.local");
-    if(SETTINGS_STATUS_OK != status) {
-      printf("settings-example: `set` failed: %d\n", status);
-    }
-    /* Basic getting of parameters */
-    panid = settings_get_uint16(SETTINGS_KEY_PAN_ID, 0);
-    if(0xABCD != panid) {
-      printf("settings-example: `get` failed: value mismatch.\n");
-    }
-    channel = settings_get_uint16(SETTINGS_KEY_CHANNEL, 0);
-    if(26 != channel) {
-      printf("settings-example: `get` failed: value mismatch.\n");
-    }
 
-    if(!settings_get_cstr(SETTINGS_KEY_HOSTNAME, 0, hostname, sizeof(hostname))) {
-      printf("settings-example: `get` failed: settings_get_cstr returned NULL\n");
-    } else if(strcmp(hostname, "contiki.local") != 0) {
-      printf("settings-example: `get` failed: value mismatch.\n");
-    }
+//    status = settings_set_uint16(SETTINGS_KEY_PAN_ID, 0xABCD);
+//    if(SETTINGS_STATUS_OK != status) {
+//      printf("settings-example: `set` failed: %d\n", status);
+//    }
+//    status = settings_set_uint8(SETTINGS_KEY_CHANNEL, 11);
+//    if(SETTINGS_STATUS_OK != status) {
+//      printf("settings-example: `set` failed: %d\n", status);
+//    }
+//    status = settings_set_cstr(SETTINGS_KEY_HOSTNAME, "contiki.local");
+//    if(SETTINGS_STATUS_OK != status) {
+//      printf("settings-example: `set` failed: %d\n", status);
+//    }
+    /* Basic getting of parameters */
+//    panid = settings_get_uint16(SETTINGS_KEY_PAN_ID, 0);
+//    if(0xABCD != panid) {
+//      printf("settings-example: `get` failed: value mismatch.\n");
+//    }
+//    channel = settings_get_uint16(SETTINGS_KEY_CHANNEL, 0);
+//    if(26 != channel) {
+//      printf("settings-example: `get` failed: value mismatch.\n");
+//    }
+
+//    if(!settings_get_cstr(SETTINGS_KEY_HOSTNAME, 0, hostname, sizeof(hostname))) {
+//      printf("settings-example: `get` failed: settings_get_cstr returned NULL\n");
+//    } else if(strcmp(hostname, "contiki.local") != 0) {
+//      printf("settings-example: `get` failed: value mismatch.\n");
+//    }
       /*************************************************************************/
   /* Adding multiple values with the same key */
 
-  for(i = 0; i < 10; i++) {
-    settings_add_uint8(TCC('e','x'), i + 20);
-  }
+//  for(i = 0; i < 10; i++) {
+//    settings_add_uint8(TCC('e','x'), i + 20);
+//  }
 
   /*************************************************************************/
   /* Reading multiple values with the same key */
 
-  for(i = 0; i < 10; i++) {
-    if(settings_get_uint8(TCC('e', 'x'), i) != i + 20) {
-      printf("settings-example: `get` failed: value mismatch.\n");
-    }
-  }
+//  for(i = 0; i < 10; i++) {
+//    if(settings_get_uint8(TCC('e', 'x'), i) != i + 20) {
+//      printf("settings-example: `get` failed: value mismatch.\n");
+//    }
+//  }
 
   /*************************************************************************/
   /* Iterating thru all settings */
-
+/*
   for(iter = settings_iter_begin(); iter; iter = settings_iter_next(iter)) {
     settings_length_t len = settings_iter_get_value_length(iter);
     eeprom_addr_t addr = settings_iter_get_value_addr(iter);
@@ -206,6 +207,7 @@ void setup (void)
 
     printf(">\n");
   }
+*/
 
   printf("settings-example: Done.\n");
     // Seriell Shell
@@ -222,7 +224,7 @@ void setup (void)
   shell_file_init();
 #endif
 
-    get_rf_consts();  
+//    get_rf_consts();  
     print_rf_values();
     // init coap resourcen
     rest_init_engine ();
