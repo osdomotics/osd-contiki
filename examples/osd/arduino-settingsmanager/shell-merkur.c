@@ -50,8 +50,10 @@
 #include "sys/node-id.h"
 #include "lib/settings.h"
 #include "extended-rf-api.h"
+#include "params.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>     /* strtol */
 
 /*---------------------------------------------------------------------------*/
 PROCESS(shell_txpower_process, "txpower");
@@ -59,6 +61,11 @@ SHELL_COMMAND(txpower_command,
 	      "txpower",
 	      "txpower <power>: change transmission power 0 (3dbm, default) to 15 (-17.2dbm)",
 	      &shell_txpower_process);
+PROCESS(shell_panid_process, "panid");
+SHELL_COMMAND(panid_command,
+	      "panid",
+	      "panid <0xabcd>: change panid (default 0xabcd)",
+	      &shell_panid_process);
 PROCESS(shell_rfchannel_process, "rfchannel");
 SHELL_COMMAND(rfchannel_command,
 	      "rfchannel",
@@ -72,7 +79,7 @@ SHELL_COMMAND(ccathresholds_command,
 PROCESS(shell_saveparam_process, "saveparam");
 SHELL_COMMAND(saveparam_command,
 	      "saveparam",
-	      "saveparam <> save parameters to eeprom settingsmanager",
+	      "saveparam <> save parameters txpower, channel, panid to eeprom settingsmanager",
 	      &shell_saveparam_process);
 
 /*---------------------------------------------------------------------------*/
@@ -151,19 +158,43 @@ PROCESS_THREAD(shell_ccathresholds_process, ev, data)
   PROCESS_END();
 }
 /*---------------------------------------------------------------------------*/
-PROCESS_THREAD(shell_saveparam_process, ev, data)
+PROCESS_THREAD(shell_panid_process, ev, data)
 {
   radio_value_t value;
   char buf[20];
-  const char *newptr;
+  char *newptr;
+  PROCESS_BEGIN();
+
+  value = strtol(data, &newptr, 0);
+  
+  /* If no channel was given on the command line, we print out the
+     current channel. */
+  if(newptr == data) {
+	if(get_param(RADIO_PARAM_PAN_ID, &value) == RADIO_RESULT_OK) {
+		
+    }
+  } else {
+    set_param(RADIO_PARAM_PAN_ID, value);
+  }
+
+  snprintf(buf, sizeof(buf),"0x%02x%02x\n", (value >> 8) & 0xFF, value & 0xFF);
+  shell_output_str(&panid_command, "panid: ", buf);
+
+  PROCESS_END();
+}
+/*---------------------------------------------------------------------------*/
+PROCESS_THREAD(shell_saveparam_process, ev, data)
+{
   PROCESS_BEGIN();
   /* Save txpower */
-  params_save_channel();
+  params_save_txpower();
   /* Save rfchannel */
-  
+  params_save_channel();  
   /* Save ccathresholds */
-
+  // todo 
+  
   /* Save panid */
+  params_save_panid();
 
   shell_output_str(&rfchannel_command, "saveparam done ", 0);
 
@@ -176,7 +207,7 @@ shell_merkur_init(void)
   shell_register_command(&txpower_command);
   shell_register_command(&rfchannel_command);
   shell_register_command(&ccathresholds_command);  
-//  shell_register_command(&panid_command);
+  shell_register_command(&panid_command);
   shell_register_command(&saveparam_command);
 
 }

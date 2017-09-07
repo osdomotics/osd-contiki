@@ -276,19 +276,72 @@ params_get_txpower(void) {
   }
   return x;
 }
+uint8_t
+params_get_ccathresholds(void) {
+  uint8_t x;
+  size_t  size = 1;
+  if (settings_get(SETTINGS_KEY_TXPOWER, 0,(unsigned char*)&x, &size) == SETTINGS_STATUS_OK) {
+    PRINTD("<-Get tx power of %d (0=max)\n",x);
+  } else {
+    x=PARAMS_TXPOWER;
+    if (settings_add_uint8(SETTINGS_KEY_TXPOWER,x)==SETTINGS_STATUS_OK) {
+      PRINTD("->Set EEPROM tx power of %d (0=max)\n",x);
+    }
+  }
+  return x;
+}
+
+settings_status_t 
+params_save_panid(void) {
+  radio_value_t value;
+  size_t  size = 2;
+
+  settings_status_t rx=SETTINGS_STATUS_OK;
+  	
+  if(NETSTACK_RADIO.get_value(RADIO_PARAM_PAN_ID, &value) == RADIO_RESULT_OK) {
+    printf("%d\n", value);
+    if(settings_set_uint16(SETTINGS_KEY_PAN_ID, value) != SETTINGS_STATUS_OK) {
+      printf("settings-panid: `save` failed: \n");
+      rx = SETTINGS_STATUS_FAILURE;
+    }
+  } else {
+      rx = SETTINGS_STATUS_FAILURE;	  
+  }
+  return rx; 
+}
 
 settings_status_t 
 params_save_channel(void) {
   radio_value_t value;
-  settings_status_t x=SETTINGS_STATUS_OK;
+  settings_status_t rx=SETTINGS_STATUS_OK;
   	
   if(NETSTACK_RADIO.get_value(RADIO_PARAM_CHANNEL, &value) == RADIO_RESULT_OK) {
     printf("%d\n", value);
     if(settings_set_uint8(SETTINGS_KEY_CHANNEL, value) != SETTINGS_STATUS_OK) {
-      printf("settings-example: `set` failed: \n");
-      x = SETTINGS_STATUS_FAILURE;
+      printf("settings-channel: `save` failed: \n");
+      rx = SETTINGS_STATUS_FAILURE;
     }
+  } else {
+      rx = SETTINGS_STATUS_FAILURE;	  
   }
-  return x; 
+  return rx; 
 }
+
+settings_status_t 
+params_save_txpower(void) {
+  radio_value_t value;
+  settings_status_t rx=SETTINGS_STATUS_OK;
+  	
+  if(NETSTACK_RADIO.get_value(RADIO_PARAM_TXPOWER, &value) == RADIO_RESULT_OK) {
+    printf("%d\n", value);
+    if(settings_set_uint8(SETTINGS_KEY_TXPOWER, value) != SETTINGS_STATUS_OK) {
+      printf("settings-txpower: `save` failed: \n");
+      rx = SETTINGS_STATUS_FAILURE;
+    }
+  } else {
+      rx = SETTINGS_STATUS_FAILURE;	  
+  }
+  return rx; 
+}
+
 #endif /* CONTIKI_CONF_SETTINGS_MANAGER */

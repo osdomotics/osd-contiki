@@ -59,6 +59,16 @@ extern uint8_t eemem_domain_name[30];
 #else
 #define PARAMS_NODEID 0
 #endif
+#ifdef CHANNEL_802_15_4
+#define PARAMS_CHANNEL CHANNEL_802_15_4
+#else
+#define PARAMS_CHANNEL 26
+#endif
+#ifdef IEEE802154_PANID
+#define PARAMS_PANID IEEE802154_PANID
+#else
+#define PARAMS_PANID 0xABCD
+#endif
 #ifdef IEEE802154_PANADDR
 #define PARAMS_PANADDR IEEE802154_PANADDR
 #else
@@ -90,8 +100,8 @@ uint8_t params_get_eui64(uint8_t *eui64);
 /* Hard coded program flash parameters */
 #define params_get_servername(...) 
 #define params_get_nodeid(...)  PARAMS_NODEID
-#define params_get_channel(...) CHANNEL_802_15_4
-#define params_get_panid(...)   IEEE802154_PANID
+#define params_get_channel(...) PARAMS_CHANNEL
+#define params_get_panid(...)   PARAMS_PANID
 #define params_get_panaddr(...) PARAMS_PANADDR
 #define params_get_txpower(...) PARAMS_TXPOWER
 #else
@@ -101,7 +111,11 @@ uint8_t params_get_channel(void);
 uint16_t params_get_panid(void);
 uint16_t params_get_panaddr(void);
 uint8_t params_get_txpower(void);
+settings_status_t params_save_nodeid(void);
 settings_status_t params_save_channel(void);
+settings_status_t params_save_panid(void);
+settings_status_t params_save_panaddr(void);
+settings_status_t params_save_txpower(void);
 #endif
 
 #endif /* PARAMS_H_ */
