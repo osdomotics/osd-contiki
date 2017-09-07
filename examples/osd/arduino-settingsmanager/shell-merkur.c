@@ -76,11 +76,11 @@ SHELL_COMMAND(ccathresholds_command,
 	      "ccathresholds",
 	      "ccathresholds <threshold: change cca thresholds -91 to -61 dBm (default -77)",
 	      &shell_ccathresholds_process);
-PROCESS(shell_saveparam_process, "saveparam");
-SHELL_COMMAND(saveparam_command,
-	      "saveparam",
-	      "saveparam <> save parameters txpower, channel, panid to eeprom settingsmanager",
-	      &shell_saveparam_process);
+PROCESS(shell_saverfparam_process, "saverfparam");
+SHELL_COMMAND(saverfparam_command,
+	      "saverfparam",
+	      "saverfparam <> save parameters txpower, channel, panid to eeprom settingsmanager",
+	      &shell_saverfparam_process);
 
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(shell_txpower_process, ev, data)
@@ -183,7 +183,7 @@ PROCESS_THREAD(shell_panid_process, ev, data)
   PROCESS_END();
 }
 /*---------------------------------------------------------------------------*/
-PROCESS_THREAD(shell_saveparam_process, ev, data)
+PROCESS_THREAD(shell_saverfparam_process, ev, data)
 {
   PROCESS_BEGIN();
   /* Save txpower */
@@ -196,7 +196,7 @@ PROCESS_THREAD(shell_saveparam_process, ev, data)
   /* Save panid */
   params_save_panid();
 
-  shell_output_str(&rfchannel_command, "saveparam done ", 0);
+  shell_output_str(&rfchannel_command, "saverfparam done ", 0);
 
   PROCESS_END();
 }
@@ -208,7 +208,7 @@ shell_merkur_init(void)
   shell_register_command(&rfchannel_command);
   shell_register_command(&ccathresholds_command);  
   shell_register_command(&panid_command);
-  shell_register_command(&saveparam_command);
+  shell_register_command(&saverfparam_command);
 
 }
 /*---------------------------------------------------------------------------*/
