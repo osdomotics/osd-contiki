@@ -61,8 +61,11 @@ Note. We use Debian 9 as reference Linux
 ###### For Linux
 
 sudo apt-get install avr-libc binutils-avr gcc-avr gdb-avr simulavr avrdude make git 
+
 sudo apt-get install python-pip
+
 pip install intelhex
+
 sudo apt-get install picocom libcoap-1-0-bin
 
 ###### For Windows
