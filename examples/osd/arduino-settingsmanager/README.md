@@ -11,20 +11,35 @@ start a terminal programm
 picocom -c -b 38400 --omap crcrlf /dev/ttyUSB0
 
 ? [ENTER]
+
 Available commands:
+
 ?: shows this help
+
 ccathresholds <threshold: change cca thresholds -91 to -61 dBm (default -77)
+
 exit: exit shell
+
 help: shows this help
+
 kill <command>: stop a specific command
+
 killall: stop all running commands
+
 null: discard input
+
 panid <0xabcd>: change panid (default 0xabcd)
+
 ps: list all running processes
+
 quit: exit shell
+
 reboot: reboot the system
+
 rfchannel <channel>: change radio channel (11 - 26)
+
 saverfparam <> save radio parameters txpower, channel, panid to eeprom settingsmanager
+
 txpower <power>: change transmission power 0 (3dbm, default) to 15 (-17.2dbm)
 
 ------------------------------------------------------------------------------
