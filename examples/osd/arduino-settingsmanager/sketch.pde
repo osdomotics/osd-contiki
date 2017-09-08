@@ -14,12 +14,8 @@ extern "C" {
 #include "arduino-process.h"
 #include "rest-engine.h"
 #include "net/netstack.h"
-#include "lib/settings.h"
-#include "shell.h"
 #include "serial-shell.h"
 #include "shell-merkur.h"
-#include "dev/radio.h"
-#include "extended-rf-api.h"
 
 extern resource_t res_led, res_battery, res_cputemp;
 
@@ -35,14 +31,7 @@ void setup (void)
     led_status=0;
     // Seriell Shell
     serial_shell_init();
-    shell_ps_init();
-    shell_reboot_init();
     shell_merkur_init();  
-#if COFFEE
-    shell_coffee_init();
-    shell_file_init();
-#endif
-
     // init coap resourcen
     rest_init_engine ();
     #pragma GCC diagnostic ignored "-Wwrite-strings"

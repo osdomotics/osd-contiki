@@ -294,7 +294,6 @@ params_get_ccathresholds(void) {
 settings_status_t 
 params_save_panid(void) {
   radio_value_t value;
-  size_t  size = 2;
 
   settings_status_t rx=SETTINGS_STATUS_OK;
   	

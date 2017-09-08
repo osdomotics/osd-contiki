@@ -38,22 +38,13 @@
  */
 
 #include "contiki.h"
+#include <stdio.h>
+#include <stdlib.h>     /* strtol */
 #include "sys/cc.h"
-#include "shell-sky.h"
-
-#include "dev/watchdog.h"
-
-#include "net/rime/rime.h"
-#include "net/netstack.h"
-#include "net/rime/timesynch.h"
 #include "dev/radio.h"
-#include "sys/node-id.h"
-#include "lib/settings.h"
+#include "shell-merkur.h"
 #include "extended-rf-api.h"
 #include "params.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>     /* strtol */
 
 /*---------------------------------------------------------------------------*/
 PROCESS(shell_txpower_process, "txpower");
@@ -79,7 +70,7 @@ SHELL_COMMAND(ccathresholds_command,
 PROCESS(shell_saverfparam_process, "saverfparam");
 SHELL_COMMAND(saverfparam_command,
 	      "saverfparam",
-	      "saverfparam <> save parameters txpower, channel, panid to eeprom settingsmanager",
+	      "saverfparam <> save radio parameters txpower, channel, panid to eeprom settingsmanager",
 	      &shell_saverfparam_process);
 
 /*---------------------------------------------------------------------------*/
@@ -204,6 +195,8 @@ PROCESS_THREAD(shell_saverfparam_process, ev, data)
 void
 shell_merkur_init(void)
 {
+  shell_ps_init();
+  shell_reboot_init();
   shell_register_command(&txpower_command);
   shell_register_command(&rfchannel_command);
   shell_register_command(&ccathresholds_command);  

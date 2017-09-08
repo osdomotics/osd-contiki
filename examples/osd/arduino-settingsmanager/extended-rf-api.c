@@ -32,12 +32,10 @@
  *   Example project demonstrating the extended RF API functionality
  */
 #include "contiki.h"
-#include "net/netstack.h"
-#include "dev/radio.h"
-
 #include <stdio.h>
 #include <stdint.h>
-#include <string.h>
+#include "net/netstack.h"
+#include "dev/radio.h"
 #include "extended-rf-api.h"
 /*---------------------------------------------------------------------------*/
 struct rf_consts {
