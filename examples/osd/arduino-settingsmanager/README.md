@@ -44,8 +44,13 @@ txpower <power>: change transmission power 0 (3dbm, default) to 15 (-17.2dbm)
 
 ------------------------------------------------------------------------------
 quit picocom, you need to press Ctrl-a , then Ctrl-q
+------------------------------------------------------------------------------
+todo: 
 
+bugfix: txpower <power>: change transmission power 0 (3dbm, default) to 15 (-17.2dbm)
+make a contiki app for easier inegration in projects
 
+------------------------------------------------------------------------------
 
 This example shows that it is now possible to re-use arduino sketches in
 Contiki. This example documents the necessary magic. Arduino specifies
