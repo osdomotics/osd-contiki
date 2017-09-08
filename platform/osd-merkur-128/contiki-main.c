@@ -190,7 +190,14 @@ void initialize(void)
 
   /* Redirect stdout */
   rs232_redirect_stdout(RS232_PORT_0);
+#if 0
+  /* Do it my way... */
+  //UBRR0L =  8; UBRR0H = 0; UCSR0A = (0 << U2X0);  // 115.2k  err=-3.5%  
+  //UBRR0L = 16; UBRR0H = 0; UCSR0A = (1 << U2X0);  // 115.2k     2.1%  
+  //UBRR0L =  3; UBRR0H = 0; UCSR0A = (1 << U2X0);  // 500k         0%
+#endif
 
+  rs232_set_input(RS232_PORT_0, serial_line_input_byte);
   clock_init();
 
   if(MCUSR & (1<<PORF )) PRINTD("Power-on reset.\n");
@@ -276,6 +283,7 @@ uint8_t i;
   rf230_set_pan_addr(params_get_panid(),params_get_panaddr(),(uint8_t *)&addr.u8);
   rf230_set_channel(params_get_channel());
   rf230_set_txpower(params_get_txpower());
+//  rf230_set_cca_threshold(params_get_txpower());
 
 #if NETSTACK_CONF_WITH_IPV6
   PRINTA("EUI-64 MAC: %x-%x-%x-%x-%x-%x-%x-%x\n",addr.u8[0],addr.u8[1],addr.u8[2],addr.u8[3],addr.u8[4],addr.u8[5],addr.u8[6],addr.u8[7]);
@@ -312,7 +320,7 @@ uint8_t i;
 #endif
 
   process_start(&sensors_process, NULL);
-
+  serial_line_init();
   /* Autostart other processes */
   autostart_start(autostart_processes);
 
