@@ -85,10 +85,10 @@ PROCESS_THREAD(shell_txpower_process, ev, data)
   
   /* If no transmission power was given on the command line, we print
      out the current txpower. */
-    if(newptr == data) {
+  if(newptr == data) {
 	if(get_param(RADIO_PARAM_TXPOWER, &value) == RADIO_RESULT_OK) {
-
     }
+//    value = params_get_txpower();
   } else {
     set_param(RADIO_PARAM_TXPOWER, value);
   }

@@ -45,6 +45,11 @@ txpower <power>: change transmission power 0 (3dbm, default) to 15 (-17.2dbm)
 ------------------------------------------------------------------------------
 quit picocom, you need to press Ctrl-a , then Ctrl-q
 ------------------------------------------------------------------------------
+Read eeprom to disk:
+avrdude -p m256rfr2  -c stk500v2  -P /dev/ttyUSB0 -b 57600 -U eeprom:r:eeprom_img.hex:i
+Write eeprom to Merkurboard:
+avrdude -p m256rfr2  -c stk500v2  -P /dev/ttyUSB0 -b 57600 -U eeprom:w:eeprom_img.hex:i
+
 todo: 
 
 bugfix: txpower <power>: change transmission power 0 (3dbm, default) to 15 (-17.2dbm)

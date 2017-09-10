@@ -37,7 +37,9 @@
 #define PLATFORM_HAS_BATTERY 1
 
 
-#define LOOP_INTERVAL		(30 * CLOCK_SECOND)
+#define LOOP_INTERVAL		(20 * CLOCK_SECOND)
+
+//#define SETTINGS_MAX_SIZE 255
 
 /* Save energy */
 //#define RDC_CONF_PT_YIELD_OFF
