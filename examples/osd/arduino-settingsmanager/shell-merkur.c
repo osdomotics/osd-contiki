@@ -88,12 +88,11 @@ PROCESS_THREAD(shell_txpower_process, ev, data)
   if(newptr == data) {
 	if(get_param(RADIO_PARAM_TXPOWER, &value) == RADIO_RESULT_OK) {
     }
-//    value = params_get_txpower();
   } else {
     set_param(RADIO_PARAM_TXPOWER, value);
   }
 
-  snprintf(buf, sizeof(buf), "%3d dBm", value);
+  snprintf(buf, sizeof(buf), "%3d", value);
   shell_output_str(&txpower_command, "TX Power: ", buf);
 
   PROCESS_END();

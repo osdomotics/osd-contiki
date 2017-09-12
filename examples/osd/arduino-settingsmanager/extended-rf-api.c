@@ -46,7 +46,6 @@ struct rf_consts {
 };
 
 static struct rf_consts consts;
-static radio_value_t tmpv;
 
 void
 print_64bit_addr(const uint8_t *addr)
@@ -116,12 +115,9 @@ radio_result_t
 get_param(radio_param_t param, radio_value_t *value)
 {
   radio_result_t rv;
-  if(param == RADIO_PARAM_TXPOWER){
-	  value = tmpv;
-	  rv = RADIO_RESULT_OK;
-  } else {
-    rv = NETSTACK_RADIO.get_value(param, value);
-  }
+
+  rv = NETSTACK_RADIO.get_value(param, value);
+  
   switch(rv) {
   case RADIO_RESULT_ERROR:
     printf("Radio returned an error\n");
@@ -146,9 +142,7 @@ radio_result_t
 set_param(radio_param_t param, radio_value_t value)
 {
   radio_result_t rv;
-  if(param == RADIO_PARAM_TXPOWER){
-	  tmpv = value;
-  }
+
   rv = NETSTACK_RADIO.set_value(param, value);
 
   switch(rv) {

@@ -1877,18 +1877,22 @@ rf230_read(void *buf, unsigned short bufsize)
   return len - AUX_LEN;
 }
 /*---------------------------------------------------------------------------*/
+static uint8_t powertmp;
 void
 rf230_set_txpower(uint8_t power)
 {
   set_txpower(power);
+  powertmp = power;
 }
 /*---------------------------------------------------------------------------*/
 uint8_t
 rf230_get_txpower(void)
 {
-	uint8_t power = TX_PWR_UNDEFINED;
+//	uint8_t power = TX_PWR_UNDEFINED;
+	uint8_t power = powertmp;
 	if (hal_get_slptr()) {
 		PRINTF("rf230_get_txpower:Sleeping");
+//		power = powertmp;
 	} else {
 		power = hal_subregister_read(SR_TX_PWR);
 	}

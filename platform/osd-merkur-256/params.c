@@ -31,7 +31,7 @@
  */
 #define PRINTF(FORMAT,args...) printf_P(PSTR(FORMAT),##args)
 
-#define DEBUG 1
+#define DEBUG 0
 #if DEBUG
 #define PRINTD(FORMAT,args...) printf_P(PSTR(FORMAT),##args)
 #else
@@ -266,6 +266,7 @@ uint8_t
 params_get_txpower(void) {
   uint8_t x;
   size_t  size = 1;
+  PRINTD("params_get_txpower\n",x);
   if (settings_get(SETTINGS_KEY_TXPOWER, 0,(unsigned char*)&x, &size) == SETTINGS_STATUS_OK) {
     PRINTD("<-Get tx power of %d (0=max)\n",x);
   } else {
@@ -298,9 +299,9 @@ params_save_panid(void) {
   settings_status_t rx=SETTINGS_STATUS_OK;
   	
   if(NETSTACK_RADIO.get_value(RADIO_PARAM_PAN_ID, &value) == RADIO_RESULT_OK) {
-    printf("%d\n", value);
+    PRINTD("%04x\n", value);
     if(settings_set_uint16(SETTINGS_KEY_PAN_ID, value) != SETTINGS_STATUS_OK) {
-      printf("settings-panid: `save` failed: \n");
+      PRINTD("settings-panid: `save` failed: \n");
       rx = SETTINGS_STATUS_FAILURE;
     }
   } else {
@@ -315,9 +316,9 @@ params_save_channel(void) {
   settings_status_t rx=SETTINGS_STATUS_OK;
   	
   if(NETSTACK_RADIO.get_value(RADIO_PARAM_CHANNEL, &value) == RADIO_RESULT_OK) {
-    printf("%d\n", value);
+    PRINTD("%d\n", value);
     if(settings_set_uint8(SETTINGS_KEY_CHANNEL, value) != SETTINGS_STATUS_OK) {
-      printf("settings-channel: `save` failed: \n");
+      PRINTD("settings-channel: `save` failed: \n");
       rx = SETTINGS_STATUS_FAILURE;
     }
   } else {
@@ -332,9 +333,9 @@ params_save_txpower(void) {
   settings_status_t rx=SETTINGS_STATUS_OK;
   	
   if(NETSTACK_RADIO.get_value(RADIO_PARAM_TXPOWER, &value) == RADIO_RESULT_OK) {
-    printf("%d\n", value);
+    PRINTD("%d\n", value);
     if(settings_set_uint8(SETTINGS_KEY_TXPOWER, value) != SETTINGS_STATUS_OK) {
-      printf("settings-txpower: `save` failed: \n");
+      PRINTD("settings-txpower: `save` failed: \n");
       rx = SETTINGS_STATUS_FAILURE;
     }
   } else {
