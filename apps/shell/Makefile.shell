@@ -66,3 +66,11 @@ endif
 ifeq ($(TARGET),z1)
   shell_src += shell-sky.c shell-exec.c
 endif
+
+ifeq ($(TARGET),osd-merkur-256)
+  shell_src += shell-merkur.c
+endif
+
+ifeq ($(TARGET),osd-merkur-128)
+  shell_src += shell-merkur.c
+endif

@@ -344,4 +344,57 @@ params_save_txpower(void) {
   return rx; 
 }
 
+radio_result_t
+get_param(radio_param_t param, radio_value_t *value)
+{
+  radio_result_t rv;
+
+  rv = NETSTACK_RADIO.get_value(param, value);
+  
+  switch(rv) {
+  case RADIO_RESULT_ERROR:
+    printf("Radio returned an error\n");
+    break;
+  case RADIO_RESULT_INVALID_VALUE:
+    printf("Value %d is invalid\n", *value);
+    break;
+  case RADIO_RESULT_NOT_SUPPORTED:
+    printf("Param %u not supported\n", param);
+    break;
+  case RADIO_RESULT_OK:
+    break;
+  default:
+    printf("Unknown return value\n");
+    break;
+  }
+
+  return rv;
+}
+/*---------------------------------------------------------------------------*/
+radio_result_t
+set_param(radio_param_t param, radio_value_t value)
+{
+  radio_result_t rv;
+
+  rv = NETSTACK_RADIO.set_value(param, value);
+
+  switch(rv) {
+  case RADIO_RESULT_ERROR:
+    printf("Radio returned an error\n");
+    break;
+  case RADIO_RESULT_INVALID_VALUE:
+    printf("Value %d is invalid\n", value);
+    break;
+  case RADIO_RESULT_NOT_SUPPORTED:
+    printf("Param %u not supported\n", param);
+    break;
+  case RADIO_RESULT_OK:
+    break;
+  default:
+    printf("Unknown return value\n");
+    break;
+  }
+
+  return rv;
+}
 #endif /* CONTIKI_CONF_SETTINGS_MANAGER */

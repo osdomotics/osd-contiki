@@ -12,7 +12,7 @@ CONTIKI_WITH_IPV6 = 1
 CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
 CFLAGS += -DCONTIKI_CONF_SETTINGS_MANAGER=1
 
-PROJECT_SOURCEFILES += ${SKETCH}.cpp shell-merkur.c extended-rf-api.c
+PROJECT_SOURCEFILES += ${SKETCH}.cpp
 
 # automatically build RESTful resources
 REST_RESOURCES_DIR = ./resources

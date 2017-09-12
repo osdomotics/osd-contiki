@@ -27,8 +27,6 @@ uint8_t led_status;
 
 void setup (void)
 {
-  settings_status_t status;
-  
     // switch off the led
     pinMode(led_pin, OUTPUT);
     digitalWrite(led_pin, HIGH);
@@ -50,11 +48,7 @@ void setup (void)
 
 void loop (void)
 {
-  int i;
   settings_iter_t iter;
-  char hostname[30];
-  uint16_t panid;
-  uint16_t channel;
 
   /*************************************************************************/
   /* Iterating thru all settings */

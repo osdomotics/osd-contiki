@@ -43,7 +43,7 @@
 #include "sys/cc.h"
 #include "dev/radio.h"
 #include "shell-merkur.h"
-#include "extended-rf-api.h"
+//#include "extended-rf-api.h"
 #include "params.h"
 
 /*---------------------------------------------------------------------------*/
