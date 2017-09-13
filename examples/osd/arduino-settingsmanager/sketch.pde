@@ -19,7 +19,7 @@ extern "C" {
 
 #include "lib/settings.h"
 
-extern resource_t res_led, res_battery, res_cputemp;
+extern resource_t res_led, res_battery, res_cputemp, res_rfchannel;
 
 uint8_t led_pin=4;
 uint8_t led_status;
@@ -40,6 +40,7 @@ void setup (void)
     rest_activate_resource (&res_led, "s/led");
     rest_activate_resource (&res_battery, "s/battery");
     rest_activate_resource (&res_cputemp, "s/cputemp");
+    rest_activate_resource (&res_rfchannel, "p/rfchannel");
     #pragma GCC diagnostic pop
     
  //   NETSTACK_MAC.off(1);
