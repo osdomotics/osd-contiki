@@ -67,6 +67,11 @@ SHELL_COMMAND(ccathresholds_command,
 	      "ccathresholds",
 	      "ccathresholds <threshold: change cca thresholds -91 to -61 dBm (default -77)",
 	      &shell_ccathresholds_process);
+PROCESS(shell_macconf_process, "macconf");
+SHELL_COMMAND(macconf_command,
+	      "macconf",
+	      "macconf <conf>: change mac layer 0 -> do nothing; 1 -> Radio allways on",
+	      &shell_macconf_process);
 PROCESS(shell_saverfparam_process, "saverfparam");
 SHELL_COMMAND(saverfparam_command,
 	      "saverfparam",
@@ -148,6 +153,29 @@ PROCESS_THREAD(shell_ccathresholds_process, ev, data)
   PROCESS_END();
 }
 /*---------------------------------------------------------------------------*/
+PROCESS_THREAD(shell_macconf_process, ev, data)
+{
+  radio_value_t value;
+  char buf[20];
+  const char *newptr;
+  PROCESS_BEGIN();
+
+  value = shell_strtolong(data, &newptr);
+  
+  /* If no transmission power was given on the command line, we print
+     out the current macconf. */
+  if(newptr == data) {
+    value = params_get_macconf();
+  } else {
+    params_set_macconf(value);
+  }
+
+  snprintf(buf, sizeof(buf), "%3d", value);
+  shell_output_str(&txpower_command, "macconf: ", buf);
+
+  PROCESS_END();
+}
+/*---------------------------------------------------------------------------*/
 PROCESS_THREAD(shell_panid_process, ev, data)
 {
   radio_value_t value;
@@ -185,6 +213,8 @@ PROCESS_THREAD(shell_saverfparam_process, ev, data)
   
   /* Save panid */
   params_save_panid();
+  /* Save macconf */
+  params_save_macconf();
 
   shell_output_str(&rfchannel_command, "saverfparam done ", 0);
 
@@ -200,6 +230,7 @@ shell_merkur_init(void)
   shell_register_command(&rfchannel_command);
   shell_register_command(&ccathresholds_command);  
   shell_register_command(&panid_command);
+  shell_register_command(&macconf_command);  
   shell_register_command(&saverfparam_command);
 
 }

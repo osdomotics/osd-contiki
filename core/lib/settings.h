@@ -130,7 +130,7 @@ typedef uint16_t settings_length_t;
 
 #define SETTINGS_KEY_RDC_INDEX     TCC('R','D') /*!< RDC index, uint8_t */
 #define SETTINGS_KEY_CHANNEL_MASK  TCC('C','M') /*!< Channel mask, uint16_t */
-
+#define SETTINGS_KEY_MAC_CONF      TCC('M','C') /*!< MAC Layer Config, uint8_t */
 /*****************************************************************************/
 // MARK: - Constants
 

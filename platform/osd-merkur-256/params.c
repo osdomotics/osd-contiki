@@ -31,7 +31,7 @@
  */
 #define PRINTF(FORMAT,args...) printf_P(PSTR(FORMAT),##args)
 
-#define DEBUG 0
+#define DEBUG 1
 #if DEBUG
 #define PRINTD(FORMAT,args...) printf_P(PSTR(FORMAT),##args)
 #else
@@ -292,6 +292,32 @@ params_get_ccathresholds(void) {
   return x;
 }
 
+uint8_t
+params_get_macconf(void) {
+  uint8_t x;
+  size_t  size = 1;
+  if (settings_get(SETTINGS_KEY_MAC_CONF, 0,(unsigned char*)&x, &size) == SETTINGS_STATUS_OK) {
+    PRINTD("<-Get macconf of %d (0 -> do nothing)\n",x);
+  } else {
+    x=PARAMS_MACCONF;
+    if (settings_add_uint8(SETTINGS_KEY_MAC_CONF,x)==SETTINGS_STATUS_OK) {
+      PRINTD("->Set EEPROM macconf of %d (0 -> do nothing)\n",x);
+    }
+  }
+  return x;
+}
+
+settings_status_t 
+params_set_macconf(radio_value_t value){
+  settings_status_t rx=SETTINGS_STATUS_OK;
+  PRINTD("%d\n", value);
+  if(settings_set_uint8(SETTINGS_KEY_MAC_CONF, value) != SETTINGS_STATUS_OK) {
+    PRINTD("settings-mac-conf: `save` failed: \n");
+    rx = SETTINGS_STATUS_FAILURE;
+  }
+  return rx; 
+}
+
 settings_status_t 
 params_save_panid(void) {
   radio_value_t value;
@@ -340,6 +366,20 @@ params_save_txpower(void) {
     }
   } else {
       rx = SETTINGS_STATUS_FAILURE;	  
+  }
+  return rx; 
+}
+
+settings_status_t 
+params_save_macconf(void) {
+  radio_value_t value;
+  settings_status_t rx=SETTINGS_STATUS_OK;
+  	
+  value = params_get_macconf();	
+  PRINTD("%d\n", value);
+  if(settings_set_uint8(SETTINGS_KEY_MAC_CONF, value) != SETTINGS_STATUS_OK) {
+    PRINTD("settings-mac-conf: `save` failed: \n");
+    rx = SETTINGS_STATUS_FAILURE;
   }
   return rx; 
 }
