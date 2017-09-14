@@ -45,8 +45,8 @@
 //#define RDC_CONF_PT_YIELD_OFF
 
 /* For Debug: Dont allow MCU sleeping between channel checks */
-#undef RDC_CONF_MCU_SLEEP
-#define RDC_CONF_MCU_SLEEP       0
+//#undef RDC_CONF_MCU_SLEEP
+//#define RDC_CONF_MCU_SLEEP       0
 
 /* Disabling RDC for demo purposes. Core updates often require more memory. */
 /* For projects, optimize memory and enable RDC again. */

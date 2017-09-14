@@ -79,23 +79,39 @@ extern resource_t res_event, res_separate;
 #endif /* PLATFORM_HAS_BUTTON */
 
 volatile uint8_t mcusleepcycleval;
+/* 0 dont sleep; 1 sleep */
+uint8_t mcusleep;
 
 /*-------------- enabled sleep mode ----------------------------------------*/
 void
 mcu_sleep_init(void)
 {
 	mcusleepcycleval=mcusleepcycle;
+	mcu_sleep_enable();
+}
+void
+mcu_sleep_disable(void)
+{
+	mcusleep=0;
+    mcu_sleep_off();
+}
+void
+mcu_sleep_enable(void)
+{
+	mcusleep=1;
 }
 void
 mcu_sleep_on(void)
 {
-	mcusleepcycle= mcusleepcycleval;
+	if(mcusleep){
+		mcusleepcycle= mcusleepcycleval;
+	}
 }
 /*--------------- disable sleep mode ---------------------------------------*/
 void
 mcu_sleep_off(void)
 {
-	mcusleepcycle=0;
+		mcusleepcycle=0;
 }
 /*---------------- set duty cycle value ------------------------------------*/
 void

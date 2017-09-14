@@ -52,8 +52,12 @@
 #include "contiki.h"
 
 /*--------------- enable sleep mode ---------------------------------------*/
-void mcu_sleep_on(void);
+void mcu_sleep_enable(void);
 /*--------------- disable sleep mode ---------------------------------------*/
+void mcu_sleep_disable(void);
+/*--------------- sleep mode on---------------------------------------*/
+void mcu_sleep_on(void);
+/*--------------- sleep mode off---------------------------------------*/
 void mcu_sleep_off(void);
 /*---------------- set sleep value ------------------------------------*/
 void mcu_sleep_set(uint8_t value);
