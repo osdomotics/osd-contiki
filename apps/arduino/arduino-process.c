@@ -58,7 +58,8 @@
 #include "contiki.h"
 #include "project-conf.h"
 
-#define DEBUG 0
+
+#define DEBUG 1
 #if DEBUG
 #include <stdio.h>
 #define PRINTF(...) printf(__VA_ARGS__)
@@ -87,7 +88,7 @@ void
 mcu_sleep_init(void)
 {
 	mcusleepcycleval=mcusleepcycle;
-	mcu_sleep_enable();
+	mcu_sleep_disable();
 }
 void
 mcu_sleep_disable(void)
@@ -126,10 +127,13 @@ PROCESS(arduino_sketch, "Arduino Sketch Wrapper");
 #ifndef LOOP_INTERVAL
 #define LOOP_INTERVAL		(1 * CLOCK_SECOND)
 #endif
+#define START_MCUSLEEP		(5 * CLOCK_SECOND)
 
 PROCESS_THREAD(arduino_sketch, ev, data)
 {
   static struct etimer loop_periodic_timer;
+  static struct etimer start_mcusleep_timer;
+  static int a=0;
 
   PROCESS_BEGIN();
   adc_init ();
@@ -137,6 +141,7 @@ PROCESS_THREAD(arduino_sketch, ev, data)
   setup ();
   /* Define application-specific events here. */
   etimer_set(&loop_periodic_timer, LOOP_INTERVAL);
+  etimer_set(&start_mcusleep_timer, START_MCUSLEEP);
 
   while (1) {
 	PROCESS_WAIT_EVENT();
@@ -148,6 +153,11 @@ PROCESS_THREAD(arduino_sketch, ev, data)
       mcu_sleep_on();
     }
 #endif /* PLATFORM_HAS_BUTTON */
+    if(etimer_expired(&start_mcusleep_timer) && a == 0) {
+      PRINTF("mcusleep_timer %d",a);
+      mcu_sleep_enable();
+      a++;
+    }
 
     if(etimer_expired(&loop_periodic_timer)) {
       mcu_sleep_off();
