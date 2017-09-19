@@ -49,7 +49,7 @@
 
 #include <stdio.h>
 #include <string.h>
-
+#include "arduino-process.h"
 
 /*---------------------------------------------------------------------------*/
 PROCESS(serial_shell_process, "Contiki serial shell");
@@ -59,7 +59,7 @@ shell_default_output(const char *text1, int len1, const char *text2, int len2)
 {
   int i;
   
-  mcu_sleep_off();
+  mcu_sleep_disable();
   if(text1 == NULL) {
     text1 = "";
     len1 = 0;
@@ -78,7 +78,6 @@ shell_default_output(const char *text1, int len1, const char *text2, int len2)
     printf("%c", text2[i]);
   }
   printf("\r\n");
-  mcu_sleep_on();
 }
 /*---------------------------------------------------------------------------*/
 void
@@ -92,6 +91,7 @@ void
 shell_exit(void)
 {
 }
+
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(serial_shell_process, ev, data)
 {
@@ -101,9 +101,8 @@ PROCESS_THREAD(serial_shell_process, ev, data)
 
   while(1) {
     PROCESS_WAIT_EVENT_UNTIL(ev == serial_line_event_message && data != NULL);
-    mcu_sleep_off();
+    mcu_sleep_disable();
     shell_input(data, strlen(data));
-    mcu_sleep_on();
   }
 
   PROCESS_END();

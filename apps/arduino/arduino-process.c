@@ -59,7 +59,7 @@
 #include "project-conf.h"
 
 
-#define DEBUG 1
+#define DEBUG 0
 #if DEBUG
 #include <stdio.h>
 #define PRINTF(...) printf(__VA_ARGS__)
@@ -88,23 +88,23 @@ void
 mcu_sleep_init(void)
 {
 	mcusleepcycleval=mcusleepcycle;
-	mcu_sleep_disable();
+    mcu_sleep_disable(); // if a shell is active we can type 
 }
 void
 mcu_sleep_disable(void)
 {
-	mcusleep=0;
+	mcusleep=2;
     mcu_sleep_off();
 }
 void
 mcu_sleep_enable(void)
 {
-	mcusleep=1;
+	mcusleep=0;
 }
 void
 mcu_sleep_on(void)
 {
-	if(mcusleep){
+	if(mcusleep == 0){
 		mcusleepcycle= mcusleepcycleval;
 	}
 }
@@ -127,13 +127,12 @@ PROCESS(arduino_sketch, "Arduino Sketch Wrapper");
 #ifndef LOOP_INTERVAL
 #define LOOP_INTERVAL		(1 * CLOCK_SECOND)
 #endif
-#define START_MCUSLEEP		(5 * CLOCK_SECOND)
+#define START_MCUSLEEP		(10 * CLOCK_SECOND)
 
 PROCESS_THREAD(arduino_sketch, ev, data)
 {
   static struct etimer loop_periodic_timer;
   static struct etimer start_mcusleep_timer;
-  static int a=0;
 
   PROCESS_BEGIN();
   adc_init ();
@@ -153,10 +152,17 @@ PROCESS_THREAD(arduino_sketch, ev, data)
       mcu_sleep_on();
     }
 #endif /* PLATFORM_HAS_BUTTON */
-    if(etimer_expired(&start_mcusleep_timer) && a == 0) {
-      PRINTF("mcusleep_timer %d",a);
-      mcu_sleep_enable();
-      a++;
+    if(etimer_expired(&start_mcusleep_timer)) {
+      PRINTF("mcusleep_timer %d\n",mcusleep);
+      if(mcusleep == 1){
+        PRINTF("mcu sleep on\n");
+        mcu_sleep_enable();
+        mcu_sleep_on();
+      }
+      if (mcusleep > 0) {
+		mcusleep--;
+      }
+      etimer_reset(&start_mcusleep_timer);
     }
 
     if(etimer_expired(&loop_periodic_timer)) {

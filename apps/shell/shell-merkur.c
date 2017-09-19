@@ -255,6 +255,6 @@ shell_merkur_init(void)
   shell_register_command(&panid_command);
   shell_register_command(&macconf_command);  
   shell_register_command(&saverfparam_command);
-  shell_register_command(&s_command);
+//  shell_register_command(&s_command);
 }
 /*---------------------------------------------------------------------------*/
