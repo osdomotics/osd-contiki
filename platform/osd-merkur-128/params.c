@@ -266,6 +266,7 @@ uint8_t
 params_get_txpower(void) {
   uint8_t x;
   size_t  size = 1;
+  PRINTD("params_get_txpower\n",x);
   if (settings_get(SETTINGS_KEY_TXPOWER, 0,(unsigned char*)&x, &size) == SETTINGS_STATUS_OK) {
     PRINTD("<-Get tx power of %d (0=max)\n",x);
   } else {
@@ -291,6 +292,32 @@ params_get_ccathresholds(void) {
   return x;
 }
 
+uint8_t
+params_get_macconf(void) {
+  uint8_t x;
+  size_t  size = 1;
+  if (settings_get(SETTINGS_KEY_MAC_CONF, 0,(unsigned char*)&x, &size) == SETTINGS_STATUS_OK) {
+    PRINTD("<-Get macconf of %d (0 -> do nothing)\n",x);
+  } else {
+    x=PARAMS_MACCONF;
+    if (settings_add_uint8(SETTINGS_KEY_MAC_CONF,x)==SETTINGS_STATUS_OK) {
+      PRINTD("->Set EEPROM macconf of %d (0 -> do nothing)\n",x);
+    }
+  }
+  return x;
+}
+
+settings_status_t 
+params_set_macconf(radio_value_t value){
+  settings_status_t rx=SETTINGS_STATUS_OK;
+  PRINTD("%d\n", value);
+  if(settings_set_uint8(SETTINGS_KEY_MAC_CONF, value) != SETTINGS_STATUS_OK) {
+    PRINTD("settings-mac-conf: `save` failed: \n");
+    rx = SETTINGS_STATUS_FAILURE;
+  }
+  return rx; 
+}
+
 settings_status_t 
 params_save_panid(void) {
   radio_value_t value;
@@ -298,9 +325,9 @@ params_save_panid(void) {
   settings_status_t rx=SETTINGS_STATUS_OK;
   	
   if(NETSTACK_RADIO.get_value(RADIO_PARAM_PAN_ID, &value) == RADIO_RESULT_OK) {
-    printf("%d\n", value);
+    PRINTD("%04x\n", value);
     if(settings_set_uint16(SETTINGS_KEY_PAN_ID, value) != SETTINGS_STATUS_OK) {
-      printf("settings-panid: `save` failed: \n");
+      PRINTD("settings-panid: `save` failed: \n");
       rx = SETTINGS_STATUS_FAILURE;
     }
   } else {
@@ -315,9 +342,9 @@ params_save_channel(void) {
   settings_status_t rx=SETTINGS_STATUS_OK;
   	
   if(NETSTACK_RADIO.get_value(RADIO_PARAM_CHANNEL, &value) == RADIO_RESULT_OK) {
-    printf("%d\n", value);
+    PRINTD("%d\n", value);
     if(settings_set_uint8(SETTINGS_KEY_CHANNEL, value) != SETTINGS_STATUS_OK) {
-      printf("settings-channel: `save` failed: \n");
+      PRINTD("settings-channel: `save` failed: \n");
       rx = SETTINGS_STATUS_FAILURE;
     }
   } else {
@@ -332,9 +359,9 @@ params_save_txpower(void) {
   settings_status_t rx=SETTINGS_STATUS_OK;
   	
   if(NETSTACK_RADIO.get_value(RADIO_PARAM_TXPOWER, &value) == RADIO_RESULT_OK) {
-    printf("%d\n", value);
+    PRINTD("%d\n", value);
     if(settings_set_uint8(SETTINGS_KEY_TXPOWER, value) != SETTINGS_STATUS_OK) {
-      printf("settings-txpower: `save` failed: \n");
+      PRINTD("settings-txpower: `save` failed: \n");
       rx = SETTINGS_STATUS_FAILURE;
     }
   } else {
@@ -343,4 +370,71 @@ params_save_txpower(void) {
   return rx; 
 }
 
+settings_status_t 
+params_save_macconf(void) {
+  radio_value_t value;
+  settings_status_t rx=SETTINGS_STATUS_OK;
+  	
+  value = params_get_macconf();	
+  PRINTD("%d\n", value);
+  if(settings_set_uint8(SETTINGS_KEY_MAC_CONF, value) != SETTINGS_STATUS_OK) {
+    PRINTD("settings-mac-conf: `save` failed: \n");
+    rx = SETTINGS_STATUS_FAILURE;
+  }
+  return rx; 
+}
+
+radio_result_t
+get_param(radio_param_t param, radio_value_t *value)
+{
+  radio_result_t rv;
+
+  rv = NETSTACK_RADIO.get_value(param, value);
+  
+  switch(rv) {
+  case RADIO_RESULT_ERROR:
+    printf("Radio returned an error\n");
+    break;
+  case RADIO_RESULT_INVALID_VALUE:
+    printf("Value %d is invalid\n", *value);
+    break;
+  case RADIO_RESULT_NOT_SUPPORTED:
+    printf("Param %u not supported\n", param);
+    break;
+  case RADIO_RESULT_OK:
+    break;
+  default:
+    printf("Unknown return value\n");
+    break;
+  }
+
+  return rv;
+}
+/*---------------------------------------------------------------------------*/
+radio_result_t
+set_param(radio_param_t param, radio_value_t value)
+{
+  radio_result_t rv;
+
+  rv = NETSTACK_RADIO.set_value(param, value);
+
+  switch(rv) {
+  case RADIO_RESULT_ERROR:
+    printf("Radio returned an error\n");
+    break;
+  case RADIO_RESULT_INVALID_VALUE:
+    printf("Value %d is invalid\n", value);
+    break;
+  case RADIO_RESULT_NOT_SUPPORTED:
+    printf("Param %u not supported\n", param);
+    break;
+  case RADIO_RESULT_OK:
+    break;
+  default:
+    printf("Unknown return value\n");
+    break;
+  }
+
+  return rv;
+}
 #endif /* CONTIKI_CONF_SETTINGS_MANAGER */

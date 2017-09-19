@@ -12,6 +12,8 @@
  *
  * Note the parameters in this file can be changed without forcing a complete rebuild.
  */
+#include "dev/radio.h"
+ 
 // default settings
 #define CHANNEL_802_15_4          25     // default frequency (11-26) 
 
@@ -79,6 +81,9 @@ extern uint8_t eemem_domain_name[30];
 #else
 #define PARAMS_TXPOWER 0
 #endif
+#ifdef NETSTACK_CONF_RDC 
+#define PARAMS_MACCONF 0
+#endif
 #ifdef EUI64_ADDRESS
 #define PARAMS_EUI64ADDR EUI64_ADDRESS
 #else
@@ -104,6 +109,7 @@ uint8_t params_get_eui64(uint8_t *eui64);
 #define params_get_panid(...)   PARAMS_PANID
 #define params_get_panaddr(...) PARAMS_PANADDR
 #define params_get_txpower(...) PARAMS_TXPOWER
+#define params_get_macconf(...) PARAMS_MACCONF
 #else
 /* Parameters stored in eeprom */
 uint16_t params_get_nodeid(void);
@@ -111,11 +117,16 @@ uint8_t params_get_channel(void);
 uint16_t params_get_panid(void);
 uint16_t params_get_panaddr(void);
 uint8_t params_get_txpower(void);
+uint8_t params_get_macconf(void);
+settings_status_t params_set_macconf(radio_value_t value);
 settings_status_t params_save_nodeid(void);
 settings_status_t params_save_channel(void);
 settings_status_t params_save_panid(void);
 settings_status_t params_save_panaddr(void);
 settings_status_t params_save_txpower(void);
+settings_status_t params_save_macconf(void);
+radio_result_t get_param(radio_param_t param, radio_value_t *value);
+radio_result_t set_param(radio_param_t param, radio_value_t value);
 #endif
 
 #endif /* PARAMS_H_ */
