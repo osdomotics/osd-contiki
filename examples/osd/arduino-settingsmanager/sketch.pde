@@ -41,9 +41,7 @@ void setup (void)
     rest_activate_resource (&res_battery, "s/battery");
     rest_activate_resource (&res_cputemp, "s/cputemp");
     #pragma GCC diagnostic pop
-    
- //   NETSTACK_MAC.off(1);
- //   mcu_sleep_set(128);
+    mcu_sleep_set(128);
 }
 
 void loop (void)
