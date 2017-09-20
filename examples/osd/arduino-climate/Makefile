@@ -10,6 +10,7 @@ CONTIKI=../../../../osd-contiki
 CONTIKI_WITH_IPV6 = 1
 
 CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
+CFLAGS += -DCONTIKI_CONF_SETTINGS_MANAGER=1
 LFLAGS += -lm
 
 PROJECT_SOURCEFILES += ${SKETCH}.cpp Adafruit_HTU21DF.cpp
@@ -45,6 +46,7 @@ SMALL=1
 # REST Engine shall use Erbium CoAP implementation
 APPS += er-coap
 APPS += rest-engine
+APPS += serial-shell
 APPS += arduino
 
 include $(CONTIKI)/Makefile.include

@@ -16,6 +16,9 @@
 extern "C" {
 #include "arduino-process.h"
 #include "rest-engine.h"
+#include "net/netstack.h"
+#include "serial-shell.h"
+#include "shell-merkur.h"
 
 Adafruit_HTU21DF htu = Adafruit_HTU21DF();
 
@@ -33,6 +36,9 @@ void setup (void)
     // switch off the led
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, HIGH);
+    // Seriell Shell
+    serial_shell_init();
+    shell_merkur_init();  
     // htu21d sensor
     if (!htu.begin()) {
       printf("Couldn't find sensor!");
@@ -44,19 +50,21 @@ void setup (void)
     rest_activate_resource (&res_htu21dhum, "s/hum");
     rest_activate_resource (&res_battery, "s/battery");
 #pragma GCC diagnostic pop    
-    mcu_sleep_set(128); // Power consumtion 278uA; average over 20 minutes
+//    mcu_sleep_set(128); // Power consumtion 278uA; average over 20 minutes
 }
 
 // at project-conf.h
 // LOOP_INTERVAL		(30 * CLOCK_SECOND)
 void loop (void)
 {
+
     htu21d_temp = htu.readTemperature();
     htu21d_hum = htu.readHumidity();
     dtostrf(htu21d_temp , 0, 2, htu21d_temp_s );   
     dtostrf(htu21d_hum , 0, 2, htu21d_hum_s );
       
 //  debug only   
-//  printf("Temp: '%s'",htu21d_temp_s);
-//  printf("\t\tHum: '%s'\n",htu21d_hum_s);
+//    printf("Temp: '%s'",htu21d_temp_s);
+//    printf("\t\tHum: '%s'\n",htu21d_hum_s);
+
 }

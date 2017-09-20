@@ -36,9 +36,10 @@
 //#define PLATFORM_HAS_BUTTON  1
 #define PLATFORM_HAS_BATTERY 1
 
-#define SICSLOWPAN_CONF_FRAG	1
 
-#define LOOP_INTERVAL		(30 * CLOCK_SECOND)
+#define LOOP_INTERVAL		(20 * CLOCK_SECOND)
+
+//#define SETTINGS_MAX_SIZE 255
 
 /* Save energy */
 //#define RDC_CONF_PT_YIELD_OFF
@@ -49,12 +50,14 @@
 
 /* Disabling RDC for demo purposes. Core updates often require more memory. */
 /* For projects, optimize memory and enable RDC again. */
-// #undef NETSTACK_CONF_RDC
+//#undef NETSTACK_CONF_RDC
 //#define NETSTACK_CONF_RDC     nullrdc_driver
+//#undef NETSTACK_CONF_MAC
+//#define  NETSTACK_CONF_MAC	nullmac_driver
 
 /* Increase rpl-border-router IP-buffer when using more than 64. */
-#undef REST_MAX_CHUNK_SIZE
-#define REST_MAX_CHUNK_SIZE    64
+//#undef REST_MAX_CHUNK_SIZE
+//#define REST_MAX_CHUNK_SIZE    64
 
 /* Estimate your header size, especially when using Proxy-Uri. */
 /*
@@ -65,7 +68,7 @@
 /* The IP buffer size must fit all other hops, in particular the border router. */
 
 #undef UIP_CONF_BUFFER_SIZE
-#define UIP_CONF_BUFFER_SIZE    256
+#define UIP_CONF_BUFFER_SIZE    192
 
 
 /* Multiplies with chunk size, be aware of memory constraints. */
@@ -84,23 +87,5 @@
 #define COAP_LINK_FORMAT_FILTERING      0
 */
 
-/* Save some memory for the sky platform. */
-/*
-#undef NBR_TABLE_CONF_MAX_NEIGHBORS
-#define NBR_TABLE_CONF_MAX_NEIGHBORS     10
-#undef UIP_CONF_MAX_ROUTES
-#define UIP_CONF_MAX_ROUTES   10
-*/
-
-/* Reduce 802.15.4 frame queue to save RAM. */
-/*
-#undef QUEUEBUF_CONF_NUM
-#define QUEUEBUF_CONF_NUM       4
-*/
-
-/*
-#undef SICSLOWPAN_CONF_FRAG
-#define SICSLOWPAN_CONF_FRAG	1
-*/
 
 #endif /* PROJECT_RPL_WEB_CONF_H_ */
