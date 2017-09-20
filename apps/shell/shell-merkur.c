@@ -77,35 +77,12 @@ SHELL_COMMAND(saverfparam_command,
 	      "saverfparam",
 	      "saverfparam <> save radio parameters txpower, channel, panid to eeprom settingsmanager",
 	      &shell_saverfparam_process);
-PROCESS(shell_s_process, "s");
-SHELL_COMMAND(s_command,
-	      "s",
-	      "s disable mcu_sleep",
-	      &shell_s_process);
 
-/*---------------------------------------------------------------------------*/
-PROCESS_THREAD(shell_s_process, ev, data)
-{
-//  radio_value_t value;
-  const char *newptr;
-
-  PROCESS_BEGIN();
-  shell_strtolong(data, &newptr);
-
-  if(newptr == data) {
-	mcu_sleep_disable();  
-	shell_output_str(&txpower_command, "disable mcusleep", 0);
-  } else {
-	mcu_sleep_enable();  
-	shell_output_str(&txpower_command, "enable mcusleep", 0);
-  }
-  PROCESS_END();
-}
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(shell_txpower_process, ev, data)
 {
   radio_value_t value;
-  char buf[20];
+  char buf[10];
   const char *newptr;
   PROCESS_BEGIN();
 
@@ -129,7 +106,7 @@ PROCESS_THREAD(shell_txpower_process, ev, data)
 PROCESS_THREAD(shell_rfchannel_process, ev, data)
 {
   radio_value_t value;
-  char buf[20];
+  char buf[10];
   const char *newptr;
   PROCESS_BEGIN();
 
@@ -154,7 +131,7 @@ PROCESS_THREAD(shell_rfchannel_process, ev, data)
 PROCESS_THREAD(shell_ccathresholds_process, ev, data)
 {
   radio_value_t value;
-  char buf[20];
+  char buf[10];
   const char *newptr;
   PROCESS_BEGIN();
 
@@ -170,7 +147,7 @@ PROCESS_THREAD(shell_ccathresholds_process, ev, data)
     set_param(RADIO_PARAM_CCA_THRESHOLD, value);
   }
 
-  snprintf(buf, sizeof(buf), "%d  dBm", value);
+  snprintf(buf, sizeof(buf), "%d dBm", value);
   shell_output_str(&rfchannel_command, "CCA Threshold: ", buf);
 
   PROCESS_END();
@@ -179,7 +156,7 @@ PROCESS_THREAD(shell_ccathresholds_process, ev, data)
 PROCESS_THREAD(shell_macconf_process, ev, data)
 {
   radio_value_t value;
-  char buf[20];
+  char buf[10];
   const char *newptr;
   PROCESS_BEGIN();
 
@@ -202,7 +179,7 @@ PROCESS_THREAD(shell_macconf_process, ev, data)
 PROCESS_THREAD(shell_panid_process, ev, data)
 {
   radio_value_t value;
-  char buf[20];
+  char buf[10];
   char *newptr;
   PROCESS_BEGIN();
 
@@ -211,8 +188,8 @@ PROCESS_THREAD(shell_panid_process, ev, data)
   /* If no channel was given on the command line, we print out the
      current channel. */
   if(newptr == data) {
-	if(get_param(RADIO_PARAM_PAN_ID, &value) == RADIO_RESULT_OK) {
-		
+	if(get_param(RADIO_PARAM_PAN_ID, &value) != RADIO_RESULT_OK) {
+	//  printf("error: get_param RADIO_PARAM_PAN_ID\n");
     }
   } else {
     set_param(RADIO_PARAM_PAN_ID, value);
@@ -247,7 +224,7 @@ PROCESS_THREAD(shell_saverfparam_process, ev, data)
 void
 shell_merkur_init(void)
 {
-  shell_ps_init();
+//  shell_ps_init();
   shell_reboot_init();
   shell_register_command(&txpower_command);
   shell_register_command(&rfchannel_command);

@@ -68,7 +68,7 @@
 /* The IP buffer size must fit all other hops, in particular the border router. */
 
 #undef UIP_CONF_BUFFER_SIZE
-#define UIP_CONF_BUFFER_SIZE    256
+#define UIP_CONF_BUFFER_SIZE    192
 
 
 /* Multiplies with chunk size, be aware of memory constraints. */

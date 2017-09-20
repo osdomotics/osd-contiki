@@ -61,7 +61,7 @@ void loop (void)
 
     union {
       settings_key_t key;
-      char bytes[0];
+      char bytes[2];
     } u;
 
     u.key = settings_iter_get_key(iter);
