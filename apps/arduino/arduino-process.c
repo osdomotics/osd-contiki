@@ -119,7 +119,7 @@ void
 mcu_sleep_set(uint8_t value)
 {
 	mcusleepcycleval= value;
-	mcusleepcycle = mcusleepcycleval;
+//	mcusleepcycle = mcusleepcycleval;
 }
 
 PROCESS(arduino_sketch, "Arduino Sketch Wrapper");
