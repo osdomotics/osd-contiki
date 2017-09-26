@@ -40,10 +40,10 @@
 
 /* Save some memory for the sky platform. */
 #undef NBR_TABLE_CONF_MAX_NEIGHBORS
-#define NBR_TABLE_CONF_MAX_NEIGHBORS     20
+#define NBR_TABLE_CONF_MAX_NEIGHBORS     40
 
 #undef UIP_CONF_MAX_ROUTES
-#define UIP_CONF_MAX_ROUTES      20
+#define UIP_CONF_MAX_ROUTES      40
 
 /* Increase rpl-border-router IP-buffer when using more than 64. */
 #undef REST_MAX_CHUNK_SIZE
@@ -66,6 +66,7 @@
 #endif
 
 /*
+#define AES_128_HW_CONF 1
 #undef LLSEC802154_CONF_ENABLED
 #define LLSEC802154_CONF_ENABLED          1
 #undef NETSTACK_CONF_FRAMER
@@ -79,7 +80,6 @@
                               0x04 , 0x05 , 0x06 , 0x07 , \
                               0x08 , 0x09 , 0x0A , 0x0B , \
                               0x0C , 0x0D , 0x0E , 0x0F }
-
 */
 
 #endif /* PROJECT_ROUTER_CONF_H_ */

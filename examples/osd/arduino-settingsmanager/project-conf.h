@@ -45,8 +45,8 @@
 //#define RDC_CONF_PT_YIELD_OFF
 
 /* For Debug: Dont allow MCU sleeping between channel checks */
-//#undef RDC_CONF_MCU_SLEEP
-//#define RDC_CONF_MCU_SLEEP       0
+#undef RDC_CONF_MCU_SLEEP
+#define RDC_CONF_MCU_SLEEP       0
 
 /* Disabling RDC for demo purposes. Core updates often require more memory. */
 /* For projects, optimize memory and enable RDC again. */
@@ -87,5 +87,21 @@
 #define COAP_LINK_FORMAT_FILTERING      0
 */
 
+/*
+#define AES_128_HW_CONF 1
+#undef LLSEC802154_CONF_ENABLED
+#define LLSEC802154_CONF_ENABLED          1
+#undef NETSTACK_CONF_FRAMER
+#define NETSTACK_CONF_FRAMER              noncoresec_framer
+#undef NETSTACK_CONF_LLSEC
+#define NETSTACK_CONF_LLSEC               noncoresec_driver
+#undef NONCORESEC_CONF_SEC_LVL
+#define NONCORESEC_CONF_SEC_LVL           1
+
+#define NONCORESEC_CONF_KEY { 0x00 , 0x01 , 0x02 , 0x03 , \
+                              0x04 , 0x05 , 0x06 , 0x07 , \
+                              0x08 , 0x09 , 0x0A , 0x0B , \
+                              0x0C , 0x0D , 0x0E , 0x0F }
+*/
 
 #endif /* PROJECT_RPL_WEB_CONF_H_ */
