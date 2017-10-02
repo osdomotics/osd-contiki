@@ -174,6 +174,16 @@ typedef unsigned short uip_stats_t;
 #define UIP_CONF_TCP_SPLIT       1
 #define UIP_CONF_DHCP_LIGHT      1
 
+/* rpl routing settings */
+#define RPL_CONF_DEFAULT_LIFETIME 5
+#define RPL_CONF_WITH_MC 1
+#define RPL_CONF_WITH_DAO_ACK 1
+#define RPL_CONF_RPL_REPAIR_ON_DAO_NACK 1
+//#define RPL_CONF_DIO_REFRESH_DAO_ROUTES 1
+#define RPL_CONF_WITH_PROBING 1
+#define RPL_MRHOF_CONF_SQUARED_ETX 1
+#define RPL_CONF_DAG_MC RPL_DAG_MC_ETX
+#define LINK_STATS_CONF_INIT_ETX(stats) guess_etx_from_rssi(stats)
 
 //#if 1 /* No radio cycling */
 #if 0 /* radio cycling */
