@@ -315,6 +315,25 @@ typedef unsigned short uip_stats_t;
 #define CC_CONF_INLINE inline
 #endif
 
+/* mpr: avr-gcc 5.4.0 on gentoo needs this */
+#ifndef DDRE5
+#define DDRE5 DDE5
+#endif
+
+/* mpr: next is for having rpl mesh-networking working */
+#if 1
+//#define RPL_CONF_DEFAULT_LIFETIME 5
+#define RPL_CONF_WITH_MC 1
+//#define RPL_CONF_WITH_DAO_ACK 1
+//#define RPL_CONF_RPL_REPAIR_ON_DAO_NACK 1
+#define RPL_CONF_DIO_REFRESH_DAO_ROUTES 1
+#define RPL_CONF_WITH_PROBING 1
+#define RPL_MRHOF_CONF_SQUARED_ETX 1
+#define RPL_CONF_DAG_MC RPL_DAG_MC_ETX
+
+#define LINK_STATS_CONF_INIT_ETX(stats) guess_etx_from_rssi(stats)
+#endif 
+
 /* include the project config */
 /* PROJECT_CONF_H might be defined in the project Makefile */
 #ifdef PROJECT_CONF_H
