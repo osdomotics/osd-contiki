@@ -32,24 +32,13 @@
 #ifndef PROJECT_RPL_WEB_CONF_H_
 #define PROJECT_RPL_WEB_CONF_H_
 
-
-#ifdef IEEE802154_CONF_PANID
-#undef IEEE802154_CONF_PANID
-#define IEEE802154_CONF_PANID     0xA001 // default panid
-#endif // IEEE802154_CONF_PANID
-
-#ifdef CHANNEL_802_15_4
-#undef CHANNEL_802_15_4
-#define CHANNEL_802_15_4          25     // default frequency (11-26)
-#endif
-
 //#define PLATFORM_HAS_LEDS    1
 //#define PLATFORM_HAS_BUTTON  1
 //#define PLATFORM_HAS_BATTERY 1
 
 #define SICSLOWPAN_CONF_FRAG	1
 
-#define LOOP_INTERVAL		(CLOCK_SECOND)
+#define LOOP_INTERVAL		(CLOCK_SECOND/4)
 #define WIND_SPEEDS             30
 
 /* Save energy */
