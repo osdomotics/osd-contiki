@@ -101,8 +101,14 @@ that are not kept in the directory:
 - ``/part_start``: This resource needs an additional query-parameter
   indicating the partition number, e.g., ``/part_start?part=1`` and
   returns the partition start address in flash.
-- ``active_part``: The partition that is currently booted.
+- ``/active_part``: The partition that is currently booted.
 
+How to use in your own code
+===========================
+
+- add app "ota-update" to the Makefile
+- add #include "ota-update.h"
+- add OTA_ACTIVATE_RESOURCES() to your code to activate the resources
 
 Security
 ========

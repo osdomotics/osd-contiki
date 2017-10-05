@@ -11,7 +11,18 @@ CONTIKI_WITH_IPV6 = 1
 
 CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
 
-PROJECT_SOURCEFILES += res_upload_image.c res_bootloader.c ${SKETCH}.cpp
+PROJECT_SOURCEFILES += ${SKETCH}.cpp
+
+# automatically build RESTful resources
+REST_RESOURCES_DIR = ./resources
+REST_RESOURCES_DIR_COMMON = ../resources-common
+REST_RESOURCES_FILES= $(notdir \
+    $(shell find $(REST_RESOURCES_DIR) -name '*.c') \
+    $(shell find $(REST_RESOURCES_DIR_COMMON) -name '*.c') \
+    )
+
+PROJECTDIRS += $(REST_RESOURCES_DIR) $(REST_RESOURCES_DIR_COMMON)
+PROJECT_SOURCEFILES += $(REST_RESOURCES_FILES)
 
 # variable for Makefile.include
 ifneq ($(TARGET), minimal-net)
@@ -33,7 +44,7 @@ SMALL=1
 # REST Engine shall use Erbium CoAP implementation
 APPS += er-coap
 APPS += rest-engine
-APPS += arduino json-resource json #time
+APPS += arduino json-resource json ota-update
 
 include $(CONTIKI)/Makefile.include
 include $(CONTIKI)/apps/arduino/Makefile.include
