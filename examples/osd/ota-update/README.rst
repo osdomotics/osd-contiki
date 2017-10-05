@@ -106,9 +106,13 @@ that are not kept in the directory:
 How to use in your own code
 ===========================
 
-- add app "ota-update" to the Makefile
-- add #include "ota-update.h"
-- add OTA_ACTIVATE_RESOURCES() to your code to activate the resources
+- add app ``ota-update`` (and possibly ``json`` and ``json-resource``)
+  to your Makefile
+- add ``#include "ota-update.h"`` to your source file
+- add ``OTA_ACTIVATE_RESOURCES();`` to your code to activate the 
+  resources
+
+All above described resources are prefixed with ``ota/``.
 
 Security
 ========
