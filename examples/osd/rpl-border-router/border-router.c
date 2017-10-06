@@ -89,6 +89,11 @@ AUTOSTART_PROCESSES(&border_router_process,&webserver_nogui_process);
 #define BUF_USES_STACK 1
 #endif
 
+#define WEBSERVER_CONF_COPPER_LINKS 1
+#if WEBSERVER_CONF_COPPER_LINKS
+#define BUF_USES_STACK 1
+#endif
+
 PROCESS(webserver_nogui_process, "Web server");
 PROCESS_THREAD(webserver_nogui_process, ev, data)
 {
@@ -247,11 +252,39 @@ PT_THREAD(generate_routes(struct httpd_state *s))
     ADD("/%u (via ", r->length);
     ipaddr_add(uip_ds6_route_nexthop(r));
     if(1 || (r->state.lifetime < 600)) {
-      ADD(") %lus\n", (unsigned long)r->state.lifetime);
+      ADD(") %lus", (unsigned long)r->state.lifetime);
     } else {
-      ADD(")\n");
+      ADD(")");
     }
     SEND_STRING(&s->sout, buf);
+
+#if BUF_USES_STACK
+    bufptr = buf; bufend = bufptr + sizeof(buf);
+#else
+    blen = 0;
+#endif
+
+#if BUF_USES_STACK
+#if WEBSERVER_CONF_COPPER_LINKS
+    ADD(" -&gt; <a href=\"coap://[");
+    ipaddr_add(&r->ipaddr);
+    ADD("]\" target=\"_new\">copper");
+    ADD("</a>");
+#endif
+#else
+#if WEBSERVER_CONF_COPPER_LINKS
+    ADD(" -&gt; <a href=http://[");
+    ipaddr_add(&r->ipaddr);
+    ADD("]\" target=\"_new\">copper");
+    SEND_STRING(&s->sout, buf); //TODO: why tunslip6 needs an output here, wpcapslip does not
+    blen = 0;
+    ADD("</a>");
+#endif
+#endif
+
+    ADD("\n");
+    SEND_STRING(&s->sout, buf);
+
 #if BUF_USES_STACK
     bufptr = buf; bufend = bufptr + sizeof(buf);
 #else
@@ -267,7 +300,7 @@ PT_THREAD(generate_routes(struct httpd_state *s))
 
 #if WEBSERVER_CONF_LOADTIME
   numticks = clock_time() - numticks + 1;
-  ADD(" <i>(%u.%02u sec)</i>",numticks/CLOCK_SECOND,(100*(numticks%CLOCK_SECOND))/CLOCK_SECOND));
+  ADD(" <i>(%u.%02u sec)</i>",numticks/CLOCK_SECOND,(100*(numticks%CLOCK_SECOND))/CLOCK_SECOND);
 #endif
 
   SEND_STRING(&s->sout, buf);

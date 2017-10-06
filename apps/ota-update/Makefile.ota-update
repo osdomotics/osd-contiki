@@ -1,0 +1,1 @@
+ota-update_src = res_bootloader.c res_reboot.c res_upload_image.c
