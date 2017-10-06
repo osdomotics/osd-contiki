@@ -10,6 +10,7 @@ extern "C" {
 #include <stdio.h>
 #include "contiki.h"
 #include "contiki-net.h"
+#include "bootloader_if.h"
 #include "er-coap.h"
 #include "resources.h"
 char resname[] = "update";
@@ -31,5 +32,5 @@ void setup (void)
 
 void loop (void)
 {
-    printf ("Hello\n");
+    printf ("Hello %lu\n",bootloader_get_active_part());
 }
