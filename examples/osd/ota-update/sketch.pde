@@ -3,9 +3,7 @@
  */
 
 extern "C" {
-#include <stdio.h>
 #include "contiki.h"
-#include "contiki-net.h"
 #include "bootloader_if.h"
 #include "er-coap.h"
 #include "ota-update.h"
