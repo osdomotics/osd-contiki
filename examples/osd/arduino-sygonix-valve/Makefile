@@ -1,0 +1,85 @@
+# Set this to the name of your sketch (without extension .pde)
+SKETCH=sketch
+EXE=arduino-example
+
+all: $(EXE)
+
+CONTIKI=../../..
+
+# Contiki IPv6 configuration
+CONTIKI_WITH_IPV6 = 1
+
+CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\" -DARDUINO=100 -I./Adafruit-GFX-Library-master -I./Adafruit_SH1106-master -ffunction-sections -fdata-sections 
+
+LDFLAGS += -Wl,--gc-sections
+
+PROJECT_SOURCEFILES += ${SKETCH}.cpp \
+    Adafruit-GFX-Library-master/Adafruit_GFX.cpp \
+    Adafruit_SH1106-master/Adafruit_SH1106.cpp
+
+#PROJECT_DIRS += Adafruit-GFX-Library-master 
+#PROJECT_DIRS += SH1106-master
+
+# automatically build RESTful resources
+REST_RESOURCES_DIR = ./resources
+REST_RESOURCES_DIR_COMMON = ../resources-common
+REST_RESOURCES_FILES= $(notdir \
+    $(shell find $(REST_RESOURCES_DIR) -name '*.c') \
+    $(shell find $(REST_RESOURCES_DIR_COMMON) -name '*.c') \
+    )
+
+PROJECTDIRS += $(REST_RESOURCES_DIR) $(REST_RESOURCES_DIR_COMMON)
+PROJECT_SOURCEFILES += $(REST_RESOURCES_FILES)
+
+#ADA_GFX_DIR = Adafruit-GFX-Library-master
+#ADA_GFX_FILES = $(shell find $(ADA_GFX_DIR) -name '*.c') \
+#                $(shell find $(ADA_GFX_DIR) -name '*.cpp')
+#
+#PROJECTDIRS += $(ADA_GFX_DIR)
+#PROJECT_SOURCEFILES += $(ADA_GFX_FILES)
+
+#ADA_SSD_DIR = Adafruit_SSD1306-master
+#ADA_SSD_FILES = $(shell find $(ADA_SSD_DIR) -name '*.c') \
+#                $(shell find $(ADA_SSD_DIR) -name '*.cpp')
+#
+#PROJECTDIRS += $(ADA_SSD_DIR)
+#PROJECT_SOURCEFILES += $(ADA_SSD_FILES)
+
+
+# variable for Makefile.include
+ifneq ($(TARGET), minimal-net)
+CFLAGS += -DUIP_CONF_IPV6_RPL=1
+else
+# minimal-net does not support RPL under Linux and is mostly used to test CoAP only
+${info INFO: compiling without RPL}
+CFLAGS += -DUIP_CONF_IPV6_RPL=0
+CFLAGS += -DHARD_CODED_ADDRESS=\"fdfd::10\"
+${info INFO: compiling with large buffers}
+CFLAGS += -DUIP_CONF_BUFFER_SIZE=2048
+CFLAGS += -DREST_MAX_CHUNK_SIZE=1024
+CFLAGS += -DCOAP_MAX_HEADER_SIZE=640
+endif
+
+# linker optimizations
+SMALL=1
+
+
+# REST Engine shall use Erbium CoAP implementation
+APPS += er-coap
+APPS += rest-engine
+APPS += arduino json json-resource
+
+include $(CONTIKI)/Makefile.include
+include $(CONTIKI)/apps/arduino/Makefile.include
+
+$(CONTIKI)/tools/tunslip6:      $(CONTIKI)/tools/tunslip6.c
+	(cd $(CONTIKI)/tools && $(MAKE) tunslip6)
+
+connect-router: $(CONTIKI)/tools/tunslip6
+	sudo $(CONTIKI)/tools/tunslip6 aaaa::1/64
+
+connect-router-cooja:   $(CONTIKI)/tools/tunslip6
+	sudo $(CONTIKI)/tools/tunslip6 -a 127.0.0.1 aaaa::1/64
+
+connect-minimal:
+	sudo ip address add fdfd::1/64 dev tap0
