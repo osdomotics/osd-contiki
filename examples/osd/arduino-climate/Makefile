@@ -48,6 +48,8 @@ APPS += er-coap
 APPS += rest-engine
 APPS += serial-shell
 APPS += arduino
+APPS += json-resource 
+APPS += json ota-update
 
 include $(CONTIKI)/Makefile.include
 include $(CONTIKI)/apps/arduino/Makefile.include

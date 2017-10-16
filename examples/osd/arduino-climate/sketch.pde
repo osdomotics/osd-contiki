@@ -19,6 +19,7 @@ extern "C" {
 #include "net/netstack.h"
 #include "serial-shell.h"
 #include "shell-merkur.h"
+#include "ota-update.h"
 
 Adafruit_HTU21DF htu = Adafruit_HTU21DF();
 
@@ -45,6 +46,7 @@ void setup (void)
     }
     // init coap resourcen
     rest_init_engine ();
+    OTA_ACTIVATE_RESOURCES();
 #pragma GCC diagnostic ignored "-Wwrite-strings"
     rest_activate_resource (&res_htu21dtemp, "s/temp");
     rest_activate_resource (&res_htu21dhum, "s/hum");
