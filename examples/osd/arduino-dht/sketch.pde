@@ -16,6 +16,7 @@
 extern "C" {
 #include "arduino-process.h"
 #include "rest-engine.h"
+#include "net/netstack.h"
 
 extern resource_t res_dhtatemp, res_dhtahum, res_battery;
 extern resource_t res_dhtbtemp, res_dhtbhum;
@@ -60,6 +61,7 @@ char  dhtc_temp_s[8];
 
 void setup (void)
 {
+//	NETSTACK_MAC.off(1); // reciever always on
 	printf("DHT Sensor\n");
     // switch off the led
     pinMode(LED_PIN, OUTPUT);
