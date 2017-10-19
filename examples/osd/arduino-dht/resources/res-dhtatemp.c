@@ -45,7 +45,7 @@
 static void res_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 
 /* A simple getter example. Returns the reading from the sensor with a simple etag */
-RESOURCE(res_htu21dtemp,
+RESOURCE(res_dhtatemp,
          "title=\"Temperature status\";rt=\"Temperatur\"",
          res_get_handler,
          NULL,
