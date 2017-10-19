@@ -11,32 +11,43 @@
  */
 
 #include <Wire.h>
-#include "Adafruit_HTU21DF.h"
+#include "DHT.h"
 
 extern "C" {
 #include "arduino-process.h"
 #include "rest-engine.h"
 
-Adafruit_HTU21DF htu = Adafruit_HTU21DF();
-
 extern resource_t res_htu21dtemp, res_htu21dhum, res_battery;
-float htu21d_hum;
-float htu21d_temp;
-char  htu21d_hum_s[8];
-char  htu21d_temp_s[8];
 
 #define LED_PIN 4
+
+// Uncomment whatever type you're using!
+//#define DHTTYPE DHT11   // DHT 11
+#define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
+//#define DHTTYPE DHT21   // DHT 21 (AM2301)
+
+// Connect pin 1 (on the left) of the sensor to +3.3V
+// Connect pin 2 of the sensor to whatever your DHTPIN is
+// Connect pin 4 (on the right) of the sensor to GROUND
+// Connect a 10K resistor from pin 2 (data) to pin 1 (power) o
+#define DHTPIN 9     // what digital pin we're connected to
+DHT dht(DHTPIN, DHTTYPE);
+
+float dht_hum;
+float dht_temp;
+char  dht_hum_s[8];
+char  dht_temp_s[8];
+
 }
 
 void setup (void)
 {
+	printf("DHT Sensor\n");
     // switch off the led
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, HIGH);
-    // htu21d sensor
-    if (!htu.begin()) {
-      printf("Couldn't find sensor!");
-    }
+    // DHT sensor
+    dht.begin();
     // init coap resourcen
     rest_init_engine ();
 #pragma GCC diagnostic ignored "-Wwrite-strings"
@@ -51,12 +62,22 @@ void setup (void)
 // LOOP_INTERVAL		(30 * CLOCK_SECOND)
 void loop (void)
 {
-    htu21d_temp = htu.readTemperature();
-    htu21d_hum = htu.readHumidity();
-    dtostrf(htu21d_temp , 0, 2, htu21d_temp_s );   
-    dtostrf(htu21d_hum , 0, 2, htu21d_hum_s );
+    // Reading temperature or humidity takes about 250 milliseconds!
+    // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
+    dht_hum = dht.readHumidity();
+    // Read temperature as Celsius (the default)
+    dht_temp = dht.readTemperature();
+
+    // Check if any reads failed and exit early (to try again).
+    if (isnan(dht_hum) || isnan(dht_temp)) {
+      printf("Failed to read from DHT sensor!\n");
+      return;
+    }
+
+    dtostrf(dht_temp , 0, 2, dht_temp_s );   
+    dtostrf(dht_hum , 0, 2, dht_hum_s );
       
 //  debug only   
-//  printf("Temp: '%s'",htu21d_temp_s);
-//  printf("\t\tHum: '%s'\n",htu21d_hum_s);
+    printf("Temp: '%s'",dht_temp_s);
+    printf("\t\tHum: '%s'\n",dht_hum_s);
 }
