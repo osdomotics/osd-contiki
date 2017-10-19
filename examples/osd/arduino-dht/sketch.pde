@@ -32,13 +32,13 @@ extern resource_t res_dhtctemp, res_dhtchum;
 // Connect pin 2 of the sensor to whatever your DHTPIN is
 // Connect pin 4 (on the right) of the sensor to GROUND
 // Connect a 10K resistor from pin 2 (data) to pin 1 (power) o
-#define DHTPINA 9     // what digital pin we're connected to
+#define DHTPINA 7     // what digital pin we're connected to
 DHT dhta(DHTPINA, DHTTYPE);
 
 #define DHTPINB 8     // what digital pin we're connected to
 DHT dhtb(DHTPINB, DHTTYPE);
 
-#define DHTPINC 7     // what digital pin we're connected to
+#define DHTPINC 9     // what digital pin we're connected to
 DHT dhtc(DHTPINC, DHTTYPE);
 
 float dhta_hum;
@@ -86,6 +86,7 @@ void setup (void)
 // LOOP_INTERVAL		(30 * CLOCK_SECOND)
 void loop (void)
 {
+    int errdht=0;
     // Reading temperature or humidity takes about 250 milliseconds!
     // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
     dhta_hum = dhta.readHumidity();
@@ -99,16 +100,19 @@ void loop (void)
     // Check if any reads failed and exit early (to try again).
     if (isnan(dhta_hum) || isnan(dhta_temp)) {
       printf("Failed to read from DHTa sensor!\n");
-      return;
+      errdht=1;
     }
     if (isnan(dhtb_hum) || isnan(dhtb_temp)) {
       printf("Failed to read from DHTb sensor!\n");
-      return;
+      errdht=1;
     }
     if (isnan(dhtc_hum) || isnan(dhtc_temp)) {
       printf("Failed to read from DHTc sensor!\n");
-      return;
+      errdht=1;
     }
+    if (errdht){
+		return;
+	}
 
     dtostrf(dhta_temp , 0, 2, dhta_temp_s );   
     dtostrf(dhta_hum , 0, 2, dhta_hum_s );

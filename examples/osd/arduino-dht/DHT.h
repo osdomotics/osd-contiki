@@ -8,6 +8,7 @@ written by Adafruit Industries
 
 #include "Arduino.h"
 
+
 // Uncomment to enable printing out nice debug messages.
 //#define DHT_DEBUG
 
