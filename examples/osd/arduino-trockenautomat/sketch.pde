@@ -61,8 +61,8 @@ char  dhtc_temp_s[8];
 
 void setup (void)
 {
-//	NETSTACK_MAC.off(1); // reciever always on
-	printf("DHT Sensor\n");
+	NETSTACK_MAC.off(1); // reciever always on
+	printf("Arduino-Trockenautomat v1.0\n");
     // switch off the led
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, HIGH);
@@ -81,7 +81,7 @@ void setup (void)
     rest_activate_resource (&res_dhtchum, "s/humc");
     rest_activate_resource (&res_battery, "s/battery");
 #pragma GCC diagnostic pop    
-    mcu_sleep_set(128); // Power consumtion 278uA; average over 20 minutes
+//    mcu_sleep_set(128); // Power consumtion 278uA; average over 20 minutes
 }
 
 // at project-conf.h
