@@ -13,7 +13,6 @@ extern "C" {
 #include <stdio.h>
 #include "arduino-process.h"
 #include "rest-engine.h"
-#include "resources.h"
 #include "ota-update.h"
 
 #define DEBUG 0
@@ -279,17 +278,19 @@ void loop (void)
       ws_max_speed_lo = ws_max_speed % 100;
       ws_max_speed_hi = ws_max_speed / 100;
 
-      PRINTF ("speed: %d.%02d %s, dir: %d, status: %s, max: %d.%02d\n"
+      PRINTF ("speed: %d.%02d %s, dir: %d, status: %s, max: %d.%02d, Vs: %d.%02d\n"
               , ws_speed_hi, ws_speed_lo, ws_unit, ws_direction, ws_status
-              , ws_max_speed_hi, ws_max_speed_lo);
+              , ws_max_speed_hi, ws_max_speed_lo, supply_voltage_hi
+	      , supply_voltage_lo
+	      );
 
       state = 0;
       break;
   } /* end switch (state) */
 
-  idx = analogRead (A2);
+  idx = analogRead (A1);
   idx *= 1000;
-  idx /= 565;
+  idx /= 572;
   supply_voltage_lo = idx % 100;
   supply_voltage_hi = idx / 100;
 } /* end loop */
