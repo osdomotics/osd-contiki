@@ -17,14 +17,11 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#if defined(ARDUINO_ARCH_AVR)
-
 #include <avr/interrupt.h>
-extern "C" {
-  #include "Arduino.h"
-}
-
+#include "Arduino.h"
 #include "Servo.h"
+
+#if defined(ARDUINO_ARCH_AVR)
 
 #define usToTicks(_us)    (( clockCyclesPerMicrosecond()* _us) / 8)     // converts microseconds to tick (assumes prescale of 8)  // 12 Aug 2009
 #define ticksToUs(_ticks) (( (unsigned)_ticks * 8)/ clockCyclesPerMicrosecond() ) // converts from ticks back to microseconds

@@ -9,27 +9,23 @@
  * Note that for a normal arduino sketch you won't have to include any
  * of the contiki-specific files here, the sketch should just work.
  */
+#include "Servo.h"
 
 extern "C" {
-
 #include "arduino-process.h"
 #include "rest-engine.h"
 #include "net/netstack.h"
-#include "Servo.h"
 
 extern resource_t res_led, res_battery, res_cputemp;
+}
 
 uint8_t led_pin=4;
 uint8_t led_status;
 
-
 int potpin = A5;  // analog pin used to connect the potentiometer
 int val;    // variable to read the value from the analog pin
 
-Servo servo();  // create servo object to control a servo
-
-}
-
+Servo servo;  // create servo object to control a servo
 
 void setup (void)
 {
@@ -48,7 +44,7 @@ void setup (void)
     #pragma GCC diagnostic pop
     
  //   NETSTACK_MAC.off(1);
-    mcu_sleep_set(128);
+ //   mcu_sleep_set(128);
 }
 
 void loop (void)
