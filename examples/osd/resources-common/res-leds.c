@@ -37,9 +37,6 @@
  */
 
 #include "contiki.h"
-
-#if PLATFORM_HAS_LEDS
-
 #include <string.h>
 #include "rest-engine.h"
 #include "dev/leds.h"
@@ -105,4 +102,4 @@ res_post_put_handler(void *request, void *response, uint8_t *buffer, uint16_t pr
     REST.set_response_status(response, REST.status.BAD_REQUEST);
   }
 }
-#endif /* PLATFORM_HAS_LEDS */
+

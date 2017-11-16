@@ -37,7 +37,6 @@
  */
 
 #include "contiki.h"
-
 #include <string.h>
 #include "rest-engine.h"
 #include "Arduino.h"
@@ -80,4 +79,3 @@ res_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferr
     REST.set_response_payload(response, msg, strlen(msg));
   }
 }
-
