@@ -21,6 +21,7 @@ osd/arduino-relaybox/osd-merkur-128            \
 osd/arduino-rfid-rc522/osd-merkur-128          \
 osd/arduino-roomalert/osd-merkur-128           \
 osd/arduino-sketch/osd-merkur-128              \
+osd/arduino-settingsmanager/osd-merkur-128     \
 osd/arduino-wateralert/osd-merkur-128          \
 osd/arduino-weather/osd-merkur-128             \
 osd/climate/osd-merkur-128                     \
@@ -50,6 +51,7 @@ osd/arduino-roomalert/osd-merkur-256           \
 osd/arduino-sketch/osd-merkur-256              \
 osd/arduino-wateralert/osd-merkur-256          \
 osd/arduino-weather/osd-merkur-256             \
+osd/arduino-settingsmanager/osd-merkur-256     \
 osd/climate/osd-merkur-256                     \
 osd/climate2/osd-merkur-256                    \
 osd/servo-sensor/osd-merkur-256                \
