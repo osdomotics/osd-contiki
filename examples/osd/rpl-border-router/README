@@ -1,8 +1,14 @@
 OSDOMOTIS
 
-www.osdomotics.com
+wiki.osdomotics.com
 
-Plattform: osd-merkur
+Plattform: osd-merkur-256
+-------------------------
+make clean TARGET=osd-merkur-256 flash
+
+
+Plattform: osd-merkur-128
+-------------------------
 
 ./run.sh
 sudo ./flash.sh
