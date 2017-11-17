@@ -20,6 +20,8 @@ REST_RESOURCES_DIR_COMMON = ../resources-common
 REST_RESOURCES_FILES= $(notdir \
     $(shell find $(REST_RESOURCES_DIR) -name '*.c') \
     $(shell find $(REST_RESOURCES_DIR_COMMON) -name '*.c') \
+    $(shell find $(REST_RESOURCES_DIR) -name '*.cpp') \
+    $(shell find $(REST_RESOURCES_DIR_COMMON) -name '*.cpp') \
     )
 
 PROJECTDIRS += $(REST_RESOURCES_DIR) $(REST_RESOURCES_DIR_COMMON)
