@@ -16,7 +16,7 @@ extern "C" {
 #include "rest-engine.h"
 #include "net/netstack.h"
 
-extern resource_t res_led, res_battery, res_cputemp;
+extern resource_t res_led, res_battery, res_cputemp, res_servo;
 }
 
 uint8_t led_pin=4;
@@ -41,6 +41,7 @@ void setup (void)
     rest_activate_resource (&res_led, "s/led");
     rest_activate_resource (&res_battery, "s/battery");
     rest_activate_resource (&res_cputemp, "s/cputemp");
+    rest_activate_resource (&res_servo, "a/servo");
     #pragma GCC diagnostic pop
     
  //   NETSTACK_MAC.off(1);
