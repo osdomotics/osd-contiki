@@ -18,8 +18,6 @@ extern "C" {
 
 uint8_t  pwm             = 128;
 uint8_t  period_100ms    = 1; /* 1/10 second (period_100ms * 100ms) */
-uint16_t analog2_voltage = 0;
-uint16_t analog5_voltage = 0;
 }
 
 void setup (void)
@@ -28,17 +26,14 @@ void setup (void)
     rest_init_engine ();
     rest_activate_resource (&res_led_pwm,         (char *)"led/pwm");
     rest_activate_resource (&res_led_period,      (char *)"led/period");
-    rest_activate_resource (&res_analog2_voltage, (char *)"analog/2");
-    rest_activate_resource (&res_analog5_voltage, (char *)"analog/5");
 }
 
 void loop (void)
 {
     /* Use 255 - pwm, LED on merkur-board is wired to +3.3V */
-    analogWrite (LED_PIN, 255 - pwm);
-    analogWrite (LED_STRING, pwm);
-    analog2_voltage = analogRead (A2) * 1600L / 1023L;
-    analog5_voltage = analogRead (A5) * 1600L / 1023L;
+    analogWrite (LED_PIN, 255 - pwm); // Merkurboard LED
+    analogWrite (LED_STRING, pwm);    // Grove Modul
+
     printf ("clock : %lu\nmillis: %lu\n", clock_time (), millis ());
     delay (period_100ms * 100);
     analogWrite (LED_PIN, 255); /* OFF: LED on merkur-board is wired to +3.3V */
