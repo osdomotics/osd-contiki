@@ -57,8 +57,6 @@
 
 #include <stdint.h>
 
-#define IEEE802154_CONF_PANID     0xABCD // default panid
-
 /* The AVR tick interrupt usually is done with an 8 bit counter around 128 Hz.
  * 125 Hz needs slightly more overhead during the interrupt, as does a 32 bit
  * clock_time_t.
@@ -175,6 +173,7 @@ typedef unsigned short uip_stats_t;
 #define UIP_CONF_DHCP_LIGHT      1
 
 /* rpl routing settings */
+#if 0
 #define RPL_CONF_DEFAULT_LIFETIME 5
 #define RPL_CONF_WITH_MC 1
 #define RPL_CONF_WITH_DAO_ACK 1
@@ -184,6 +183,7 @@ typedef unsigned short uip_stats_t;
 #define RPL_MRHOF_CONF_SQUARED_ETX 1
 #define RPL_CONF_DAG_MC RPL_DAG_MC_ETX
 #define LINK_STATS_CONF_INIT_ETX(stats) guess_etx_from_rssi(stats)
+#endif
 
 //#if 1 /* No radio cycling */
 #if 0 /* radio cycling */
