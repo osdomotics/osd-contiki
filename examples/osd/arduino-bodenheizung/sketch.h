@@ -5,6 +5,6 @@ struct dstemp{
 	float ftemp;
 	char  stemp[8];
 };
-extern struct dstemp ds1820[7];
+extern struct dstemp ds1820[8];
 
 #endif

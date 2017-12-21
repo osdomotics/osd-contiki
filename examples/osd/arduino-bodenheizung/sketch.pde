@@ -32,14 +32,14 @@ OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature dsensors(&oneWire);
 
 // arrays to hold device addresses
-DeviceAddress insideThermometer, outsideThermometer;
+DeviceAddress insideThermometer0, insideThermometer1, insideThermometer2, insideThermometer3, insideThermometer4, insideThermometer5, insideThermometer6, insideThermometer7;
 
 extern resource_t res_dtemp1, res_dtemp2, res_dtemp3, res_dtemp4, res_dtemp5, res_dtemp6, res_dtemp7, res_dtemp8, res_battery;
 float d_temp;
 char  d_temp_s[8];
 
 // sketch.h
-struct dstemp ds1820[7];
+struct dstemp ds1820[8];
 
 #define LED_PIN 4
 }
@@ -113,8 +113,14 @@ void setup (void)
   // the devices on your bus (and assuming they don't change).
   // 
   // method 1: by index
-  if (!dsensors.getAddress(insideThermometer, 0)) printf("Unable to find address for Device 0\n"); 
-  if (!dsensors.getAddress(outsideThermometer, 1)) printf("Unable to find address for Device 1\n"); 
+  if (!dsensors.getAddress(insideThermometer0, 0)) printf("Unable to find address for Device 0\n"); 
+  if (!dsensors.getAddress(insideThermometer1, 1)) printf("Unable to find address for Device 1\n"); 
+  if (!dsensors.getAddress(insideThermometer2, 2)) printf("Unable to find address for Device 2\n"); 
+  if (!dsensors.getAddress(insideThermometer3, 3)) printf("Unable to find address for Device 3\n"); 
+  if (!dsensors.getAddress(insideThermometer4, 4)) printf("Unable to find address for Device 4\n"); 
+  if (!dsensors.getAddress(insideThermometer5, 5)) printf("Unable to find address for Device 5\n"); 
+  if (!dsensors.getAddress(insideThermometer6, 6)) printf("Unable to find address for Device 6\n"); 
+  if (!dsensors.getAddress(insideThermometer7, 7)) printf("Unable to find address for Device 7\n"); 
 
   // method 2: search()
   // search() looks for the next device. Returns 1 if a new address has been
@@ -132,24 +138,79 @@ void setup (void)
 
   // show the addresses we found on the bus
   printf("Device 0 Address: ");
-  printAddress(insideThermometer);
+  printAddress(insideThermometer0);
   printf("\n");
 
   printf("Device 1 Address: ");
-  printAddress(outsideThermometer);
+  printAddress(insideThermometer1);
+  printf("\n");
+
+  printf("Device 2 Address: ");
+  printAddress(insideThermometer2);
+  printf("\n");
+
+  printf("Device 3 Address: ");
+  printAddress(insideThermometer3);
+  printf("\n");
+
+  printf("Device 4 Address: ");
+  printAddress(insideThermometer4);
+  printf("\n");
+
+  printf("Device 5 Address: ");
+  printAddress(insideThermometer5);
+  printf("\n");
+
+  printf("Device 6 Address: ");
+  printAddress(insideThermometer6);
+  printf("\n");
+
+  printf("Device 7 Address: ");
+  printAddress(insideThermometer7);
   printf("\n");
 
   // set the resolution to 9 bit
-  dsensors.setResolution(insideThermometer, 9);
-  dsensors.setResolution(outsideThermometer, 9);
+  dsensors.setResolution(insideThermometer0, 9);
+  dsensors.setResolution(insideThermometer1, 9);
+  dsensors.setResolution(insideThermometer2, 9);
+  dsensors.setResolution(insideThermometer3, 9);
+  dsensors.setResolution(insideThermometer4, 9);
+  dsensors.setResolution(insideThermometer5, 9);
+  dsensors.setResolution(insideThermometer6, 9);
+  dsensors.setResolution(insideThermometer7, 9);
 
   printf("Device 0 Resolution: ");
-  printf("%d",dsensors.getResolution(insideThermometer)); 
+  printf("%d",dsensors.getResolution(insideThermometer0)); 
   printf("\n");
 
   printf("Device 1 Resolution: ");
-  printf("%d",dsensors.getResolution(outsideThermometer)); 
+  printf("%d",dsensors.getResolution(insideThermometer1)); 
   printf("\n");
+
+  printf("Device 2 Resolution: ");
+  printf("%d",dsensors.getResolution(insideThermometer2)); 
+  printf("\n");
+
+  printf("Device 3 Resolution: ");
+  printf("%d",dsensors.getResolution(insideThermometer3)); 
+  printf("\n");
+
+  printf("Device 4 Resolution: ");
+  printf("%d",dsensors.getResolution(insideThermometer4)); 
+  printf("\n");
+
+  printf("Device 5 Resolution: ");
+  printf("%d",dsensors.getResolution(insideThermometer5)); 
+  printf("\n");
+
+  printf("Device 6 Resolution: ");
+  printf("%d",dsensors.getResolution(insideThermometer6)); 
+  printf("\n");
+
+  printf("Device 7 Resolution: ");
+  printf("%d",dsensors.getResolution(insideThermometer7)); 
+  printf("\n");
+
     // init coap resourcen
     rest_init_engine ();
     #pragma GCC diagnostic ignored "-Wwrite-strings"
@@ -177,8 +238,14 @@ void loop (void)
       printf("DONE\n");
 
       // print the device information
-      printData(insideThermometer,0);
-      printData(outsideThermometer,1);
+      printData(insideThermometer0,0);
+      printData(insideThermometer1,1);
+      printData(insideThermometer2,2);
+      printData(insideThermometer3,3);
+      printData(insideThermometer4,4);
+      printData(insideThermometer5,5);
+      printData(insideThermometer6,6);
+      printData(insideThermometer7,7);
       mcu_sleep_on();
    
 //  debug only 
