@@ -56,8 +56,6 @@
 
 #include <stdint.h>
 
-#define IEEE802154_CONF_PANID     0xABCD // default panid
-
 /* The AVR tick interrupt usually is done with an 8 bit counter around 128 Hz.
  * 125 Hz needs slightly more overhead during the interrupt, as does a 32 bit
  * clock_time_t.
