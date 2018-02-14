@@ -38,10 +38,6 @@
 //#define PLATFORM_HAS_TEMPERATURE   1
 #define PLATFORM_HAS_BATTERY 1
 
-/* Some platforms have weird includes. */
-// #undef IEEE802154_CONF_PANID
-// #define IEEE802154_CONF_PANID 0xAAAA
-
 /* For Debug: Dont allow MCU sleeping between channel checks */
 #undef RDC_CONF_MCU_SLEEP
 #define RDC_CONF_MCU_SLEEP       0

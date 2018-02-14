@@ -43,16 +43,6 @@
    #define PLATFORM_HAS_BATTERY 1
    #define PLATFORM_HAS_BUTTON 1
 
-/* Custom channel and PAN ID configuration for your project. */
-/*
-   #undef RF_CHANNEL
-   #define RF_CHANNEL                     26
-
-   #undef IEEE802154_CONF_PANID
-   #define IEEE802154_CONF_PANID          0xABCD
- */
-
-
 /* For Debug: Dont allow MCU sleeping between channel checks */
 //#undef RDC_CONF_MCU_SLEEP
 //#define RDC_CONF_MCU_SLEEP       0

@@ -42,15 +42,6 @@
    #define PLATFORM_HAS_LEDS   1
    #define PLATFORM_HAS_BATTERY 1
 
-/* Custom channel and PAN ID configuration for your project. */
-/*
-   #undef RF_CHANNEL
-   #define RF_CHANNEL                     26
-
-   #undef IEEE802154_CONF_PANID
-   #define IEEE802154_CONF_PANID          0xABCD
- */
-
 /* IP buffer size must match all other hops, in particular the border router. */
 
    #undef UIP_CONF_BUFFER_SIZE
