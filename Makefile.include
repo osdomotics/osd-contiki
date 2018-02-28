@@ -304,6 +304,25 @@ endif
 %.flashprof: %.$(TARGET)
 	$(NM) -S -td --size-sort $< | grep -i " [t] " | cut -d' ' -f2,4
 
+viewconf:
+	@echo "----------------- Make variables: --------------"
+	@echo "##### \"TARGET\": ________________________________ $(TARGET)"
+	@echo "##### \"BOARD\": _________________________________ $(BOARD)"
+	@echo "##### \"MAKE_MAC\": ______________________________ $(MAKE_MAC)"
+	@echo "##### \"MAKE_NET\": ______________________________ $(MAKE_NET)"
+	@echo "##### \"MAKE_ROUTING\": __________________________ $(MAKE_ROUTING)"
+ifdef MAKE_COAP_DTLS_KEYSTORE
+	@echo "##### \"MAKE_COAP_DTLS_KEYSTORE\": _______________ $(MAKE_COAP_DTLS_KEYSTORE)"
+endif
+	@echo "----------------- C variables: -----------------"
+	$(Q)$(CC) $(CFLAGS) -E $(CONTIKI)/tools/viewconf.c | grep \#\#\#\#\#
+	@echo "------------------------------------------------"
+	@echo "'==' Means the flag is set to a given a value"
+	@echo "'->' Means the flag is unset, but will default to a given value"
+	@echo "'><' Means the flag is unset and has no default value"
+	@echo "To view more Make variables, edit $(CONTIKI)/Makefile.include, rule 'viewconf'"
+	@echo "To view more C variables, edit $(CONTIKI)/tools/viewconf.c"
+	
 # Don't treat %.$(TARGET) as an intermediate file because it is
 # in fact the primary target.
 .PRECIOUS: %.$(TARGET)
