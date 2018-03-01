@@ -98,7 +98,7 @@ extern resource_t res_sht11;
 void 
 hw_init()
 {
-#if defined (PLATFORM_HAS_LEDS)
+#if PLATFORM_HAS_LEDS
  leds_off(LEDS_RED);
 #endif
 }
