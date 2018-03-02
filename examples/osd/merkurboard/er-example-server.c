@@ -93,7 +93,7 @@ extern resource_t res_radio;
 void 
 hw_init()
 {
-#if defined (PLATFORM_HAS_LEDS)
+#if PLATFORM_HAS_LEDS
 leds_arch_init();
 LEDS_OFF();
 #endif
