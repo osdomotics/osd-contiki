@@ -1,0 +1,42 @@
+/*
+ * Sample e-paper arduino sketch using contiki features.
+ * We turn the LED off 
+ * 
+ * Note that for a normal arduino sketch you won't have to include any
+ * of the contiki-specific files here, the sketch should just work.
+ */
+
+extern "C" {
+#include "arduino-process.h"
+#include "rest-engine.h"
+#include "net/netstack.h"
+
+extern resource_t res_led, res_battery, res_cputemp;
+
+uint8_t led_pin=4;
+uint8_t led_status;
+}
+
+void setup (void)
+{
+    // switch off the led
+    pinMode(led_pin, OUTPUT);
+    digitalWrite(led_pin, HIGH);
+    led_status=0;
+    // init coap resourcen
+    rest_init_engine ();
+    #pragma GCC diagnostic ignored "-Wwrite-strings"
+    rest_activate_resource (&res_led, "s/led");
+    rest_activate_resource (&res_battery, "s/battery");
+    rest_activate_resource (&res_cputemp, "s/cputemp");
+    #pragma GCC diagnostic pop
+    
+ //   NETSTACK_MAC.off(1);
+    mcu_sleep_set(128);
+}
+
+void loop (void)
+{
+
+
+}

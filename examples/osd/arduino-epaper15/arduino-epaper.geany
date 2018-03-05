@@ -1,0 +1,53 @@
+[file_prefs]
+final_new_line=true
+ensure_convert_new_lines=false
+strip_trailing_spaces=false
+replace_tabs=false
+
+[indentation]
+indent_width=4
+indent_type=1
+indent_hard_tab_width=8
+detect_indent=false
+detect_indent_width=false
+indent_mode=2
+
+[project]
+name=arduino-epaper
+base_path=/home/harald/install/osd-contiki/examples/osd/arduino-epaper15/
+description=
+file_patterns=
+
+[long line marker]
+long_line_behaviour=1
+long_line_column=72
+
+[files]
+current_page=0
+FILE_NAME_0=1339;C++;0;EUTF-8;1;1;0;%2Fhome%2Fharald%2Finstall%2Fosd-contiki%2Fexamples%2Fosd%2Farduino-bodenheizung%2Fsketch.pde;0;4
+
+[VTE]
+last_dir=/home/harald
+
+[build-menu]
+NF_00_LB=_Make
+NF_00_CM=make TARGET=osd-merkur-256
+NF_00_WD=
+NF_01_LB=Make flash
+NF_01_CM=make TARGET=osd-merkur-256 flash
+NF_01_WD=
+NF_03_LB=Make Clean
+NF_03_CM=make clean TARGET=osd-merkur-256
+NF_03_WD=
+C++FT_00_LB=_Kompilieren
+C++FT_00_CM=make TARGET=osd-merkur-256
+C++FT_00_WD=
+C++FT_01_LB=_Erstellen
+C++FT_01_CM=make TARGET=osd-merkur-256 flash
+C++FT_01_WD=
+filetypes=C++;
+
+[editor]
+line_wrapping=false
+line_break_column=72
+auto_continue_multiline=true
