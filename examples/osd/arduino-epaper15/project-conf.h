@@ -32,7 +32,7 @@
 #ifndef PROJECT_RPL_WEB_CONF_H_
 #define PROJECT_RPL_WEB_CONF_H_
 
-#define LOOP_INTERVAL		(30 * CLOCK_SECOND)
+#define LOOP_INTERVAL		(1* CLOCK_SECOND)
 
 
 /* For Debug: Dont allow MCU sleeping between channel checks */
