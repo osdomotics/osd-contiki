@@ -11,7 +11,7 @@ CONTIKI_WITH_IPV6 = 1
 
 CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
 
-PROJECT_SOURCEFILES += ${SKETCH}.cpp
+PROJECT_SOURCEFILES += ${SKETCH}.cpp epd1in54.cpp epdif.cpp epdpaint.cpp font8.c font24.c font20.c font16.c font12.c imagedata.cpp
 
 # automatically build RESTful resources
 REST_RESOURCES_DIR = ./resources
