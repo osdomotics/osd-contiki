@@ -24,17 +24,11 @@ uint8_t led_status;
 #define COLORED     0
 #define UNCOLORED   1
 
-/**
-  * Due to RAM not enough in Arduino UNO, a frame buffer is not allowed.
-  * In this case, a smaller image buffer is allocated and you have to 
-  * update a partial display several times.
-  * 1 byte = 8 pixels, therefore you have to set 8*N pixels at a time.
-  */
 unsigned char image[1024];
 Paint paint(image, 0, 0);    // width should be the multiple of 8 
 Epd epd;
 
-long second=-2;
+long second=-3;
 
 void setup (void)
 {
@@ -53,6 +47,7 @@ void setup (void)
     
  //   NETSTACK_MAC.off(1);
  //    mcu_sleep_set(128);
+ 
     printf("e-Paper init");
     // e-paper init
     if (epd.Init(lut_full_update) != 0) {
@@ -71,12 +66,7 @@ void setup (void)
     epd.DisplayFrame();
     epd.ClearFrameMemory(0xFF);   // bit set = white, bit reset = black
     epd.DisplayFrame();
-
-    if (epd.Init(lut_partial_update) != 0) {
-       printf("e-Paper init failed");
-       return;
-    }
-
+    
 }
 
 void loop (void)
@@ -84,6 +74,13 @@ void loop (void)
   char time_string[] = {'0', '0', ':', '0', '0', '\0'};
   
     second ++;
+    
+    if(second==-2){
+      if (epd.Init(lut_partial_update) != 0) {
+         printf("e-Paper init failed");
+         return;
+      }
+	}
     if(second==-1){
       epd.SetFrameMemory(IMAGE_DATA);
       epd.DisplayFrame();
