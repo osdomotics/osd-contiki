@@ -1826,6 +1826,20 @@ rf230_read(void *buf, unsigned short bufsize)
 
 /* mpr: removed code to fetch signal strength, as it is not always available here
         basically rf230_last_rssi gets set in the interrupt routine ! */
+#if 0
+/* Get the received signal strength for the packet, 0-84 dB above rx threshold */
+#if 0   //more general
+    rf230_last_rssi = rf230_get_raw_rssi();
+#else   //faster
+#if RF230_CONF_AUTOACK
+ //   rf230_last_rssi = hal_subregister_read(SR_ED_LEVEL);  //0-84 resolution 1 dB
+    rf230_last_rssi = hal_register_read(RG_PHY_ED_LEVEL);  //0-84, resolution 1 dB
+#else
+/* last_rssi will have been set at RX_START interrupt */
+//  rf230_last_rssi = 3*hal_subregister_read(SR_RSSI);    //0-28 resolution 3 dB
+#endif
+#endif /* speed vs. generality */
+#endif 
 
   /* Save the smallest rssi. The display routine can reset by setting it to zero */
   if ((rf230_smallest_rssi==0) || (rf230_last_rssi<rf230_smallest_rssi))
@@ -1889,6 +1903,41 @@ rf230_get_txpower(void)
 	return power;
 }
 
+/*---------------------------------------------------------------------------*/
+uint8_t
+rf230_get_raw_rssi(void)
+{
+  uint8_t rssi,state;
+  bool radio_was_off = 0;
+
+  /*The RSSI measurement should only be done in RX_ON or BUSY_RX.*/
+  if(!RF230_receive_on) {
+    radio_was_off = 1;
+    rf230_on();
+  }
+
+/* The energy detect register is used in extended mode (since RSSI will read 0) */
+/* The rssi register is multiplied by 3 to a consistent value from either register */
+  state=radio_get_trx_state();
+  if ((state==RX_AACK_ON) || (state==BUSY_RX_AACK)) {
+ //  rssi = hal_subregister_read(SR_ED_LEVEL);  //0-84, resolution 1 dB
+     rssi = hal_register_read(RG_PHY_ED_LEVEL);  //0-84, resolution 1 dB
+  } else {
+#if 0   // 3-clock shift and add is faster on machines with no hardware multiply
+/* avr-gcc may have an -Os bug that uses the general subroutine for multiplying by 3 */
+     rssi = hal_subregister_read(SR_RSSI);      //0-28, resolution 3 dB
+     rssi = (rssi << 1)  + rssi;                //*3
+#else  // 1 or 2 clock multiply, or compiler with correct optimization
+     rssi = 3 * hal_subregister_read(SR_RSSI);
+#endif
+
+  }
+
+  if(radio_was_off) {
+    rf230_off();
+  }
+  return rssi;
+}
 
 /*---------------------------------------------------------------------------*/
 static int

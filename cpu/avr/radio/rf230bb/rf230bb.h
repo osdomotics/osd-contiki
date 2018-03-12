@@ -231,6 +231,8 @@ int rf230_aes_encrypt_ebc(unsigned char *key, unsigned char *plain, unsigned cha
 int rf230_aes_decrypt_ebc(unsigned char *key, unsigned char *cipher, unsigned char *plain);
 int rf230_aes_decrypt_ebc(unsigned char *key, unsigned char *cipher, unsigned char *plain);
 
+#define rf230_rssi	rf230_get_raw_rssi
+
 #endif /* RF230BB_H_ */
 /** @} */
 /*EOF*/
