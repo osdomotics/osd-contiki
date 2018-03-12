@@ -191,8 +191,8 @@ typedef enum{
 typedef void (*radio_rx_callback) (uint16_t data);
 
 
-/*	Hook Documentation 
-**	
+/*	Hook Documentation
+**
 **	Sniffing Hooks:
 **		RF230BB_HOOK_TX_PACKET(buffer,total_len)
 **		RF230BB_HOOK_RX_PACKET(buf,len)
@@ -200,7 +200,7 @@ typedef void (*radio_rx_callback) (uint16_t data);
 **	RF230BB_HOOK_IS_SEND_ENABLED()
 **	RF230BB_HOOK_RADIO_ON()
 **	RF230BB_HOOK_RADIO_OFF()
-**	
+**
 */
 
 
@@ -230,9 +230,6 @@ uint8_t rf230_get_raw_rssi(void);
 int rf230_aes_encrypt_ebc(unsigned char *key, unsigned char *plain, unsigned char *cipher);
 int rf230_aes_decrypt_ebc(unsigned char *key, unsigned char *cipher, unsigned char *plain);
 int rf230_aes_decrypt_ebc(unsigned char *key, unsigned char *cipher, unsigned char *plain);
-
-
-#define rf230_rssi	rf230_get_raw_rssi
 
 #endif /* RF230BB_H_ */
 /** @} */

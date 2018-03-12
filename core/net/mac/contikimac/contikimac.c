@@ -335,7 +335,7 @@ schedule_powercycle_fixed(struct rtimer *t, rtimer_clock_t fixed_time)
 
     r = rtimer_set(t, fixed_time, 1, powercycle_wrapper, NULL);
     if(r != RTIMER_OK) {
-      PRINTF("schedule_powercycle: could not set rtimer\n");
+      PRINTF("schedule_powercycle_fixed: could not set rtimer\n");
     }
   }
 }
@@ -503,7 +503,11 @@ powercycle(struct rtimer *t, void *ptr)
       be blocked until a packet is detected */
 #if RDC_CONF_MCU_SLEEP
       static uint8_t sleepcycle;
-      if((sleepcycle++ < mcusleepcycle) && !we_are_sending && !radio_is_on && !(NETSTACK_RADIO.receiving_packet() || NETSTACK_RADIO.pending_packet())) {
+      if((sleepcycle++ < mcusleepcycle)
+          && !we_are_sending
+          && !radio_is_on
+          && !(NETSTACK_RADIO.receiving_packet()
+          || NETSTACK_RADIO.pending_packet())) {
           rtimer_arch_sleep(cycle_start - RTIMER_NOW());
       } else {
         sleepcycle = 0;

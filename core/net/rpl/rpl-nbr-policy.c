@@ -225,7 +225,7 @@ find_removable_dao(uip_ipaddr_t *from, rpl_instance_t *instance)
       max = NBR_TABLE_MAX_NEIGHBORS;
     }
   }
-  
+
   /* Check if this DAO sender is not yet neighbor and there is already too
      many children. */
   if(num_children >= max) {

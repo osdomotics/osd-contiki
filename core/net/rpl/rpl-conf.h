@@ -155,7 +155,7 @@
 #endif /* RPL_CONF_DAG_LIFETIME */
 
 /*
- * 
+ *
  */
 #ifndef RPL_CONF_DAO_SPECIFY_DAG
   #if RPL_MAX_DAG_PER_INSTANCE > 1

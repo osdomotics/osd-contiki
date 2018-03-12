@@ -182,6 +182,13 @@ parent_is_acceptable(rpl_parent_t *p)
   uint16_t link_metric = parent_link_metric(p);
   uint16_t path_cost = parent_path_cost(p);
   /* Exclude links with too high link metrics or path cost (RFC6719, 3.2.2) */
+  PRINTF ("MRHOF: parent_is_acceptable: p->dag->dag_id: ");
+  PRINT6ADDR (&(p->dag->dag_id));
+  PRINTF (" p->dag->preferred_parent->dag->dag_id: ");
+  PRINT6ADDR (&(p->dag->preferred_parent->dag->dag_id));
+  PRINTF (" link_metric=%d,path_cost=%d,acceptable=%d\n", link_metric, path_cost,
+          link_metric <= MAX_LINK_METRIC && path_cost <= MAX_PATH_COST
+         );
   return link_metric <= MAX_LINK_METRIC && path_cost <= MAX_PATH_COST;
 }
 /*---------------------------------------------------------------------------*/

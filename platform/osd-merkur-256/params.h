@@ -13,7 +13,7 @@
  * Note the parameters in this file can be changed without forcing a complete rebuild.
  */
 #include "dev/radio.h"
- 
+
 // default settings
 #define CHANNEL_802_15_4          25     // default frequency (11-26) 
 
@@ -81,7 +81,7 @@ extern uint8_t eemem_domain_name[30];
 #else
 #define PARAMS_TXPOWER 0
 #endif
-#ifdef NETSTACK_CONF_RDC 
+#ifdef NETSTACK_CONF_RDC
 #define PARAMS_MACCONF 0
 #endif
 #ifdef EUI64_ADDRESS
@@ -103,7 +103,7 @@ extern uint8_t eemem_domain_name[30];
 uint8_t params_get_eui64(uint8_t *eui64);
 #if PARAMETER_STORAGE==0
 /* Hard coded program flash parameters */
-#define params_get_servername(...) 
+#define params_get_servername(...)
 #define params_get_nodeid(...)  PARAMS_NODEID
 #define params_get_channel(...) PARAMS_CHANNEL
 #define params_get_panid(...)   PARAMS_PANID
