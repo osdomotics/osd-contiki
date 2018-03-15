@@ -20,6 +20,7 @@ extern "C" {
 #include "serial-shell.h"
 #include "shell-merkur.h"
 #include "ota-update.h"
+#include "rpl.h"
 
 Adafruit_HTU21DF htu = Adafruit_HTU21DF();
 
@@ -37,6 +38,8 @@ void setup (void)
     // switch off the led
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, HIGH);
+    // host node
+    rpl_set_mode(RPL_MODE_LEAF);
     // Seriell Shell
     serial_shell_init();
     shell_merkur_init();  

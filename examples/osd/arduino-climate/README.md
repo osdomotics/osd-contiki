@@ -1,5 +1,7 @@
-Arduino compatibility example
-=============================
+Arduino HTU21 temperature and humidity Node
+===========================================
+
+make clean TARGET=osd-merkur-256 flash
 
 This example shows that it is now possible to re-use arduino sketches in
 Contiki. This example documents the necessary magic. Arduino specifies
