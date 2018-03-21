@@ -21,6 +21,7 @@ extern resource_t res_battery;
 
 #define LED_PIN 4
 
+char gesture[64];
 /* 
 Notice: When you want to recognize the Forward/Backward gesture or other continuous gestures, your gestures' reaction time must less than GES_REACTION_TIME(0.8s). 
         You also can adjust the reaction time according to the actual circumstance.
@@ -73,21 +74,22 @@ void loop (void)
 				paj7620ReadReg(0x43, 1, &data);
 				if(data == GES_LEFT_FLAG) 
 				{
-					printf("Right-Left\n");
+					sprintf(gesture,"Right-Left");
 				}
 				else if(data == GES_FORWARD_FLAG) 
 				{
-					printf("Forward\n");
+					sprintf(gesture,"Forward");
 					delay(GES_QUIT_TIME);
 				}
 				else if(data == GES_BACKWARD_FLAG) 
 				{
-					printf("Backward\n");
+					sprintf(gesture,"Backward");
 					delay(GES_QUIT_TIME);
 				}
 				else
 				{
-					printf("Right");
+					sprintf(gesture,"Right");
+					printf("%s\n",gesture);
 				}          
 				break;
 			case GES_LEFT_FLAG:
@@ -95,21 +97,23 @@ void loop (void)
 				paj7620ReadReg(0x43, 1, &data);
 				if(data == GES_RIGHT_FLAG) 
 				{
-					printf("Left-Right\n");
+					sprintf(gesture,"Left-Right");
 				}
 				else if(data == GES_FORWARD_FLAG) 
 				{
-					printf("Forward\n");
+					sprintf(gesture,"Forward");
 					delay(GES_QUIT_TIME);
 				}
 				else if(data == GES_BACKWARD_FLAG) 
 				{
-					printf("Backward\n");
+
+					sprintf(gesture,"Backward");
 					delay(GES_QUIT_TIME);
 				}
 				else
 				{
-					printf("Left\n");
+					sprintf(gesture,"Left");
+					printf("%s\n",gesture);
 				}          
 				break;
 				break;
@@ -118,21 +122,21 @@ void loop (void)
 				paj7620ReadReg(0x43, 1, &data);
 				if(data == GES_DOWN_FLAG) 
 				{
-					printf("Up-Down\n");
+					sprintf(gesture,"Up-Down");
 				}
 				else if(data == GES_FORWARD_FLAG) 
 				{
-					printf("Forward\n");
+					sprintf(gesture,"Forward");
 					delay(GES_QUIT_TIME);
 				}
 				else if(data == GES_BACKWARD_FLAG) 
 				{
-					printf("Backward\n");
+					sprintf(gesture,"Backward");
 					delay(GES_QUIT_TIME);
 				}
 				else
 				{
-					printf("Up\n");
+					sprintf(gesture,"Up");
 				}
 				break;
 			case GES_DOWN_FLAG:
@@ -140,21 +144,21 @@ void loop (void)
 				paj7620ReadReg(0x43, 1, &data);
 				if(data == GES_UP_FLAG) 
 				{
-					printf("Down-Up\n");
+					sprintf(gesture,"Down-Up");
 				}
 				else if(data == GES_FORWARD_FLAG) 
 				{
-					printf("Forward\n");
+					sprintf(gesture,"Forward");
 					delay(GES_QUIT_TIME);
 				}
 				else if(data == GES_BACKWARD_FLAG) 
 				{
-					printf("Backward\n");
+					sprintf(gesture,"Backward");
 					delay(GES_QUIT_TIME);
 				}
 				else
 				{
-					printf("Down");
+					sprintf(gesture,"Down");
 				}
 				break;
 			case GES_FORWARD_FLAG:
@@ -162,12 +166,12 @@ void loop (void)
 				paj7620ReadReg(0x43, 1, &data);
 				if(data == GES_BACKWARD_FLAG) 
 				{
-					printf("Forward-Backward\n");
+					sprintf(gesture,"Forward-Backward");
 					delay(GES_QUIT_TIME);
 				}
 				else
 				{
-					printf("Forward\n");
+					sprintf(gesture,"Forward");
 					delay(GES_QUIT_TIME);
 				}
 				break;
@@ -176,28 +180,29 @@ void loop (void)
 				paj7620ReadReg(0x43, 1, &data);
 				if(data == GES_FORWARD_FLAG) 
 				{
-					printf("Backward-Forward\n");
+					sprintf(gesture,"Backward-Forward");
 					delay(GES_QUIT_TIME);
 				}
 				else
 				{
-					printf("Backward\n");
+					sprintf(gesture,"Backward");
 					delay(GES_QUIT_TIME);
 				}
 				break;
 			case GES_CLOCKWISE_FLAG:
-				printf("Clockwise\n");
+				sprintf(gesture,"Clockwise");
 				break;
 			case GES_COUNT_CLOCKWISE_FLAG:
-				printf("anti-clockwise\n");
+				sprintf(gesture,"anti-clockwise");
 				break;  
 			default:
 				paj7620ReadReg(0x44, 1, &data1);
 				if (data1 == GES_WAVE_FLAG) 
 				{
-					printf("wave\n");
+					sprintf(gesture,"wave");
 				}
 				break;
 		}
+		printf("%s\n",gesture); // Debug Print
 	}
 }

@@ -38,7 +38,7 @@
 
 #define SICSLOWPAN_CONF_FRAG	1
 
-#define LOOP_INTERVAL		(2 * CLOCK_SECOND)
+#define LOOP_INTERVAL		(1 * CLOCK_SECOND)
 
 /* Save energy */
 //#define RDC_CONF_PT_YIELD_OFF
