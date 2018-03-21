@@ -17,7 +17,7 @@ extern "C" {
 #include "arduino-process.h"
 #include "rest-engine.h"
 
-extern resource_t res_battery;
+extern resource_t res_battery, res_gesture;
 
 #define LED_PIN 4
 
@@ -55,6 +55,7 @@ void setup (void)
 	
 	#pragma GCC diagnostic ignored "-Wwrite-strings"
     rest_activate_resource (&res_battery, "s/battery");
+    rest_activate_resource (&res_gesture, "s/gesture");
     #pragma GCC diagnostic pop
 }
 
