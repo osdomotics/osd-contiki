@@ -34,6 +34,18 @@
 
 #define LOOP_INTERVAL		(30 * CLOCK_SECOND)
 
+/* RPL: need to turn it on in platform/osd-merkur-256/contiki-conf.h
+ 
+   for leaf nodes: 
+     use normal contikimac and dont do rpl routing
+     uncomment the below settings
+
+   for routing nodes:
+     turn off duty cycling in contikimac by calling NETSTACK_MAC.off(1)
+     comment out the below settings
+*/
+//#undef RPL_CONF_LEAF_ONLY
+//#define RPL_CONF_LEAF_ONLY 1
 
 /* For Debug: Dont allow MCU sleeping between channel checks */
 #undef RDC_CONF_MCU_SLEEP

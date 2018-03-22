@@ -1,6 +1,6 @@
 /*
  * Sample arduino sketch using contiki features.
- * We turn the LED off 
+ * We turn the LED off
  * We allow read the moisture sensor
  * Unfortunately sleeping for long times in loop() isn't currently
  * possible, something turns off the CPU (including PWM outputs) if a
@@ -34,8 +34,10 @@ void setup (void)
     rest_activate_resource (&res_battery, "s/battery");
     rest_activate_resource (&res_cputemp, "s/cputemp");
     #pragma GCC diagnostic pop
-    
- //   NETSTACK_MAC.off(1);
+
+    // uncomment if you want this node to be a routing node and set the
+    // correct options in project-conf.h and contiki-conf.h
+    //NETSTACK_MAC.off(1);
     mcu_sleep_set(128);
 }
 
