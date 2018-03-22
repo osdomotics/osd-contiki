@@ -260,7 +260,7 @@ static int rf230_receiving_packet(void);
 static int rf230_pending_packet(void);
 static int rf230_cca(void);
 
-uint8_t rf230_last_correlation,rf230_last_rssi,rf230_smallest_rssi;
+int8_t rf230_last_correlation,rf230_last_rssi,rf230_smallest_rssi;
 
 static void
 set_poll_mode(bool enable)
@@ -1839,7 +1839,7 @@ rf230_read(void *buf, unsigned short bufsize)
 //  rf230_last_rssi = 3*hal_subregister_read(SR_RSSI);    //0-28 resolution 3 dB
 #endif
 #endif /* speed vs. generality */
-#endif 
+#endif
 
   /* Save the smallest rssi. The display routine can reset by setting it to zero */
   if ((rf230_smallest_rssi==0) || (rf230_last_rssi<rf230_smallest_rssi))
