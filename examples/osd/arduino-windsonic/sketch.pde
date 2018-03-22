@@ -14,6 +14,7 @@ extern "C" {
 #include "arduino-process.h"
 #include "rest-engine.h"
 #include "ota-update.h"
+#include "net/netstack.h"
 
 #define DEBUG 0
 
@@ -24,12 +25,12 @@ extern "C" {
 #define PRINTF(...)
 #endif
 
-extern resource_t 
-  res_wind, 
-  res_wind_speed_max, 
+extern resource_t
+  res_wind,
+  res_wind_speed_max,
   res_wind_status,
-  res_wind_speed, 
-  res_wind_direction, 
+  res_wind_speed,
+  res_wind_direction,
   res_power_supply;
 
 #define STX 0x02
@@ -99,7 +100,8 @@ void setup (void)
     OTA_ACTIVATE_RESOURCES();
 #pragma GCC diagnostic pop
 
-    mcu_sleep_set(0); // Power consumtion 278uA; average over 20 minutes
+    NETSTACK_MAC.off(1);
+    mcu_sleep_set(0);
     Serial1.begin (9600);
 
     set_no_data ();
