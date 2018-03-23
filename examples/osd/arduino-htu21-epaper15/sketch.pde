@@ -77,32 +77,40 @@ void setup (void)
   //  activate_cron_resources ();
 
  //   NETSTACK_MAC.off(1);
- //    mcu_sleep_set(128);
+    mcu_sleep_set(128);
 
     epd.Init (lut_full_update);
     epd.ClearFrameMemory(0xFF);   // bit set = white, bit reset = black
     epd.DisplayFrame();
-    epd.ClearFrameMemory(0xFF);   // bit set = white, bit reset = black
-    epd.DisplayFrame();
-
+    epd.Sleep();
 }
 
 void loop (void)
 {
+	static int state = -2;
     float htu21d_hum;
     float htu21d_temp;
     uint16_t battery_voltage;
     char buf [20];
     char htu_buf [20];
-    char *week_days [] = {"Mo","Di","Mi","Do","Fr","Sa","So"};
-    struct xtimeval tv;
-    struct xtm tm;
+//    char *week_days [] = {"Mo","Di","Mi","Do","Fr","Sa","So"};
+//    struct xtimeval tv;
+//    struct xtm tm;
 
-    epd.Init (lut_partial_update);
-    epd.ClearFrameMemory(0xFF);   // bit set = white, bit reset = black
+    if(state==-1){
+      epd.ClearFrameMemory(0xFF);   // bit set = white, bit reset = black
+      epd.DisplayFrame();
+      epd.Init(lut_partial_update);
+      epd.Sleep();
+	}
 
-    xgettimeofday (&tv, NULL);
-    xlocaltime_r (&tv.tv_sec, &tm);
+    if(state == 0){
+    //epd.Init (lut_partial_update);
+    //epd.ClearFrameMemory(0xFF);   // bit set = white, bit reset = black
+
+//    xgettimeofday (&tv, NULL);
+//    xlocaltime_r (&tv.tv_sec, &tm);
+
     htu21d_temp = htu.readTemperature();
     htu21d_hum = htu.readHumidity();
     dtostrf(htu21d_temp , 0, 2, htu21d_temp_s );
@@ -114,18 +122,17 @@ void loop (void)
 
     paint.Clear(UNCOLORED);
 
-    snprintf
-      ( buf
-      , 10
-      , "%02u:%02u"
-      , tm.tm_hour, tm.tm_min//, tm.tm_sec
-      );
+//    snprintf
+//      ( buf
+//      , 10
+//      , "%02u:%02u:%02u"
+//      , tm.tm_hour, tm.tm_min, tm.tm_sec
+ //     );
 
-    printf ("%s ",buf);
-    paint.DrawStringAt(0, 4, buf, &Font24, COLORED);
-    epd.SetFrameMemory(paint.GetImage(), 32+24, 0, paint.GetWidth(), paint.GetHeight());
+//    printf ("%s ",buf);
+//    paint.DrawStringAt(0, 4, buf, &Font24, COLORED);
+//    epd.SetFrameMemory(paint.GetImage(), 32+24, 0, paint.GetWidth(), paint.GetHeight());
 
-    //cron();
 
     dtostrf(htu21d_temp , 0, 1, htu_buf );
     snprintf (buf,12,"  LT: %s", htu_buf);
@@ -151,24 +158,29 @@ void loop (void)
     paint.DrawStringAt(0, 4, buf, &Font24, COLORED);
     epd.SetFrameMemory(paint.GetImage(), 8, 113, paint.GetWidth(), paint.GetHeight());
 
-    snprintf
-      ( buf
-      , 15
-      , "%s,%02u.%02u.%02u"
-      , week_days [tm.tm_wday]
-      , tm.tm_mday
-      , tm.tm_mon + 1
-      , tm.tm_year > 100 ? tm.tm_year - 100 : tm.tm_year
-      );
+//    snprintf
+//      ( buf
+//      , 15
+//      , "%s,%02u.%02u.%02u"
+//      , week_days [tm.tm_wday]
+//      , tm.tm_mday
+//      , tm.tm_mon + 1
+//      , tm.tm_year > 100 ? tm.tm_year - 100 : tm.tm_year
+//      );
 
-    paint.SetWidth(200);
-    paint.Clear(UNCOLORED);
-    printf ("%s ",buf);
-    paint.DrawStringAt(7, 4, buf, &Font24, COLORED);
-    epd.SetFrameMemory(paint.GetImage(), 0, 200-32, paint.GetWidth(), paint.GetHeight());
+//    paint.SetWidth(200);
+//    paint.Clear(UNCOLORED);
+//    printf ("%s ",buf);
+//    paint.DrawStringAt(7, 4, buf, &Font24, COLORED);
+//    epd.SetFrameMemory(paint.GetImage(), 0, 200-32, paint.GetWidth(), paint.GetHeight());
 
     printf ("\n");
 
     epd.DisplayFrame();
     epd.Sleep();
+	}
+	state++;
+	if(state > 6) state=1;	
+//    cron();
+	printf(".");
 }
