@@ -15,9 +15,9 @@ extern "C" {
 #include <epdpaint.h>
 #include <Wire.h>
 #include "Adafruit_HTU21DF.h"
-#include "xtime.h"
-#include "cron.h"
-#include "time_resource.h"
+//#include "xtime.h"
+//#include "cron.h"
+//#include "time_resource.h"
 #include "jsonparse.h"
 #include "dev/batmon.h"
 #include "ota-update.h"
@@ -44,6 +44,7 @@ char flag = 0;
 char  htu21d_hum_s[8];
 char  htu21d_temp_s[8];
 
+
 void setup (void)
 {
     // switch off the led
@@ -62,10 +63,10 @@ void setup (void)
     rest_activate_resource (&res_led, "s/led");
     rest_activate_resource (&res_battery, "s/battery");
     rest_activate_resource (&res_cputemp, "s/cputemp");
-    rest_activate_resource (&res_timestamp, "clock/timestamp");
-    rest_activate_resource (&res_timezone, "clock/timezone");
-    rest_activate_resource (&res_localtime, "clock/localtime");
-    rest_activate_resource (&res_utc, "clock/utc");
+ //   rest_activate_resource (&res_timestamp, "clock/timestamp");
+ //   rest_activate_resource (&res_timezone, "clock/timezone");
+ //   rest_activate_resource (&res_localtime, "clock/localtime");
+ //   rest_activate_resource (&res_utc, "clock/utc");
     OTA_ACTIVATE_RESOURCES();
     #pragma GCC diagnostic pop
 
@@ -82,12 +83,11 @@ void setup (void)
     epd.Init (lut_full_update);
     epd.ClearFrameMemory(0xFF);   // bit set = white, bit reset = black
     epd.DisplayFrame();
-    epd.Sleep();
 }
 
 void loop (void)
 {
-	static int state = -2;
+	static int state = -1;
     float htu21d_hum;
     float htu21d_temp;
     uint16_t battery_voltage;
@@ -97,16 +97,13 @@ void loop (void)
 //    struct xtimeval tv;
 //    struct xtm tm;
 
-    if(state==-1){
+    if(state==0){
       epd.ClearFrameMemory(0xFF);   // bit set = white, bit reset = black
       epd.DisplayFrame();
-      epd.Init(lut_partial_update);
-      epd.Sleep();
 	}
 
-    if(state == 0){
-    //epd.Init (lut_partial_update);
-    //epd.ClearFrameMemory(0xFF);   // bit set = white, bit reset = black
+    if(state == 1){
+    epd.Init (lut_partial_update);
 
 //    xgettimeofday (&tv, NULL);
 //    xlocaltime_r (&tv.tv_sec, &tm);
@@ -120,8 +117,7 @@ void loop (void)
     paint.SetHeight(32);
     //paint.SetRotate(ROTATE_180);
 
-    paint.Clear(UNCOLORED);
-
+//    paint.Clear(UNCOLORED);
 //    snprintf
 //      ( buf
 //      , 10
@@ -182,5 +178,5 @@ void loop (void)
 	state++;
 	if(state > 6) state=1;	
 //    cron();
-	printf(".");
+	printf("%d\n",state);
 }
