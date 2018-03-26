@@ -33,7 +33,7 @@ SMALL=1
 APPS += er-coap
 APPS += rest-engine
 APPS += arduino
-APPS += json json-resource time ota-update
+APPS += json json-resource ota-update
 
 include $(CONTIKI)/Makefile.include
 include $(CONTIKI)/apps/arduino/Makefile.include
