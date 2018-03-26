@@ -212,7 +212,7 @@ void Epd::ClearFrameMemory(unsigned char color) {
  */
 void Epd::DisplayFrame(void) {
     SendCommand(DISPLAY_UPDATE_CONTROL_2);
-    SendData(0xC4);
+    SendData(0xC7);
     SendCommand(MASTER_ACTIVATION);
     SendCommand(TERMINATE_FRAME_READ_WRITE);
     WaitUntilIdle();
@@ -253,6 +253,10 @@ void Epd::SetMemoryPointer(int x, int y) {
  *          You can use Epd::Init() to awaken
  */
 void Epd::Sleep() {
+	SendCommand(DISPLAY_UPDATE_CONTROL_2);
+	SendData(0x03);
+	SendCommand(TERMINATE_FRAME_READ_WRITE);
+	WaitUntilIdle();
     SendCommand(DEEP_SLEEP_MODE);
     WaitUntilIdle();
 }

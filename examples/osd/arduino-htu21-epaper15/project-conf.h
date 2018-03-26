@@ -34,8 +34,8 @@
 
 #define LOOP_INTERVAL		(10 * CLOCK_SECOND)
 
-//#undef RPL_CONF_LEAF_ONLY
-//#define RPL_CONF_LEAF_ONLY 1
+#undef RPL_CONF_LEAF_ONLY
+#define RPL_CONF_LEAF_ONLY 1
 
 /* For Debug: Dont allow MCU sleeping between channel checks */
 //#undef RDC_CONF_MCU_SLEEP
