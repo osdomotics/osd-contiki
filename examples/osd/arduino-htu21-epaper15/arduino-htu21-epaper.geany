@@ -24,7 +24,9 @@ long_line_column=72
 
 [files]
 current_page=0
-FILE_NAME_0=1339;C++;0;EUTF-8;1;1;0;%2Fhome%2Fharald%2Finstall%2Fosd-contiki%2Fexamples%2Fosd%2Farduino-bodenheizung%2Fsketch.pde;0;4
+FILE_NAME_0=2757;C++;0;EUTF-8;1;1;0;%2Fhome%2Fharald%2Finstall%2Fosd-contiki%2Fexamples%2Fosd%2Farduino-htu21-epaper15%2Fsketch.pde;0;4
+FILE_NAME_1=1682;C++;0;EUTF-8;1;1;0;%2Fhome%2Fharald%2Finstall%2Fosd-contiki%2Fexamples%2Fosd%2Farduino-htu21-epaper15%2Fproject-conf.h;0;4
+FILE_NAME_2=7821;C++;0;EUTF-8;1;1;0;%2Fhome%2Fharald%2Finstall%2Fosd-contiki%2Fexamples%2Fosd%2Farduino-htu21-epaper15%2Fepd1in54.cpp;0;4
 
 [VTE]
 last_dir=/home/harald
