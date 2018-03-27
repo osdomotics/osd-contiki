@@ -28,7 +28,7 @@ unsigned char image[1024];
 Paint paint(image, 0, 0);    // width should be the multiple of 8 
 Epd epd;
 
-long second=-3;
+long second=-4;
 
 void setup (void)
 {
@@ -64,8 +64,6 @@ void setup (void)
 
     epd.ClearFrameMemory(0xFF);   // bit set = white, bit reset = black
     epd.DisplayFrame();
-    epd.ClearFrameMemory(0xFF);   // bit set = white, bit reset = black
-    epd.DisplayFrame();
     
 }
 
@@ -75,11 +73,12 @@ void loop (void)
   
     second ++;
     
+    if(second==-3){
+      epd.ClearFrameMemory(0xFF);   // bit set = white, bit reset = black
+      epd.DisplayFrame();
+	}
     if(second==-2){
-      if (epd.Init(lut_partial_update) != 0) {
-         printf("e-Paper init failed");
-         return;
-      }
+      epd.Init(lut_partial_update);
 	}
     if(second==-1){
       epd.SetFrameMemory(IMAGE_DATA);
@@ -103,6 +102,7 @@ void loop (void)
       paint.DrawStringAt(0, 4, time_string, &Font24, COLORED);
       epd.SetFrameMemory(paint.GetImage(), 80, 72, paint.GetWidth(), paint.GetHeight());
       epd.DisplayFrame();
+	  epd.Sleep();
     }
-    printf("%d ",second);    
+    printf("%ld ",second);    
 }
