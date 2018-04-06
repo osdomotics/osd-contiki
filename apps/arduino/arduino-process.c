@@ -83,6 +83,8 @@ volatile uint8_t mcusleepcycleval;
 /* 0 dont sleep; 1 sleep */
 uint8_t mcusleep;
 
+static struct etimer loop_periodic_timer;
+
 /*-------------- enabled sleep mode ----------------------------------------*/
 void
 mcu_sleep_init(void)
@@ -121,6 +123,12 @@ mcu_sleep_set(uint8_t value)
 	mcusleepcycleval= value;
 //	mcusleepcycle = mcusleepcycleval;
 }
+/*---------------- loop periodic set value ------------------------------------*/
+void
+loop_periodic_set(uint8_t value)
+{
+  etimer_set(&loop_periodic_timer, value);
+}
 
 PROCESS(arduino_sketch, "Arduino Sketch Wrapper");
 
@@ -129,9 +137,9 @@ PROCESS(arduino_sketch, "Arduino Sketch Wrapper");
 #endif
 #define START_MCUSLEEP		(10 * CLOCK_SECOND)
 
+
 PROCESS_THREAD(arduino_sketch, ev, data)
 {
-  static struct etimer loop_periodic_timer;
   static struct etimer start_mcusleep_timer;
 
   PROCESS_BEGIN();
