@@ -37,6 +37,7 @@ Adafruit_HTU21DF htu = Adafruit_HTU21DF();
 extern resource_t res_htu21dtemp, res_htu21dhum, res_battery;
 
 char flag = 0;
+
 // needed by the resource
 char  htu21d_hum_s[8];
 char  htu21d_temp_s[8];
@@ -73,57 +74,53 @@ void setup (void)
 
 void loop (void)
 {
-	static int state = -1;
     float htu21d_hum;
     float htu21d_temp;
+
     uint16_t battery_voltage;
     char buf [20];
     char htu_buf [20];
 
-    if(state==0){
-		epd.ClearFrameMemory(0xFF);   // bit set = white, bit reset = black
-		epd.DisplayFrame();
-	}
+    if (flag == 0) {
+        epd.ClearFrameMemory(0xFF);   // bit set = white, bit reset = black
+        epd.DisplayFrame();
+        flag = 1;
+    } else {
+        epd.Init (lut_partial_update);
+        paint.SetWidth(4+17*10);
+        paint.SetHeight(32);
+        //paint.SetRotate(ROTATE_180);
 
-    if(state == 1){
-		epd.Init (lut_partial_update);
-		paint.SetWidth(4+17*10);
-		paint.SetHeight(32);
-		//paint.SetRotate(ROTATE_180);
+        htu21d_temp = htu.readTemperature();
+        htu21d_hum = htu.readHumidity();
+        dtostrf(htu21d_temp , 0, 2, htu21d_temp_s );
+        dtostrf(htu21d_hum , 0, 2, htu21d_hum_s );
 
-		htu21d_temp = htu.readTemperature();
-		htu21d_hum = htu.readHumidity();
-		dtostrf(htu21d_temp , 0, 2, htu21d_temp_s );
-		dtostrf(htu21d_hum , 0, 2, htu21d_hum_s );
+        dtostrf(htu21d_temp , 0, 1, htu_buf );
+        snprintf (buf,12,"  LT: %s", htu_buf);
+        paint.Clear(UNCOLORED);
+        paint.DrawStringAt(0, 4, buf, &Font24, COLORED);
+        epd.SetFrameMemory(paint.GetImage(), 0, 53, paint.GetWidth(), paint.GetHeight());
 
-		dtostrf(htu21d_temp , 0, 1, htu_buf );
-		snprintf (buf,12,"  LT: %s", htu_buf);
-		paint.Clear(UNCOLORED);
-		//printf ("%s ",buf); // Debug
-		paint.DrawStringAt(0, 4, buf, &Font24, COLORED);
-		epd.SetFrameMemory(paint.GetImage(), 0, 53, paint.GetWidth(), paint.GetHeight());
+        dtostrf(htu21d_hum , 0, 1, htu_buf );
+        snprintf (buf,12,"  RF: %s", htu_buf);
+        paint.Clear(UNCOLORED);
+        paint.DrawStringAt(0, 4, buf, &Font24, COLORED);
+        epd.SetFrameMemory(paint.GetImage(), 0, 83, paint.GetWidth(), paint.GetHeight());
 
-		dtostrf(htu21d_hum , 0, 1, htu_buf );
-		snprintf (buf,12,"  RF: %s", htu_buf);
-		paint.Clear(UNCOLORED);
-		//printf ("%s ",buf); // Debug
-		paint.DrawStringAt(0, 4, buf, &Font24, COLORED);
-		epd.SetFrameMemory(paint.GetImage(), 0, 83, paint.GetWidth(), paint.GetHeight());
+        batmon_get_voltage(&battery_voltage);
+        dtostrf ((float)battery_voltage / (float)1000,0,1,htu_buf);
+        snprintf (buf,12," BAT:  %s", htu_buf);
+        paint.Clear(UNCOLORED);
+        paint.DrawStringAt(0, 4, buf, &Font24, COLORED);
+        epd.SetFrameMemory(paint.GetImage(), 8, 113, paint.GetWidth(), paint.GetHeight());
+        epd.DisplayFrame();
+        epd.Sleep();
 
-		batmon_get_voltage(&battery_voltage);
-
-		dtostrf ((float)battery_voltage / (float)1000,0,1,htu_buf);
-		snprintf (buf,12," BAT:  %s", htu_buf);
-		paint.Clear(UNCOLORED);
-		//printf ("%s ",buf); // Debug
-		paint.DrawStringAt(0, 4, buf, &Font24, COLORED);
-		epd.SetFrameMemory(paint.GetImage(), 8, 113, paint.GetWidth(), paint.GetHeight());
-		epd.DisplayFrame();
-		epd.Sleep();
-		//printf ("\n"); // Debug
-	}
-	
-	state++;
-	if(state > 6) state=1;	
-	//printf("%d\n",state);  // Debug
+        if (flag == 1) {
+            printf ("reset timer to %d... \n", LOOP_INTERVAL_AFTER_INIT);
+            loop_periodic_set (LOOP_INTERVAL_AFTER_INIT);
+            flag = 2;
+        }
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, Swedish Institute of Computer Science.
+ * Copyright (C) 2010-2018, Swedish Institute of Computer Science.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,8 @@
 #ifndef PROJECT_RPL_WEB_CONF_H_
 #define PROJECT_RPL_WEB_CONF_H_
 
-#define LOOP_INTERVAL		(10 * CLOCK_SECOND)
+#define LOOP_INTERVAL		(2 * CLOCK_SECOND)
+#define LOOP_INTERVAL_AFTER_INIT (60 * CLOCK_SECOND)
 
 #undef RPL_CONF_LEAF_ONLY
 #define RPL_CONF_LEAF_ONLY 1
