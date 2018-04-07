@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Ralf Schlatterbeck Open Source Consulting
+ * Copyright (C) 2014-2018, Ralf Schlatterbeck Open Source Consulting
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -71,7 +71,6 @@
 #define PRINTLLADDR(addr)
 #endif
 
-
 extern volatile uint8_t mcusleepcycle;
 #if PLATFORM_HAS_BUTTON
 #include "rest-engine.h"
@@ -85,12 +84,14 @@ uint8_t mcusleep;
 
 static struct etimer loop_periodic_timer;
 
+static clock_time_t loop_periodic_timer_interval;
+
 /*-------------- enabled sleep mode ----------------------------------------*/
 void
 mcu_sleep_init(void)
 {
 	mcusleepcycleval=mcusleepcycle;
-    mcu_sleep_disable(); // if a shell is active we can type 
+    mcu_sleep_disable(); // if a shell is active we can type
 }
 void
 mcu_sleep_disable(void)
@@ -125,9 +126,9 @@ mcu_sleep_set(uint8_t value)
 }
 /*---------------- loop periodic set value ------------------------------------*/
 void
-loop_periodic_set(uint8_t value)
+loop_periodic_set(clock_time_t value)
 {
-  etimer_set(&loop_periodic_timer, value);
+    loop_periodic_timer_interval = value;
 }
 
 PROCESS(arduino_sketch, "Arduino Sketch Wrapper");
@@ -147,11 +148,13 @@ PROCESS_THREAD(arduino_sketch, ev, data)
   mcu_sleep_init ();
   setup ();
   /* Define application-specific events here. */
+  loop_periodic_timer_interval = LOOP_INTERVAL;
   etimer_set(&loop_periodic_timer, LOOP_INTERVAL);
   etimer_set(&start_mcusleep_timer, START_MCUSLEEP);
 
   while (1) {
 	PROCESS_WAIT_EVENT();
+
 #if PLATFORM_HAS_BUTTON
     if(ev == sensors_event && data == &button_sensor) {
       mcu_sleep_off();
@@ -160,6 +163,7 @@ PROCESS_THREAD(arduino_sketch, ev, data)
       mcu_sleep_on();
     }
 #endif /* PLATFORM_HAS_BUTTON */
+
     if(etimer_expired(&start_mcusleep_timer)) {
       PRINTF("mcusleep_timer %d\n",mcusleep);
       if(mcusleep == 1){
@@ -177,7 +181,7 @@ PROCESS_THREAD(arduino_sketch, ev, data)
       mcu_sleep_off();
       loop ();
       mcu_sleep_on();
-      etimer_reset(&loop_periodic_timer);
+      etimer_reset_with_new_interval(&loop_periodic_timer, loop_periodic_timer_interval);
     }
   }
   PROCESS_END();

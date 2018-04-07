@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Ralf Schlatterbeck Open Source Consulting
+ * Copyright (C) 2014-2018, Ralf Schlatterbeck Open Source Consulting
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,7 @@ void mcu_sleep_off(void);
 /*---------------- set sleep value ------------------------------------*/
 void mcu_sleep_set(uint8_t value);
 /*---------------- loop periodic set value ------------------------------------*/
-void loop_periodic_set(uint8_t value);
+void loop_periodic_set(clock_time_t value);
 
 extern void loop         (void);
 extern void setup        (void);
