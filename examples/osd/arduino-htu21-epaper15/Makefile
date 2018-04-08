@@ -9,10 +9,11 @@ CONTIKI=../../..
 # Contiki IPv6 configuration
 CONTIKI_WITH_IPV6 = 1
 
-CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
+CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\" -IAdafruit-GFX-Library/
 LFLAGS += -lm
 
-PROJECT_SOURCEFILES += ${SKETCH}.cpp Adafruit_HTU21DF.cpp epd1in54.cpp epdif.cpp epdpaint.cpp font24.c
+PROJECT_SOURCEFILES += ${SKETCH}.cpp Adafruit_HTU21DF.cpp epd1in54.cpp epdif.cpp
+PROJECT_SOURCEFILES += Adafruit_GFX.cpp
 
 # automatically build RESTful resources
 REST_RESOURCES_DIR = ./resources

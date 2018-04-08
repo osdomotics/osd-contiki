@@ -12,7 +12,6 @@ extern "C" {
 #include "net/netstack.h"
 #include <SPI.h>
 #include <epd1in54.h>
-#include <epdpaint.h>
 #include <Wire.h>
 #include "Adafruit_HTU21DF.h"
 #include "jsonparse.h"
@@ -23,25 +22,32 @@ extern resource_t res_led, res_battery, res_cputemp;
 
 uint8_t led_pin=4;
 uint8_t led_status;
+
+void __cxa_pure_virtual() { while (1); }
+
 }
+
+#include <Adafruit_GFX.h>
+#include <Fonts/arial_big.h>
+#include <Fonts/arial_small.h>
+#include <Fonts/arial_xsmall.h>
 
 #define COLORED     0
 #define UNCOLORED   1
 
-unsigned char image[1024];
-Paint paint(image, 0, 0);    // width should be the multiple of 8
 Epd epd;
 
 Adafruit_HTU21DF htu = Adafruit_HTU21DF();
 
+GFXcanvas1 canvas = GFXcanvas1 (200, 200);
+
 extern resource_t res_htu21dtemp, res_htu21dhum, res_battery;
 
-char flag = 0;
+char flag = 1;
 
 // needed by the resource
 char  htu21d_hum_s[8];
 char  htu21d_temp_s[8];
-
 
 void setup (void)
 {
@@ -70,6 +76,8 @@ void setup (void)
     epd.Init (lut_full_update);
     epd.ClearFrameMemory(0xFF);   // bit set = white, bit reset = black
     epd.DisplayFrame();
+
+    flag = 1;
 }
 
 void loop (void)
@@ -81,46 +89,53 @@ void loop (void)
     char buf [20];
     char htu_buf [20];
 
-    if (flag == 0) {
-        epd.ClearFrameMemory(0xFF);   // bit set = white, bit reset = black
-        epd.DisplayFrame();
-        flag = 1;
-    } else {
-        epd.Init (lut_partial_update);
-        paint.SetWidth(4+17*10);
-        paint.SetHeight(32);
-        //paint.SetRotate(ROTATE_180);
+    htu21d_temp = htu.readTemperature();
+    htu21d_hum = htu.readHumidity();
 
-        htu21d_temp = htu.readTemperature();
-        htu21d_hum = htu.readHumidity();
-        dtostrf(htu21d_temp , 0, 2, htu21d_temp_s );
-        dtostrf(htu21d_hum , 0, 2, htu21d_hum_s );
+    dtostrf(htu21d_temp , 0, 2, htu21d_temp_s );
+    dtostrf(htu21d_hum , 0, 2, htu21d_hum_s );
 
-        dtostrf(htu21d_temp , 0, 1, htu_buf );
-        snprintf (buf,12,"  LT: %s", htu_buf);
-        paint.Clear(UNCOLORED);
-        paint.DrawStringAt(0, 4, buf, &Font24, COLORED);
-        epd.SetFrameMemory(paint.GetImage(), 0, 53, paint.GetWidth(), paint.GetHeight());
+    dtostrf(htu21d_temp , 0, 1, htu_buf );
+    snprintf (buf, 12, "  LT: %s", htu_buf);
 
-        dtostrf(htu21d_hum , 0, 1, htu_buf );
-        snprintf (buf,12,"  RF: %s", htu_buf);
-        paint.Clear(UNCOLORED);
-        paint.DrawStringAt(0, 4, buf, &Font24, COLORED);
-        epd.SetFrameMemory(paint.GetImage(), 0, 83, paint.GetWidth(), paint.GetHeight());
+    batmon_get_voltage(&battery_voltage);
 
-        batmon_get_voltage(&battery_voltage);
-        dtostrf ((float)battery_voltage / (float)1000,0,1,htu_buf);
-        snprintf (buf,12," BAT:  %s", htu_buf);
-        paint.Clear(UNCOLORED);
-        paint.DrawStringAt(0, 4, buf, &Font24, COLORED);
-        epd.SetFrameMemory(paint.GetImage(), 8, 113, paint.GetWidth(), paint.GetHeight());
-        epd.DisplayFrame();
-        epd.Sleep();
+    switch (flag) {
+     case 1 :
+      epd.ClearFrameMemory(0xFF);   // bit set = white, bit reset = black
+      epd.DisplayFrame();
+       break;
 
-        if (flag == 1) {
-            printf ("reset timer to %d... \n", LOOP_INTERVAL_AFTER_INIT);
-            loop_periodic_set (LOOP_INTERVAL_AFTER_INIT);
-            flag = 2;
-        }
+     case 2 :
+      epd.Init (lut_partial_update);
+      canvas.fillScreen(0xffff);
+      canvas.setTextColor(0x0000);
+
+      canvas.setFont(&arialbd12pt7b);
+      canvas.setCursor (10, 24);
+      canvas.print (F("Wohnzimmer"));
+      //canvas.print (((float)battery_voltage)/1000, 1);
+
+      canvas.setFont(&arialbd48pt7b);
+      canvas.setCursor(10, 130);
+      canvas.print (htu21d_temp, 1);
+
+      canvas.setFont(&arialbd20pt7b);
+      canvas.setCursor(50, 190);
+      canvas.print (htu21d_hum, 1);
+      canvas.println (F("%"));
+
+      epd.SetFrameMemory(canvas.getBuffer(), 0, 0, 200, 200);
+      epd.DisplayFrame();
+      loop_periodic_set (LOOP_INTERVAL_AFTER_INIT);
+      epd.Sleep();
+     break;
     }
+
+    flag++;
+
+    if (flag == 3) flag = 2;
+
+    printf ("\n");
+
 }
