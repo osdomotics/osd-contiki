@@ -112,16 +112,16 @@ void loop (void)
       canvas.setTextColor(0x0000);
 
       canvas.setFont(&arialbd12pt7b);
-      canvas.setCursor (10, 24);
-      canvas.print (F("Wohnzimmer"));
+      canvas.setCursor (14, 30);
+      canvas.print (F("WOHNZIMMER"));
       //canvas.print (((float)battery_voltage)/1000, 1);
 
       canvas.setFont(&arialbd48pt7b);
-      canvas.setCursor(10, 130);
+      canvas.setCursor(10, 125);
       canvas.print (htu21d_temp, 1);
 
       canvas.setFont(&arialbd20pt7b);
-      canvas.setCursor(50, 190);
+      canvas.setCursor(50, 175);
       canvas.print (htu21d_hum, 1);
       canvas.println (F("%"));
 
