@@ -173,7 +173,7 @@ typedef unsigned short uip_stats_t;
 #define UIP_CONF_DHCP_LIGHT      1
 
 /* rpl routing settings */
-#if 0
+#if 1
 #define RPL_CONF_DEFAULT_LIFETIME_UNIT 5
 #define RPL_CONF_DEFAULT_LIFETIME 5
 #define RPL_CONF_WITH_MC 1
