@@ -38,11 +38,15 @@ void setup (void)
     // uncomment if you want this node to be a routing node and set the
     // correct options in project-conf.h and contiki-conf.h
     //NETSTACK_MAC.off(1);
+
+    // uncoment if you want to set the loop interval at runtime
+    //#define LOOP_INTERVAL_AFTER_INIT (60 * CLOCK_SECOND)    
+    //loop_periodic_set (LOOP_INTERVAL_AFTER_INIT);
+
     mcu_sleep_set(128);
 }
 
 void loop (void)
 {
-
-
+	printf("Hello Merkurboard\n");
 }
