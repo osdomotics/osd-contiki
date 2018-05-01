@@ -30,9 +30,11 @@ extern "C" {
 extern volatile uint8_t mcusleepcycle;  // default 16
 
 #define LED_PIN 4
+#define WATER_PIN 20
 }
 
 uint8_t color_rgb [3] = {0, 0, 0};
+uint8_t water_switch = 0;
 
 static uint8_t name_to_offset (const char * name)
 {
@@ -94,11 +96,35 @@ GENERIC_RESOURCE
   , color_to_string
   );
 
+static size_t
+water_switch_to_string
+    ( const char *name
+    , const char *uri
+    , const char *query
+    , char *buf
+    , size_t bsize
+    )
+{
+  return snprintf (buf, bsize, "%d", water_switch);
+}
+
+GENERIC_RESOURCE
+  ( water
+  , WATER_SWITCH
+  , s
+  , 1
+  , NULL
+  , water_switch_to_string
+  );
+
 void setup (void)
 {
     // switch off the led
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, HIGH);
+    // water switch sensor
+    pinMode(WATER_PIN, INPUT);
+    digitalWrite(WATER_PIN, HIGH);       // turn on pullup resistors
     // init coap resourcen
     rest_init_engine ();
     
@@ -107,6 +133,7 @@ void setup (void)
     rest_activate_resource (&res_red,   (char *)"led/R");
     rest_activate_resource (&res_green, (char *)"led/G");
     rest_activate_resource (&res_blue,  (char *)"led/B");
+    rest_activate_resource (&res_water, (char *)"water");
 
     Driver.begin();
     Driver.SetColor(color_rgb [0], color_rgb [1], color_rgb [2]);
@@ -115,8 +142,10 @@ void setup (void)
 
 void loop (void)
 {
-    
-/*    // Test 
+    // water sensor test
+      water_switch = digitalRead(WATER_PIN);
+      printf("water level: %d\n", water_switch);
+    // Test 
 
 	static int a=1;
 	
@@ -141,5 +170,5 @@ void loop (void)
 	 break;
 	default: printf("a ist irgendwas\n"); break;
 	}
-*/
+
 }
