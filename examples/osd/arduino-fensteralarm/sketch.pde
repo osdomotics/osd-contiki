@@ -17,11 +17,22 @@ extern "C" {
 
 extern resource_t res_led, res_battery, res_cputemp;
 
-uint8_t led_pin=4;
+uint8_t led_pin=4; // D4 
 uint8_t led_status;
-uint8_t f1_pin=18; // D18
-uint8_t f1_led=17; // D17
+
+#define f1_pin 18  // D18
+#define f1_led 17  // D17
+#define f2_pin 16  // D16
+#define f2_led 15  // D15
+#define f3_pin 19  // D19
+#define f3_led 20  // D20
+#define f4_pin 5   // D5
+#define f4_led 6   // D6
+
 uint8_t f1_status=0;
+uint8_t f2_status=0;
+uint8_t f3_status=0;
+uint8_t f4_status=0;
 }
 
 void setup (void)
@@ -34,6 +45,16 @@ void setup (void)
     pinMode(f1_pin,INPUT);
     pinMode(f1_led,OUTPUT);
     digitalWrite(f1_led,HIGH);
+    pinMode(f2_pin,INPUT);
+    pinMode(f2_led,OUTPUT);
+    digitalWrite(f2_led,HIGH);
+    pinMode(f3_pin,INPUT);
+    pinMode(f3_led,OUTPUT);
+    digitalWrite(f3_led,HIGH);
+    pinMode(f4_pin,INPUT);
+    pinMode(f4_led,OUTPUT);
+    digitalWrite(f4_led,HIGH);
+
     // init coap resourcen
     rest_init_engine ();
     #pragma GCC diagnostic ignored "-Wwrite-strings"
@@ -62,4 +83,29 @@ void loop (void)
 		digitalWrite(f1_led,HIGH);
 	}
 	printf("F1: %d\n",f1_status);
+
+        f2_status = digitalRead(f2_pin);
+        if(f2_status == 1){
+                digitalWrite(f2_led,LOW);
+        }else{
+                digitalWrite(f2_led,HIGH);
+        }
+        printf("F2: %d\n",f1_status);
+
+        f3_status = digitalRead(f3_pin);
+        if(f3_status == 1){
+                digitalWrite(f3_led,LOW);
+        }else{
+                digitalWrite(f3_led,HIGH);
+        }
+        printf("F3: %d\n",f3_status);
+
+        f1_status = digitalRead(f1_pin);
+
+        if(f4_status == 1){
+                digitalWrite(f4_led,LOW);
+        }else{
+                digitalWrite(f4_led,HIGH);
+        }
+        printf("F4: %d\n",f4_status);
 }
