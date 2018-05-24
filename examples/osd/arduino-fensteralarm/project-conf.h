@@ -48,8 +48,8 @@
 #define RPL_CONF_LEAF_ONLY 1
 
 /* For Debug: Dont allow MCU sleeping between channel checks */
-#undef RDC_CONF_MCU_SLEEP
-#define RDC_CONF_MCU_SLEEP       0
+//#undef RDC_CONF_MCU_SLEEP
+//#define RDC_CONF_MCU_SLEEP       0
 
 /* Increase rpl-border-router IP-buffer when using more than 64. */
 //#undef REST_MAX_CHUNK_SIZE

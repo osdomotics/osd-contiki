@@ -20,6 +20,7 @@ extern resource_t res_led, res_battery, res_cputemp;
 uint8_t led_pin=4;
 uint8_t led_status;
 uint8_t f1_pin=18; // D18
+uint8_t f1_led=17; // D17
 uint8_t f1_status=0;
 }
 
@@ -31,6 +32,8 @@ void setup (void)
     led_status=0;
     // fx pins
     pinMode(f1_pin,INPUT);
+    pinMode(f1_led,OUTPUT);
+    digitalWrite(f1_led,HIGH);
     // init coap resourcen
     rest_init_engine ();
     #pragma GCC diagnostic ignored "-Wwrite-strings"
@@ -53,5 +56,10 @@ void setup (void)
 void loop (void)
 {
 	f1_status = digitalRead(f1_pin);
+	if(f1_status == 1){
+		digitalWrite(f1_led,LOW);
+	}else{
+		digitalWrite(f1_led,HIGH);
+	}
 	printf("F1: %d\n",f1_status);
 }
