@@ -100,7 +100,7 @@ void loop (void)
         }
         printf("F3: %d\n",f3_status);
 
-        f1_status = digitalRead(f1_pin);
+        f4_status = digitalRead(f4_pin);
 
         if(f4_status == 1){
                 digitalWrite(f4_led,LOW);
