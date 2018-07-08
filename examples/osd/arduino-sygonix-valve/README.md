@@ -1,11 +1,22 @@
-Arduino compatibility example
-=============================
+Sygonix Heat Valve Example
+==========================
 
-This example shows that it is now possible to re-use arduino sketches in
-Contiki. This example documents the necessary magic. Arduino specifies
-two routines, `setup` and `loop`. Before `setup` is called, the
-framework initializes hardware. In original Arduino, all this is done in
-a `main` function (in C). For contiki we define a process that does the
-same.
+Here we use a sygonix heat valve as a general purpose adjustable valve.
 
-See the documentation file in apps/contiki-compat/README.md
+However here it is used as a full open/close switch for automatic plant 
+watering.
+
+The hardware documentation is currently missing, but i will check in the 
+code now. Instead of the LCD a ~1" OLED display is used.
+
+You can get one here: 
+
+	https://www.conrad.at/de/sygonix-ht100-heizkoerperthermostat-elektronisch-8-bis-28-c-1377979.html
+
+CoAP Ressources
+---------------
+
+- ``s/pulses`` get the pulses accumulated from the start
+
+- ``a/command`` put ``o`` to open, ``c`` to close
+

@@ -9,13 +9,13 @@ CONTIKI=../../..
 # Contiki IPv6 configuration
 CONTIKI_WITH_IPV6 = 1
 
-CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\" -DARDUINO=100 -I./Adafruit-GFX-Library-master -I./Adafruit_SH1106-master -ffunction-sections -fdata-sections 
+CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\" -DARDUINO=100 -ffunction-sections -fdata-sections 
 
 LDFLAGS += -Wl,--gc-sections
 
 PROJECT_SOURCEFILES += ${SKETCH}.cpp \
-    Adafruit-GFX-Library-master/Adafruit_GFX.cpp \
-    Adafruit_SH1106-master/Adafruit_SH1106.cpp
+    Adafruit_GFX.cpp \
+    Adafruit_SH1106.cpp
 
 #PROJECT_DIRS += Adafruit-GFX-Library-master 
 #PROJECT_DIRS += SH1106-master
@@ -67,7 +67,7 @@ SMALL=1
 # REST Engine shall use Erbium CoAP implementation
 APPS += er-coap
 APPS += rest-engine
-APPS += arduino json json-resource
+APPS += arduino json json-resource ota-update
 
 include $(CONTIKI)/Makefile.include
 include $(CONTIKI)/apps/arduino/Makefile.include

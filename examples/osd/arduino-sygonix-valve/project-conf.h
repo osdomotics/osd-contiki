@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2017, Swedish Institute of Computer Science.
+ * Copyright (C) 2010-2018, Swedish Institute of Computer Science.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,10 @@
 #define PROJECT_RPL_WEB_CONF_H_
 
 #define DDRE5 DDE5
-#define LOOP_INTERVAL           (CLOCK_SECOND/2)
+#define LOOP_INTERVAL            (CLOCK_SECOND)
+#define LOOP_INTERVAL_SLOW       (CLOCK_SECOND*10)
+#define DISPLAY_FADE_OUT_SECONDS (10)
+#define WAIT_TO_CLOSE_SECONDS    (15*60)
 
 #define PLATFORM_HAS_LEDS    1
 //#define PLATFORM_HAS_BUTTON  1

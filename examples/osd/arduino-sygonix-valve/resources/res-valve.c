@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017, Marcus Priesch - open source consulting
+ * Copyright (C) 2017-2018, Marcus Priesch - open source consulting
  * All rights reserved.
  *
  */
@@ -20,6 +20,8 @@
 #include "generic_resource.h"
 #include "Arduino.h"
 #include "valve.h"
+
+extern enum states state;
 
 int pulses_reset
     (const char *name, const char *uri, const char *query, const char *s)
@@ -52,20 +54,29 @@ GENERIC_RESOURCE \
 int direction_from_string
     (const char *name, const char *uri, const char *query, const char *s)
 {
-    int32_t tmp = strtol (s, NULL, 10);
-    if (tmp == 0) {
-      digitalWrite (DIR_UP_PIN, LOW);
-      digitalWrite (DIR_DOWN_PIN, LOW);
+    //int32_t tmp = strtol (s, NULL, 10);
+    if (*s == '0') {
+      valve (STOP);
     }
-    else if (tmp == -1) {
-      digitalWrite (DIR_UP_PIN, LOW);
-      digitalWrite (DIR_DOWN_PIN, HIGH);
+    else if (*s == 'o' || *s == 'O') {
+      valve (OPEN);
     }
-    else if (tmp == 1) {
-      digitalWrite (DIR_UP_PIN, HIGH);
-      digitalWrite (DIR_DOWN_PIN, LOW);
+    else if (*s == 'c' || *s == 'C') {
+      valve (CLOSE);
     }
     return 0;
+}
+
+size_t
+direction_help
+    ( const char *name
+    , const char *uri
+    , const char *query
+    , char *buf
+    , size_t bufsize
+    )
+{
+  return snprintf (buf, bufsize, "o: open, c: close, s: stop");
 }
 
 GENERIC_RESOURCE \
@@ -74,12 +85,44 @@ GENERIC_RESOURCE \
     , direction
     , 0
     , direction_from_string
-    , NULL
+    , direction_help
+    );
+
+int command_from_string
+    (const char *name, const char *uri, const char *query, const char *s)
+{
+    //int32_t tmp = strtol (s, NULL, 10);
+    if (*s == 'o' || *s == 'O') {
+      state = FULLY_OPENING;
+    }
+    else if (*s == 'c' || *s == 'C') {
+      state = FULLY_CLOSING;
+    }
+    return 0;
+}
+
+size_t
+command_help
+    ( const char *name
+    , const char *uri
+    , const char *query
+    , char *buf
+    , size_t bufsize
+    )
+{
+  return snprintf (buf, bufsize, "o: open, c: close");
+}
+
+GENERIC_RESOURCE \
+    ( command
+    , COMMAND
+    , command
+    , 0
+    , command_from_string
+    , command_help
     );
 
 /*
  * VI settings, see coding style
  * ex:ts=8:et:sw=4
  */
-
-
