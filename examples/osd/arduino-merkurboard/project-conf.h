@@ -35,8 +35,8 @@
 #define LOOP_INTERVAL		(1 * CLOCK_SECOND)
 
 /* RPL: need to turn it on in platform/osd-merkur-256/contiki-conf.h
- 
-   for leaf nodes: 
+
+   for leaf nodes:
      use normal contikimac and dont do rpl routing
      uncomment the below settings
 

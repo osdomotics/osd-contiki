@@ -15,7 +15,7 @@ First see the Security note below.
 Then, if you've decided you want to try this: This is experimental code,
 use at your own risk.
 
-OK, how to run this: 
+OK, how to run this:
 There is now a new make variable that determines which image (the one
 for the upper or the one for the lower half of flash memory) is to be
 built. Set ::
@@ -37,22 +37,48 @@ in the following):
   copy of the irq-vector table (see below for further details). This is
   only necessary if you're using the latest bootloader.
 
-To upload an image via OTA:
+To automatically make and upload an image via OTA:
 
-- Create the ``.hex`` file with::
+- go to an ``arduino-*`` directory inside ``examples`` drawer (e.g.:)::
 
-   make TARGET=osd-merkur-256 BOOTLOADER_PARTITION=1 ota.osd-merkur-256.1.hex
+   cd ../arduino-merkurboard
 
-- Generate the ``.bin`` file with::
+- call ota-update.py with the ip-address of the merkurboard::
 
-  ./ota_uploader.py x ota.osd-merkur-256.1.hex > ota.osd-merkur-256.1.bin
+  python ../ota-update/ota_uploader.py 2001:db8:c001:f00d:221:2eff:ff00:ca15
 
-  Note that the ``ota_uploader.py`` tool is intended to turn into a
-  full-fledged upgrade tool. This is work in progress. The first
-  parameter will be the destination IP-Address in the future and is
-  currently ignored.
+  It will communicate with the merkurboard to determine the correct
+  partition to build the code for and upload the correct bin file for you.
 
-- Upload this image to the ``/update`` resource, either via the firefox
+  Internally it will use libcoap's ``coap-client``. So be sure you have
+  this in your ``$PATH``.
+
+  Note that all ota ressources are mounted under /ota/ so to not mix up
+  with other resources. See ``examples/arduino-merkurboard`` how to
+  enable this for your project.
+
+- after you have successfully uplaoded the code, you can reboot into the
+  new image by calling ``ota-uploader.py`` with the ``--reboot`` option::
+
+  python ../ota-update/ota_uploader.py \
+      2001:db8:c001:f00d:221:2eff:ff00:ca15 --reboot
+
+- when you are satisfied with what your new image is doing you can persist
+  it by calling::
+
+  python ../ota-update/ota_uploader.py \
+      2001:db8:c001:f00d:221:2eff:ff00:ca15 --set-ok
+
+- if you want to query your merkurboards ota settings use::
+
+  python ../ota-update/ota_uploader.py \
+      2001:db8:c001:f00d:221:2eff:ff00:ca15 --query
+
+  Note that the ``ota_uploader.py`` tool is not checking every corner case
+  right now, if you find something which is not covered feel free to open
+  an issue on github.
+
+- If you intend to manually upload the image you can do so via the firefox
   copper plugin or via the commandline::
 
       coap-client -t application/octet-stream -f ota.osd-merkur-256.1.bin
@@ -109,7 +135,7 @@ How to use in your own code
 - add app ``ota-update`` (and possibly ``json`` and ``json-resource``)
   to your Makefile
 - add ``#include "ota-update.h"`` to your source file
-- add ``OTA_ACTIVATE_RESOURCES();`` to your code to activate the 
+- add ``OTA_ACTIVATE_RESOURCES();`` to your code to activate the
   resources
 
 All above described resources are prefixed with ``ota/``.

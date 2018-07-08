@@ -14,6 +14,7 @@ extern "C" {
 #include "arduino-process.h"
 #include "rest-engine.h"
 #include "net/netstack.h"
+#include "ota-update.h"
 
 extern resource_t res_led, res_battery, res_cputemp;
 
@@ -33,6 +34,7 @@ void setup (void)
     rest_activate_resource (&res_led, "s/led");
     rest_activate_resource (&res_battery, "s/battery");
     rest_activate_resource (&res_cputemp, "s/cputemp");
+    OTA_ACTIVATE_RESOURCES();
     #pragma GCC diagnostic pop
 
     // uncomment if you want this node to be a routing node and set the
