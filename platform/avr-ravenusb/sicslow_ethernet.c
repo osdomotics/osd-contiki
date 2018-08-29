@@ -5,7 +5,7 @@
  * \author
  *         Colin O'Flynn <coflynn@newae.com>
  *
- * \addtogroup usbstick 
+ * \addtogroup usbstick
  */
 
 /* Copyright (c) 2008 by:
@@ -133,15 +133,15 @@
 #else
 /**
    \par Ethernet to 6LowPan Address Translation
-   
-   It should be obvious that since 802.15.4 addresses are 8 
-   bytes, and 802.3 addresses are 6 bytes, some form of 
+
+   It should be obvious that since 802.15.4 addresses are 8
+   bytes, and 802.3 addresses are 6 bytes, some form of
    address translation is needed. These routines provide this
 
    \par 802.3 Address Formats
 
    802.3 MAC addresses used here have this form:
-   
+
    \verbatim
    +----+----+----+----+----+----+----+----+
    +    +    +    +    +    + TR + GL + MU +
@@ -149,20 +149,20 @@
    \endverbatim
 
 
-   It can be seen this is like a normal ethernet MAC address, 
+   It can be seen this is like a normal ethernet MAC address,
    with GL being the Global/Local bit, and MU being the
    Multicast/Unicast bit.
 
    The addition is the 'TR' bit, which if set indicates that
    the address must be translated when going between 802.15.4
-   and 802.3. 
+   and 802.3.
 
    \par Address Translation
 
    If the TRANSLATE (TR) bit is CLEAR, this means the 5th and
    4th LSBytes of the 802.15.4 address are fffe, aka the address
    has the hexidecial form:
-   
+
    xxxxxxfffexxxxxx
 
    \note
@@ -179,19 +179,19 @@
    have bit 0 CLEAR, bit 1 SET, and bit 2 CLEAR. The remaining
    bits in this octet can be anything.
 
-   If the TRANSLATE bit is SET, this means the address on the 
+   If the TRANSLATE bit is SET, this means the address on the
    802.3 side does not directly convert to an 802.15.4 address.
    To translate it, the remainder of the octet is used as an
    index in a look-up table. This look-up table simply stores
    the 4th, 5th, and 8th octet of the 802.15.4 address, and attaches
    them to the remaining 5 bytes of the 802.3 address.
 
-   In this way there can be 32 different 802.15.4 'prefixes', 
+   In this way there can be 32 different 802.15.4 'prefixes',
    requiring only 96 bytes of RAM in a storage table on the
-   802.3 to 802.15.4 bridge. 
-  
+   802.3 to 802.15.4 bridge.
+
    Mulitcast addresses on 802.3 are mapped to broadcast addresses on
-   802.15.4 and vis-versa. Since IPv6 does not use 802.3 broadcast, 
+   802.15.4 and vis-versa. Since IPv6 does not use 802.3 broadcast,
    this code will drop all 802.3 broadcast packets. They are most
    likely something unwanted, such as IPv4 packets that snuck in.
 
@@ -233,9 +233,14 @@
 #include "zmac.h"
 #include "frame.h"
 #include "radio.h"
+#define RSSI (radio_get_saved_rssi_value ())
+#else
+#include "rf230bb.h"
+#define RSSI (rf230_last_rssi)
 #endif
 #include "rndis/rndis_protocol.h"
 #include "rndis/rndis_task.h"
+#include <rtimer.h>
 
 #include <stdint.h>
 #include <stdio.h>
@@ -250,6 +255,54 @@
 
 #define UIP_IP_BUF   ((struct uip_ip_hdr *)&uip_buf[UIP_LLH_LEN])
 #define ETHBUF(x) ((struct uip_eth_hdr *)x)
+#define IP4BUF(x) ((ip_t *)((x)+UIP_LLH_LEN))
+#define UDPBUF(x) ((udp_t *)((x)+UIP_LLH_LEN+sizeof(ip_t)))
+#define ZEPBUF(x) ((zep_t *)((x)+UIP_LLH_LEN+sizeof(udp_t)+sizeof(ip_t)))
+
+#if CONF_ZEP
+/* ZEP "ZigBee Encapsulation Protocol" is carried in a UDP packet
+ * ZEP v2 defines different headers for ACK and DATA. We don't want this
+ * as the ack then wouldn't have a timestamp. So we use the same header
+ * for everything
+ */
+typedef struct ip_hdr {
+    uint8_t  v_ihl;
+    uint8_t  dscp_ecn;
+    uint16_t len;
+    uint16_t id;
+    uint16_t flags_frag;
+    uint8_t  ttl;
+    uint8_t  proto;
+    uint16_t cs;
+    uint32_t src;
+    uint32_t dst;
+} ip_t;
+typedef struct udp_hdr {
+    uint16_t src_port;
+    uint16_t dst_port;
+    uint16_t len;
+    uint16_t checksum;
+} udp_t;
+typedef struct zep_v2 {
+    char     preamble [2];
+    uint8_t  version;
+    uint8_t  type;
+    uint8_t  channel;
+    uint16_t device;
+    uint8_t  crc_mode;
+    uint8_t  lqi;
+    uint64_t ntp_timestamp;
+    uint32_t seqno;
+    uint8_t  reserved [10];
+    uint8_t  len;
+} zep_t;
+/* ntp offset for 2018-01-01 0:00:00 in seconds */
+#define NTP_OFFSET ((uint64_t)2208988800UL + (uint64_t)1514764800UL)
+#define ZEP_ENCAP_LEN (sizeof (ip_t) + sizeof (udp_t) + sizeof (zep_t))
+#else /* !CONF_ZEP */
+#define ZEP_ENCAP_LEN 0
+#endif /* !CONF_ZEP */
+
 
 //For little endian, such as our friend mr. AVR
 #ifndef LSB
@@ -284,7 +337,7 @@ extern void (*sicslowmac_snifferhook)(const struct mac_driver *r);
 
 
 //! Location of TRANSLATE (TR) bit in Ethernet address
-#define TRANSLATE_BIT_MASK (1<<2) 
+#define TRANSLATE_BIT_MASK (1<<2)
 //! Location of LOCAL (GL) bit in Ethernet address
 #define LOCAL_BIT_MASK     (1<<1)
 //! Location of MULTICAST (MU) bit in Ethernet address
@@ -295,8 +348,8 @@ extern void (*sicslowmac_snifferhook)(const struct mac_driver *r);
 uint8_t prefixCounter;
 uint8_t prefixBuffer[PREFIX_BUFFER_SIZE][3];
 
-/* 6lowpan max size + ethernet header size + 1 */
-uint8_t raw_buf[127+ UIP_LLH_LEN +1];
+/* 6lowpan max size + ZEP encapsulation size + ethernet header size + 1 */
+uint8_t raw_buf[127+ UIP_LLH_LEN + ZEP_ENCAP_LEN +1];
 
 /**
  * \brief   Perform any setup needed
@@ -311,6 +364,7 @@ void mac_ethernetSetup(void)
   usbstick_mode.translate = 1;
   usbstick_mode.debugOn= 1;
   usbstick_mode.raw = 0;
+  usbstick_mode.zep = 0;
   usbstick_mode.sneeze=0;
 
 #if !RF230BB
@@ -457,7 +511,7 @@ void mac_ethernetToLowpan(uint8_t * ethHeader)
   tcpip_output(destAddrPtr);
 #endif
 #else  /* NETSTACK_CONF_WITH_IPV6 */
-  tcpip_output();    //Allow non-ipv6 builds (Hello World) 
+  tcpip_output();    //Allow non-ipv6 builds (Hello World)
 #endif /* NETSTACK_CONF_WITH_IPV6 */
 
 #if !RF230BB
@@ -474,6 +528,9 @@ void mac_ethernetToLowpan(uint8_t * ethHeader)
  */
 void mac_LowpanToEthernet(void)
 {
+  if (usbstick_mode.raw != 0 || usbstick_mode.zep != 0) {
+    return;
+  }
 #if !RF230BB
   parsed_frame = sicslowmac_get_frame();
 #endif
@@ -525,7 +582,7 @@ void mac_LowpanToEthernet(void)
     //Some IP packets have link layer in them, need to change them around!
     mac_translateIPLinkLayer(ll_8023_type);
   }
- 
+
 #if UIP_CONF_IPV6_RPL
 /* We won't play ping-pong with the host! */
     if(uip_ipaddr_cmp(&last_sender, &UIP_IP_BUF->srcipaddr)) {
@@ -634,8 +691,8 @@ int8_t mac_translateIcmpLinkLayer(lltype_t target)
     case ICMP6_PACKET_TOO_BIG:
     case ICMP6_TIME_EXCEEDED:	
     case ICMP6_PARAM_PROB:
-    case ICMP6_ECHO_REQUEST:  
-    case ICMP6_ECHO_REPLY: 
+    case ICMP6_ECHO_REQUEST:
+    case ICMP6_ECHO_REPLY:
       return 0;
       break;
 
@@ -647,15 +704,15 @@ int8_t mac_translateIcmpLinkLayer(lltype_t target)
   len -= icmp_opt_offset;
 
   //Sanity check
-  if (len < 8) return -2; 
+  if (len < 8) return -2;
 
   //While we have options to do...
   while (len >= 8){
-    
+
     //If we have one of these, we have something useful!
-    if (((UIP_ICMP_OPTS(icmp_opt_offset)->type) == UIP_ND6_OPT_SLLAO) || 
+    if (((UIP_ICMP_OPTS(icmp_opt_offset)->type) == UIP_ND6_OPT_SLLAO) ||
         ((UIP_ICMP_OPTS(icmp_opt_offset)->type) == UIP_ND6_OPT_TLLAO) ) {
-      
+
       /* Shrinking the buffer may thrash things, so we store the old
          link-layer address */
       for(i = 0; i < (UIP_ICMP_OPTS(icmp_opt_offset)->length*8 - 2); i++) {
@@ -679,7 +736,7 @@ int8_t mac_translateIcmpLinkLayer(lltype_t target)
       } else {
         return -3; //Uh-oh!
       }
-      
+
       //Translate addresses
       if (target == ll_802154_type) {
         mac_createSicslowpanLongAddr(llbuf, (uip_lladdr_t *)UIP_ICMP_OPTS(icmp_opt_offset)->data);
@@ -689,7 +746,7 @@ int8_t mac_translateIcmpLinkLayer(lltype_t target)
 #endif
             mac_createDefaultEthernetAddr(UIP_ICMP_OPTS(icmp_opt_offset)->data);
       }
-      
+
       //Adjust the length
       if (target == ll_802154_type) {
         UIP_ICMP_OPTS(icmp_opt_offset)->length = 2;
@@ -701,7 +758,7 @@ int8_t mac_translateIcmpLinkLayer(lltype_t target)
       iplen = UIP_IP_BUF->len[1] | (UIP_IP_BUF->len[0]<<8);
       iplen += sizechange;
       len += sizechange;
-      
+
       UIP_IP_BUF->len[1] = (uint8_t)iplen;
       UIP_IP_BUF->len[0] = (uint8_t)(iplen >> 8);
 
@@ -717,10 +774,10 @@ int8_t mac_translateIcmpLinkLayer(lltype_t target)
       len -= 8 * UIP_ICMP_OPTS(icmp_opt_offset)->length;
       icmp_opt_offset += 8 * UIP_ICMP_OPTS(icmp_opt_offset)->length;
     } else {
-	  
+
       //Not an option we care about, ignore it
       len -= 8 * UIP_ICMP_OPTS(icmp_opt_offset)->length;
-	      
+
       //This shouldn't happen!
       if (UIP_ICMP_OPTS(icmp_opt_offset)->length == 0) {
         PRINTF("Option in ND packet has length zero, error?\n\r");
@@ -728,9 +785,9 @@ int8_t mac_translateIcmpLinkLayer(lltype_t target)
       }
 
       icmp_opt_offset += 8 * UIP_ICMP_OPTS(icmp_opt_offset)->length;
-      
+
     } //If ICMP_OPT is one we care about
-   
+
   } //while(len >= 8)
 
   return 0;
@@ -826,8 +883,8 @@ uint8_t mac_createEthernetAddr(uint8_t * ethernet, uip_lladdr_t * lowpan)
 	if (memcmp((uint8_t *)&macLongAddr, (uint8_t *)lowpan, UIP_LLADDR_LEN) == 0) {
 		usb_eth_get_mac_address(ethernet);
 		return 1;
-	} 
-#endif  
+	}
+#endif
 
 #if UIP_CONF_SIMPLE_JACKDAW_ADDR_TRANS
 
@@ -859,7 +916,7 @@ uint8_t mac_createEthernetAddr(uint8_t * ethernet, uip_lladdr_t * lowpan)
 	  ethernet[3] = lowpan->addr[5];
 	  ethernet[4] = lowpan->addr[6];
 	  ethernet[5] = lowpan->addr[7];
-	  
+
 	
   } else {
 
@@ -951,28 +1008,29 @@ void slide(uint8_t * data, uint8_t length, int16_t slide)
     } else {
       *(data + slide + i) = *(data + i);
     }
-    
+
     i++;
   }
 }
 
-//#define ETHBUF(x) ((struct uip_eth_hdr *)x)
-//#define UIP_IP_BUF   ((struct uip_ip_hdr *)&uip_buf[UIP_LLH_LEN])
-
-void
-mac_log_802_15_4_tx(const uint8_t* buffer, size_t total_len) {
-  if (usbstick_mode.raw != 0) {
-    uint8_t sendlen;
-
-	static uint8_t raw_buf[127+ UIP_LLH_LEN +1];
+static void mac_log_802_15_4_raw_rxtx
+    (const uint8_t* buf, size_t len, int is_tx, int zep)
+{
+    uint8_t sendlen = len;
+#if CONF_ZEP
+    static uint32_t       seqno     = 0;
+    static rtimer_clock_t last_ts   = 0;
+    static uint32_t       ovlcnt    = 0;
+    rtimer_clock_t        timestamp = RTIMER_NOW ();
+    radio_value_t         channel   = 0;
+#endif /* CONF_ZEP */
 
   /* Get the raw frame */
-    memcpy(&raw_buf[UIP_LLH_LEN], buffer, total_len);
-    sendlen = total_len;
+    memcpy(&raw_buf[UIP_LLH_LEN + (zep ? ZEP_ENCAP_LEN : 0)], buf, len);
 
   /* Setup generic ethernet stuff */
-    ETHBUF(raw_buf)->type = uip_htons(0x809A);  //UIP_ETHTYPE_802154 0x809A
- 
+    ETHBUF(raw_buf)->type = uip_htons(UIP_ETHTYPE_802154);
+
   /* Check for broadcast message */
     if(packetbuf_holds_broadcast()) {
       ETHBUF(raw_buf)->dest.addr[0] = 0x33;
@@ -989,56 +1047,98 @@ mac_log_802_15_4_tx(const uint8_t* buffer, size_t total_len) {
       ETHBUF(raw_buf)->dest.addr[5] = UIP_IP_BUF->destipaddr.u8[15];
 */
     } else {
-  /* Otherwise we have a real address */  
+      /* Otherwise we have a real address */
       mac_createEthernetAddr((uint8_t *) &(ETHBUF(raw_buf)->dest.addr[0]),
           (uip_lladdr_t *)packetbuf_addr(PACKETBUF_ADDR_RECEIVER));
     }
 
-//    mac_createEthernetAddr((uint8_t *) &(ETHBUF(raw_buf)->src.addr[0]),(uip_lladdr_t *)&uip_lladdr.addr);
-	mac_createDefaultEthernetAddr((uint8_t *) &(ETHBUF(raw_buf)->src.addr[0]));
+    //mac_createEthernetAddr((uint8_t *) &(ETHBUF(raw_buf)->src.addr[0]),(uip_lladdr_t *)&uip_lladdr.addr);
+    mac_createDefaultEthernetAddr((uint8_t *) &(ETHBUF(raw_buf)->src.addr[0]));
 
-    sendlen += UIP_LLH_LEN;
+#if CONF_ZEP
+    if (zep) {
+        /* Optimization: Do some things only once */
+        ETHBUF(raw_buf)->type = uip_htons(UIP_ETHTYPE_IPV4);
+        /* IPv4 */
+        IP4BUF(raw_buf)->v_ihl      = 0x45;
+        IP4BUF(raw_buf)->dscp_ecn   = 0;
+        IP4BUF(raw_buf)->len        = uip_htons (ZEP_ENCAP_LEN + len);
+        IP4BUF(raw_buf)->id         = uip_htons (0);
+        IP4BUF(raw_buf)->flags_frag = uip_htons (0);
+        IP4BUF(raw_buf)->ttl        = 50;
+        IP4BUF(raw_buf)->proto      = UIP_PROTOCOL_UDP;
+        IP4BUF(raw_buf)->cs         = uip_htons (0);
+        if (is_tx) {
+            IP4BUF(raw_buf)->src    = UIP_HTONL (0x7F000001);
+            IP4BUF(raw_buf)->dst    = UIP_HTONL (0);
+        } else {
+            IP4BUF(raw_buf)->src    = UIP_HTONL (0);
+            IP4BUF(raw_buf)->dst    = UIP_HTONL (0x7F000001);
+        }
+        /* UDP */
+        UDPBUF(raw_buf)->src_port = 0;
+        UDPBUF(raw_buf)->dst_port = uip_htons (UDP_ZEP_PORT);
+        UDPBUF(raw_buf)->len = uip_htons (len + sizeof (zep_t) + sizeof (udp_t));
+        UDPBUF(raw_buf)->checksum = 0;
+        /* ZEP */
+        rf230_driver.get_value  (RADIO_PARAM_CHANNEL, &channel);
+        // Doesn't work, always gets 0
+        //rf230_driver.get_object
+        //    (RADIO_PARAM_LAST_PACKET_TIMESTAMP, &timestamp, sizeof (timestamp));
+        strncpy (ZEPBUF(raw_buf)->preamble, "EX", 2);
+        ZEPBUF(raw_buf)->version  = 2;
+        ZEPBUF(raw_buf)->type     = 1; /* data */
+        ZEPBUF(raw_buf)->channel  = channel;
+        ZEPBUF(raw_buf)->device   = uip_htons (0);
+        ZEPBUF(raw_buf)->crc_mode = 1; /* crc-mode, not lqi */
+        ZEPBUF(raw_buf)->lqi      = RSSI;
+        ZEPBUF(raw_buf)->seqno    = UIP_HTONL (seqno);
+        seqno++;
+        ZEPBUF(raw_buf)->len      = len;
+        memset (ZEPBUF(raw_buf)->reserved, 0, sizeof (ZEPBUF(raw_buf)->reserved));
+        {
+            uint64_t x = (((uint64_t)timestamp) << 32) / RTIMER_ARCH_SECOND;
+            /* Simple check for overflow: effective for packets that follow
+             * closely but will lose some overflows for longer gaps in the
+             * packet flow (because we see the rtimer only on reception of
+             * packets). It would be nicer if contiki's rtimer
+             * implementation would check for overflows.
+             */
+            if (timestamp < last_ts) {
+                ovlcnt++;
+                x += (((uint64_t)0x10000) << 32) / RTIMER_ARCH_SECOND * ovlcnt;
+            }
+            /* If we don't use an offset, wireshark will treat the time as being
+             * in the next epoch starting somewhere around the year 2036, so to
+             * get a mostly-zero timestamp for the start we're using an offset
+             * into the year 2018
+             */
+            x += (NTP_OFFSET << 32);
+            ZEPBUF(raw_buf)->ntp_timestamp =
+                ( ((uint64_t)UIP_HTONL (x >> 32))
+                | (((uint64_t)UIP_HTONL (x & 0xFFFFFFFF)) << 32)
+                );
+        }
+    }
+#endif /* CONF_ZEP */
+
+    sendlen += UIP_LLH_LEN + (zep ? ZEP_ENCAP_LEN : 0);
     usb_eth_send(raw_buf, sendlen, 0);
+}
+
+//#define ETHBUF(x) ((struct uip_eth_hdr *)x)
+//#define UIP_IP_BUF   ((struct uip_ip_hdr *)&uip_buf[UIP_LLH_LEN])
+void
+mac_log_802_15_4_tx(const uint8_t* buffer, size_t total_len) {
+  if (usbstick_mode.raw != 0 || usbstick_mode.zep != 0) {
+    mac_log_802_15_4_raw_rxtx (buffer, total_len, 1, usbstick_mode.zep != 0);
   }
 }
 
 void
 mac_log_802_15_4_rx(const uint8_t* buf, size_t len) {
-  if (usbstick_mode.raw != 0) {
-    uint8_t sendlen;
-
-  /* Get the raw frame */
-    memcpy(&raw_buf[UIP_LLH_LEN], buf, len);
-    sendlen = len;
-
-  /* Setup generic ethernet stuff */
-    ETHBUF(raw_buf)->type = uip_htons(0x809A);  //UIP_ETHTYPE_802154 0x809A
-  
-  /* Check for broadcast message */
-    if(packetbuf_holds_broadcast()) {
-      ETHBUF(raw_buf)->dest.addr[0] = 0x33;
-      ETHBUF(raw_buf)->dest.addr[1] = 0x33;
-      ETHBUF(raw_buf)->dest.addr[2] = 0x00;
-      ETHBUF(raw_buf)->dest.addr[3] = 0x00;
-      ETHBUF(raw_buf)->dest.addr[4] = 0x80;
-      ETHBUF(raw_buf)->dest.addr[5] = 0x9A;
-/*
-      ETHBUF(raw_buf)->dest.addr[2] = UIP_IP_BUF->destipaddr.u8[12];
-      ETHBUF(raw_buf)->dest.addr[3] = UIP_IP_BUF->destipaddr.u8[13];
-      ETHBUF(raw_buf)->dest.addr[4] = UIP_IP_BUF->destipaddr.u8[14];
-      ETHBUF(raw_buf)->dest.addr[5] = UIP_IP_BUF->destipaddr.u8[15];
-*/
-    } else {
-  /* Otherwise we have a real address */  
-      mac_createEthernetAddr((uint8_t *) &(ETHBUF(raw_buf)->dest.addr[0]),
-          (uip_lladdr_t *)packetbuf_addr(PACKETBUF_ADDR_RECEIVER));
-    }
-
-//    mac_createEthernetAddr((uint8_t *) &(ETHBUF(raw_buf)->src.addr[0]),(uip_lladdr_t *)&uip_lladdr.addr);
-	mac_createDefaultEthernetAddr((uint8_t *) &(ETHBUF(raw_buf)->src.addr[0]));
-
-    sendlen += UIP_LLH_LEN;
-    usb_eth_send(raw_buf, sendlen, 0);
+  if (usbstick_mode.raw != 0 || usbstick_mode.zep != 0) {
+    mac_log_802_15_4_raw_rxtx (buf, len, 0, usbstick_mode.zep != 0);
   }
 }
 /* The rf230bb send driver may call this routine via  RF230BB_HOOK_IS_SEND_ENABLED */
@@ -1066,7 +1166,7 @@ mac_is_send_enabled(void) {
  */
 void mac_ethhijack(const struct mac_driver *r)
 {
-	if (usbstick_mode.raw) {
+	if (usbstick_mode.raw || usbstick_mode.zep) {
 		mac_802154raw(r);
 	}
 		
@@ -1087,7 +1187,7 @@ void mac_ethhijack(const struct mac_driver *r)
 
 void mac_ethhijack_nondata(const struct mac_driver *r)
 {
-	if (usbstick_mode.raw)
+	if (usbstick_mode.raw || usbstick_mode.zep)
 		mac_802154raw(r);
 }
 
@@ -1096,7 +1196,7 @@ void mac_ethhijack_nondata(const struct mac_driver *r)
 /*--------------------------------------------------------------------*/
 /** \brief Logs a sent 6lowpan frame
  *
- *  This routine passes a frame 
+ *  This routine passes a frame
  *  directly to the ethernet layer without decompressing.
  */
 void mac_logTXtoEthernet(frame_create_params_t *p,frame_result_t *frame_result)
@@ -1106,14 +1206,14 @@ void mac_logTXtoEthernet(frame_create_params_t *p,frame_result_t *frame_result)
 
 
 /*--------------------------------------------------------------------*/
-/** \brief Process a received 6lowpan packet. 
+/** \brief Process a received 6lowpan packet.
  *  \param r The MAC layer
  *
  *  The 6lowpan packet is put in packetbuf by the MAC. This routine passes
  *  it directly to the ethernet layer without decompressing.
  */
-void mac_802154raw(const struct mac_driver *r) { 
-	mac_log_802_15_4_tx(radio_frame_data(), radio_frame_length());
+void mac_802154raw(const struct mac_driver *r) {
+	mac_log_802_15_4_rx(radio_frame_data(), radio_frame_length());
 }
 
 #endif /* !RF230BB */

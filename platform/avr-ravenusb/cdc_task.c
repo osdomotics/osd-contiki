@@ -232,6 +232,9 @@ void menu_print(void)
 		PRINTF_P(PSTR("*  p        Set RF power          *\n\r"));
 		PRINTF_P(PSTR("*  6        Toggle 6lowpan        *\n\r"));
 		PRINTF_P(PSTR("*  r        Toggle raw mode       *\n\r"));
+#if CONF_ZEP
+		PRINTF_P(PSTR("*  z        Toggle ZEP mode       *\n\r"));
+#endif
 #if USB_CONF_RS232
 		PRINTF_P(PSTR("*  d        Toggle RS232 output   *\n\r"));
 #endif
@@ -551,6 +554,18 @@ void menu_process(char c)
 					usbstick_mode.raw = 1;
 				}
 				break;
+
+#if CONF_ZEP
+			case 'z':
+				if (usbstick_mode.zep) {
+					PRINTF_P(PSTR("Jackdaw does not capture raw frames as ZEP\n\r"));
+					usbstick_mode.zep = 0;
+				} else {
+					PRINTF_P(PSTR("Jackdaw now captures raw frames as ZEP\n\r"));
+					usbstick_mode.zep = 1;
+				}
+				break;
+#endif /* CONF_ZEP */
 #if USB_CONF_RS232
 			case 'd':
 				if (usbstick_mode.debugOn) {
@@ -649,10 +664,12 @@ extern uip_ds6_netif_t uip_ds6_if;
 				PRINTF_P(PSTR("change link-local addresses inside IP messages\n\r  * Will "));
 				if (usbstick_mode.sicslowpan == 0) { PRINTF_P(PSTR("not "));}
 				PRINTF_P(PSTR("decompress 6lowpan headers\n\r  * Will "));
-				if (usbstick_mode.raw == 0) { PRINTF_P(PSTR("not "));}
+				if (usbstick_mode.raw == 0 && usbstick_mode.zep == 0) { PRINTF_P(PSTR("not "));}
 
 #if USB_CONF_RS232
-				PRINTF_P(PSTR("Output raw 802.15.4 frames\n\r  * Will "));
+				PRINTF_P(PSTR("Output raw 802.15.4 frames "));
+                                if (usbstick_mode.zep != 0) { PRINTF_P(PSTR("in ZEP Encapsulation")); }
+                                PRINTF_P(PSTR("\n\r  * Will "));
 				if (usbstick_mode.debugOn == 0) { PRINTF_P(PSTR("not "));}
 				PRINTF_P(PSTR("Output RS232 debug strings\n\r"));
 #else

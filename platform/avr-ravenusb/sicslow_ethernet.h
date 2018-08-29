@@ -64,12 +64,17 @@ typedef struct {
 	uint8_t sendToRf	:1;
 	uint8_t translate	:1;
 	uint8_t raw         :1;
+	uint8_t zep         :1;
 	uint8_t debugOn     :1;
     uint8_t sneeze      :1;
 } usbstick_mode_t;
 
 
+/* http://www.tcpdump.org/linktypes.html */
 #define UIP_ETHTYPE_802154 0x809A
+#define UIP_ETHTYPE_IPV4   0x0800
+#define UIP_PROTOCOL_UDP   17
+#define UDP_ZEP_PORT       17754
 
 extern usbstick_mode_t usbstick_mode;
 
