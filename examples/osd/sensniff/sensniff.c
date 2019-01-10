@@ -209,18 +209,43 @@ char_in(unsigned char c)
 void
 sensniff_output_frame()
 {
-  int i;
+  //int i;
   uint8_t len = packetbuf_datalen() & 0xFF;
+  uint8_t i;
+
+#if 0
+        uint16_t cs;
+        unsigned const char * rxdata = packetbuf_dataptr();
+        printf("0000");
+        for (i=0;i<len+2;i++)
+          printf(" %02x",rxdata[i]);
+        cs = crc16_data(rxdata, len, 0);
+        uint16_t cs2;
+        cs2 = (rxdata[len+1] << 8) + rxdata[len];
+        printf (" %04x %04x", cs,cs2);
+        if (cs != cs2)
+          printf ("ERRRRROOOORRRRR");
+        printf("\n");
+#endif
+
+  uint16_t cs,cs2;
+  unsigned const char * rxdata = packetbuf_dataptr();
+  cs = crc16_data(rxdata, len, 0);
+  cs2 = (rxdata[len+1] << 8) + rxdata[len];
+  if (cs != cs2)
+    return;
 
   send_header(CMD_FRAME, len + 2);
 
-  for(i = 0; i < len; i++) {
+  for(i = 0; i < len+2; i++) {
     sensniff_io_byte_out(((uint8_t *)packetbuf_dataptr())[i]);
   }
 
+/*
   sensniff_io_byte_out(packetbuf_attr(PACKETBUF_ATTR_RSSI) & 0xFF);
   sensniff_io_byte_out(0x80 |
-                       (packetbuf_attr(PACKETBUF_ATTR_LINK_QUALITY) & 0xFF));
+                       (packetbuf_attr(PACKETBUF_ATTR_LINK_QUALITY) & 0x7F));
+*/
 
   sensniff_io_flush();
 }
@@ -339,7 +364,7 @@ PROCESS_THREAD(sensniff_process, ev, data)
     PROCESS_YIELD();
     PRINTF("POLL\n");
     if(ev == PROCESS_EVENT_POLL) {
-      PRINTF("process_incoming_data\n");		
+      PRINTF("process_incoming_data\n");
       process_incoming_data();
     }
   }
