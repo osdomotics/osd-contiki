@@ -952,10 +952,16 @@ exit(1);
         err(1, "can't open siodev");
       }
     }
+    // wait some time to let merkurboard finish reset + bootloader
+    fprintf (stderr, "waiting for merkurboard ... ");
+    sleep (7);
+    fprintf (stderr, "continue ...\n");
+
     if (timestamp) stamptime();
     fprintf(stderr, "********SLIP started on ``/dev/%s''\n", siodev);
     stty_telos(slipfd);
   }
+
   slip_send(slipfd, SLIP_END);
   inslip = fdopen(slipfd, "r");
   if(inslip == NULL) err(1, "main: fdopen");
