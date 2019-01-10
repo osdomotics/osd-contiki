@@ -7,12 +7,12 @@
  * https://github.com/Apollon77/I2CSoilMoistureSensor                   *
  *                                                                      *
  * MIT license                                                          *
- *----------------------------------------------------------------------*/ 
+ *----------------------------------------------------------------------*/
 
 #ifndef I2CSOILMOISTURESENSOR_H
 #define I2CSOILMOISTURESENSOR_H
 
-#include <Arduino.h> 
+#include <Arduino.h>
 
 //Default I2C Address of the sensor
 #define SOILMOISTURESENSOR_DEFAULT_ADDR 0x20
@@ -24,7 +24,7 @@
 #define SOILMOISTURESENSOR_MEASURE_LIGHT 	0x03 //	(w) 	n/a
 #define SOILMOISTURESENSOR_GET_LIGHT 		0x04 //	(r) 	2 bytes
 #define SOILMOISTURESENSOR_GET_TEMPERATURE	0x05 //	(r) 	2 bytes
-#define SOILMOISTURESENSOR_RESET 			0x06 //	(w) 	n/a
+#define SOILMOISTURESENSOR_RESET                0x06 // (w)     n/a
 #define SOILMOISTURESENSOR_GET_VERSION 		0x07 //	(r) 	1 bytes
 #define SOILMOISTURESENSOR_SLEEP	        0x08 // (w)     n/a
 #define SOILMOISTURESENSOR_GET_BUSY	        0x09 // (r)	    1 bytes
@@ -33,8 +33,7 @@
 class I2CSoilMoistureSensor {
     public:
         I2CSoilMoistureSensor(uint8_t addr = SOILMOISTURESENSOR_DEFAULT_ADDR);
-
-		void begin(bool wait = false);
+        void begin(bool wait = false);
         unsigned int getCapacitance();
         bool setAddress(int addr, bool reset);
         void changeSensor(int addr, bool wait = false);
@@ -48,7 +47,7 @@ class I2CSoilMoistureSensor {
         bool isBusy();
 
     private:
-		int sensorAddress;
+	int sensorAddress;
 
         void writeI2CRegister8bit(int addr, int value);
         void writeI2CRegister8bit(int addr, int reg, int value);
