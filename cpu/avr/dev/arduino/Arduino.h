@@ -71,7 +71,8 @@ extern "C"{
 #define bitWrite(value, bit, bitvalue) (bitvalue ? bitSet(value, bit) : bitClear(value, bit))
 
 #define clockCyclesPerMicrosecond()  ( F_CPU / 1000000L )
-#define microsecondsToClockCycles(a) ( (a) * (F_CPU / 1000000L) )
+#define clockCyclesToMicroseconds(a) ( (a) / clockCyclesPerMicrosecond() )
+#define microsecondsToClockCycles(a) ( (a) * clockCyclesPerMicrosecond() )
 
 typedef unsigned int word;
 
