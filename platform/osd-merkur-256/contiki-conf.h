@@ -177,8 +177,8 @@ typedef unsigned short uip_stats_t;
 #define RPL_CONF_DEFAULT_LIFETIME_UNIT 5
 #define RPL_CONF_DEFAULT_LIFETIME 5
 #define RPL_CONF_WITH_MC 1
-#define RPL_CONF_WITH_DAO_ACK 1
-#define RPL_CONF_RPL_REPAIR_ON_DAO_NACK 1
+//#define RPL_CONF_WITH_DAO_ACK 1
+//#define RPL_CONF_RPL_REPAIR_ON_DAO_NACK 1
 #define RPL_CONF_LEAF_ONLY 0
 //#define RPL_CONF_DIO_REFRESH_DAO_ROUTES 1
 #define RPL_CONF_WITH_PROBING 1
@@ -200,7 +200,7 @@ typedef unsigned short uip_stats_t;
 #define NETSTACK_CONF_FRAMER      framer_802154
 #define NETSTACK_CONF_RADIO       rf230_driver
 /* CCA theshold energy -91 to -61 dBm (default -77). Set this smaller than the $ */
-#define RF230_CONF_CCA_THRES    -77
+#define RF230_CONF_CCA_THRES    -82
 /* AUTOACK receive mode gives better rssi measurements, even if ACK is never requested */
 #define RF230_CONF_AUTOACK        1
 /* Request 802.15.4 ACK on all packets sent (else autoretry). This is primarily for testing. */
@@ -273,7 +273,7 @@ typedef unsigned short uip_stats_t;
 /* Long csma backoffs will compromise radio cycling; set to 0 for 1 csma */
 #define RF230_CONF_CSMA_RETRIES   0
 /* CCA theshold energy -91 to -61 dBm (default -77). Set this smaller than the $ */
-#define RF230_CONF_CCA_THRES    -77
+#define RF230_CONF_CCA_THRES    -82
 #define SICSLOWPAN_CONF_FRAG      1
 #define SICSLOWPAN_CONF_MAXAGE    3
 /* 211 bytes per queue buffer. Contikimac burst mode needs 15 for a 1280 byte MTU */
