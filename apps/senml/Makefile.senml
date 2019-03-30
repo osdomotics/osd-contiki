@@ -1,0 +1,4 @@
+senml_src = cbor.cpp senml_bool_actuator.cpp senml_float_actuator.cpp senml_int_record.cpp senml_record.cpp senml_base.cpp senml_bool_record.cpp senml_float_record.cpp senml_json_parser.cpp senml_string_actuator.cpp
+senml_base_parser.cpp senml_cbor_parser.cpp senml_helpers.cpp senml_JsonStreamingParser.cpp senml_string_record.cpp
+senml_binary_actuator.cpp senml_double_pack.cpp senml_int_actuator.cpp senml_logging.cpp
+senml_binary_record.cpp senml_enums.cpp senml_int_pack.cpp senml_pack.cpp
