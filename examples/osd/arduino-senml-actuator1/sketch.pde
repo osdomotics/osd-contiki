@@ -15,17 +15,18 @@ extern "C" {
 #include "rest-engine.h"
 #include "net/netstack.h"
 #include "ota-update.h"
-#include <kpn_senml.h>
+//#include <kpn_senml.h>
 
 extern resource_t res_led, res_battery, res_cputemp;
 
 uint8_t led_pin=4;
 uint8_t led_status;
 }
+#include <kpn_senml.h>
 
 void setTemp(float value){
-    Serial.print("set the temp of the boiler to ");
-    Serial.println(value);
+    Serial1.print("set the temp of the boiler to ");
+    Serial1.println(value);
 }
 
 SenMLPack doc("device_name");
@@ -39,10 +40,11 @@ void setup (void)
     digitalWrite(led_pin, HIGH);
     led_status=0;
     // senml
-    senMLSetLogger(&Serial);
+    Serial1.begin(38400);
+    senMLSetLogger(&Serial1);
     doc.add(&rec);
     delay(1000);
-    Serial.println("start");
+    Serial1.println("start");
     // init coap resourcen
     rest_init_engine ();
     #pragma GCC diagnostic ignored "-Wwrite-strings"
@@ -67,6 +69,6 @@ void loop (void)
 {
     const char* buffer = "[{\"n\":\"temperature\",\"u\":\"Cel\",\"v\":23.1}]";
     doc.fromJson(buffer);
-    Serial.println();
-    Serial.println("done");
+    Serial1.println();
+    Serial1.println("done");
 }
