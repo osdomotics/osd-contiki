@@ -18,7 +18,7 @@
     #include "mbed.h"
     #include "sstream"
 #else
-    #include <stream.h>
+    #include <Stream.h>
 #endif
 
 //contains a referenc to the global logger object assigned to the module

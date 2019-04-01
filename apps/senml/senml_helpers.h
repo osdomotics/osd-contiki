@@ -18,7 +18,7 @@
     #include "mbed.h"
     #include "sstream"
 #else
-    #include <stream.h>
+    #include <Stream.h>
 #endif
 #include <senml_enums.h>
 #include <math.h> 
