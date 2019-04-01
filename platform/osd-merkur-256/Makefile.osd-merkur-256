@@ -31,8 +31,8 @@ CONTIKI_TARGET_SOURCEFILES += wiring_digital.c
 CONTIKI_TARGET_SOURCEFILES += new.cpp twi.c Wire.cpp WMath.cpp
 CONTIKI_TARGET_SOURCEFILES += Print.cpp Stream.cpp WString.cpp
 CONTIKI_TARGET_SOURCEFILES += SPI.cpp
-CONTIKI_TARGET_SOURCEFILES += HardwareSerial.cpp HardwareSerial1.cpp
-CONTIKI_TARGET_SOURCEFILES += wiring_pulse.c
+CONTIKI_TARGET_SOURCEFILES += HardwareSerial.cpp HardwareSerial1.cpp HardwareSerial0.cpp
+CONTIKI_TARGET_SOURCEFILES += wiring_pulse.c abi.cpp Base64.cpp
 # guh Source Files
 # Smart Grid Ready Interface
 CONTIKI_TARGET_SOURCEFILES += sg-ready.c
