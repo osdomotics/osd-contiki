@@ -1205,6 +1205,8 @@ void rf230_warm_reset(void) {
 /* Limit tx power for testing miniature Raven mesh */
 #ifdef RF230_MAX_TX_POWER
   set_txpower(RF230_MAX_TX_POWER);  //0=3dbm 15=-17.2dbm
+#else
+  set_txpower(TX_PWR_MAX);  //0=3dbm 15=-17.2dbm
 #endif
 }
 /*---------------------------------------------------------------------------*/
