@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <inttypes.h>
+#include <contiki.h>
 #include "Arduino.h"
 
 #include "HardwareSerial.h"
@@ -104,35 +105,37 @@ void HardwareSerial::begin(unsigned long baud, byte config)
 {
   // Try u2x mode first
   uint16_t baud_setting = (F_CPU / 4 / baud - 1) / 2;
-  *_ucsra = 1 << U2X0;
+  if (_ubrrl && _ubrrh) {
+    *_ucsra = 1 << U2X0;
 
-  // hardcoded exception for 57600 for compatibility with the bootloader
-  // shipped with the Duemilanove and previous boards and the firmware
-  // on the 8U2 on the Uno and Mega 2560. Also, The baud_setting cannot
-  // be > 4095, so switch back to non-u2x mode if the baud rate is too
-  // low.
-  if (((F_CPU == 16000000UL) && (baud == 57600)) || (baud_setting >4095))
-  {
-    *_ucsra = 0;
-    baud_setting = (F_CPU / 8 / baud - 1) / 2;
-  }
+    // hardcoded exception for 57600 for compatibility with the bootloader
+    // shipped with the Duemilanove and previous boards and the firmware
+    // on the 8U2 on the Uno and Mega 2560. Also, The baud_setting cannot
+    // be > 4095, so switch back to non-u2x mode if the baud rate is too
+    // low.
+    if (((F_CPU == 16000000UL) && (baud == 57600)) || (baud_setting >4095))
+    {
+      *_ucsra = 0;
+      baud_setting = (F_CPU / 8 / baud - 1) / 2;
+    }
 
-  // assign the baud_setting, a.k.a. ubrr (USART Baud Rate Register)
-  *_ubrrh = baud_setting >> 8;
-  *_ubrrl = baud_setting;
+    // assign the baud_setting, a.k.a. ubrr (USART Baud Rate Register)
+    *_ubrrh = baud_setting >> 8;
+    *_ubrrl = baud_setting;
 
-  _written = false;
+    _written = false;
 
-  //set the data bits, parity, and stop bits
+    //set the data bits, parity, and stop bits
 #if defined(__AVR_ATmega8__)
-  config |= 0x80; // select UCSRC register (shared with UBRRH)
+    config |= 0x80; // select UCSRC register (shared with UBRRH)
 #endif
-  *_ucsrc = config;
+    *_ucsrc = config;
+    sbi(*_ucsrb, TXEN0);
+    cbi(*_ucsrb, UDRIE0);
+  }
   
   sbi(*_ucsrb, RXEN0);
-  sbi(*_ucsrb, TXEN0);
   sbi(*_ucsrb, RXCIE0);
-  cbi(*_ucsrb, UDRIE0);
 }
 
 void HardwareSerial::end()
@@ -140,10 +143,12 @@ void HardwareSerial::end()
   // wait for transmission of outgoing data
   flush();
 
-  cbi(*_ucsrb, RXEN0);
-  cbi(*_ucsrb, TXEN0);
   cbi(*_ucsrb, RXCIE0);
-  cbi(*_ucsrb, UDRIE0);
+  cbi(*_ucsrb, RXEN0);
+  if (_ubrrl && _ubrrh) {
+    cbi(*_ucsrb, TXEN0);
+    cbi(*_ucsrb, UDRIE0);
+  }
   
   // clear any received data
   _rx_buffer_head = _rx_buffer_tail;
@@ -177,6 +182,13 @@ int HardwareSerial::read(void)
 
 int HardwareSerial::availableForWrite(void)
 {
+  // If we use the output from contiki, we always return 1 here
+  // FIXME: Some implementations may wait for a certain number of bytes
+  // in the buffer, so we really should look into the contiki buffer
+  // here
+  if (!(_ubrrl || _ubrrh)) {
+    return 1;
+  }
 #if (SERIAL_TX_BUFFER_SIZE>256)
   uint8_t oldSREG = SREG;
   cli();
@@ -197,6 +209,10 @@ void HardwareSerial::flush()
   // complete) bit to 1 during initialization
   if (!_written)
     return;
+  // If we use the output from contiki, we always return here
+  if (!(_ubrrl || _ubrrh)) {
+    return;
+  }
 
   while (bit_is_set(*_ucsrb, UDRIE0) || bit_is_clear(*_ucsra, TXC0)) {
     if (bit_is_clear(SREG, SREG_I) && bit_is_set(*_ucsrb, UDRIE0))
@@ -213,6 +229,11 @@ void HardwareSerial::flush()
 size_t HardwareSerial::write(uint8_t c)
 {
   _written = true;
+  // Use contiki putchar if this is both NULL
+  if (!(_ubrrl || _ubrrh)) {
+    putchar (c);
+    return 1;
+  }
   // If the buffer and the data register is empty, just write the byte
   // to the data register and be done. This shortcut helps
   // significantly improve the effective datarate at high (>

@@ -46,9 +46,11 @@ void setup (void)
     //loop_periodic_set (LOOP_INTERVAL_AFTER_INIT);
 
     mcu_sleep_set(128);
+    Serial.begin (115200); // baud rate ignored by contiki
 }
 
 void loop (void)
 {
 	printf("Hello Merkurboard\n");
+        Serial.println ("Hallo von Arduino Serial");
 }
