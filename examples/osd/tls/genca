@@ -1,0 +1,6 @@
+#!/bin/sh
+
+CNF=./openssl.cnf
+
+openssl ecparam -genkey -name prime256v1 -out CA.key
+openssl req -config $CNF -x509 -new -nodes -key CA.key -days 3650 -out CA.crt
