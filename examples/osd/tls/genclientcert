@@ -1,0 +1,17 @@
+#!/bin/sh
+
+CNF=./openssl.cnf
+
+if [ -z "$1" ] ; then
+    echo "Usage: $0 <servername>"
+    exit 23
+fi
+
+export KEY_CN=$1
+export KEY_NAME=$1
+
+openssl ecparam -genkey -name prime256v1 -out $1.key
+openssl req -config $CNF -new -key $1.key -out $1.csr -reqexts client
+openssl x509 -req -in $1.csr -days 1825 -CA CA.crt -sha256 \
+    -CAkey CA.key -CAcreateserial -CAserial CA.seq \
+    -extfile $CNF -extensions client -out $1.crt
