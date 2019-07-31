@@ -15,7 +15,6 @@ osd/arduino-distance/osd-merkur-128            \
 osd/arduino-dooralert/osd-merkur-128           \
 osd/arduino-htu21/osd-merkur-128               \
 osd/arduino-ledstrip/osd-merkur-128            \
-osd/arduino-merkurboard/osd-merkur-128         \
 osd/arduino-plantobserving/osd-merkur-128      \
 osd/arduino-relaybox/osd-merkur-128            \
 osd/arduino-rfid-rc522/osd-merkur-128          \
@@ -59,6 +58,10 @@ osd/pingtheplug/osd-merkur-256                 \
 osd/powerbox/osd-merkur-256                    \
 osd/embedd-vm-merkurboard/osd-merkur-256       \
 osd/light-actor/osd-merkur-256                 \
+
+# No longer possible to use for osd-merkur-128 due to OTA (Over-the-Air
+# upgrade) which is not possible for the -128 architecture:
+#osd/arduino-merkurboard/osd-merkur-128
 
 #osd/dual-rgbw-actor/osd-merkur-128             \
 #osd/light-shutter-control/osd-merkur-128       \
