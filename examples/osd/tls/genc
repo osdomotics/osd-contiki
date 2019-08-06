@@ -1,0 +1,49 @@
+#!/usr/bin/python3
+
+from __future__ import print_function
+
+import sys
+
+from os.path  import basename
+from argparse import ArgumentParser
+
+def main () :
+    cmd = ArgumentParser ()
+    cmd.add_argument \
+        ( 'crt'
+        , help  = "Certificat in DER format (.der)"
+        , nargs = 1
+        )
+    cmd.add_argument \
+        ( 'key'
+        , help  = "Optional key in DER format (.kder)"
+        , nargs = '?'
+        )
+    args = cmd.parse_args ()
+    if args.key and args.key.startswith ('CA') :
+        print ("You *never* want to include the CA key", file=sys.stderr)
+        sys.exit (23)
+    fns = [args.crt [0]]
+    if args.key :
+        fns.append (args.key)
+    of = sys.stdout
+    for n, fn in enumerate (fns) :
+        bn = basename (fn).split ('.', 1) [0]
+        if n :
+            bn += '_key'
+        else :
+            bn += '_crt'
+        with open (fn, 'rb') as f :
+            print ("const unsigned char %s [] = {" % bn, file = of)
+            buf = f.read (8)
+            while buf :
+                h = ', '.join ("0x%02x" % c for c in buf)
+                print ("    %s," % h, file = of)
+                buf = f.read (8)
+            print ("};", file = of)
+            s = "unsigned int %s_len = sizeof (%s);" % (bn, bn)
+            print (s, file = of)
+# end def main
+
+if __name__ == '__main__' :
+    sys.exit (main ())
