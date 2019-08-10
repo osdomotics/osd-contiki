@@ -36,7 +36,6 @@
 #define CURVED25519_SMALL
 #define HAVE_ONE_TIME_AUTH
 #define WOLFSSL_DH_CONST
-#define WORD64_AVAILABLE
 
 #define HAVE_ED25519
 #define HAVE_POLY1305
@@ -63,13 +62,14 @@ typedef uint16_t word16;
 typedef uint32_t word32;
 typedef byte     word24[3];
 typedef uint64_t word64;
-typedef word32 wolfssl_word;
+/* wolfssl_word must be same size as a pointer */
+#define WC_16BIT_CPU
 
 #define WOLFSSL_TYPES 1
 #define SIZEOF_LONG 4
 #define SIZEOF_LONG_LONG 8
-#define WORD64_AVAILABLE
 #define W64LIT(x) x##LL
+#define WORD64_AVAILABLE
 #define WOLFCRYPT_SLOW_WORD64
 #define WC_INLINE inline
 
@@ -78,3 +78,18 @@ typedef word32 wolfssl_word;
 #include "sys/cc.h"
 #include "wolfssl.h"
 #include <wolfssl/wolfcrypt/types.h>
+/*
+ * This is undefined by types.h if WC_16BIT_CPU is defined
+ * But we need it for sha512.c which uses otherwise undefined macros.
+ * And we need WC_16BIT_CPU to avoid lots of warnings about pointer
+ * conversions to integer not having the same type
+ */
+#define WORD64_AVAILABLE
+
+#undef UIP_CONF_BUFFER_SIZE
+#define UIP_CONF_BUFFER_SIZE    256
+#undef REST_MAX_CHUNK_SIZE
+#define REST_MAX_CHUNK_SIZE    64
+#undef COAP_MAX_HEADER_SIZE
+#define COAP_MAX_HEADER_SIZE    70
+
