@@ -33,8 +33,12 @@
 
 #define SERVER_PORT 11111
 
-extern const unsigned char server_cert[788];
-extern const unsigned long server_cert_len;
+extern const unsigned char CA_crt[];
+extern const unsigned long CA_crt_len;
+extern const unsigned char client_crt[];
+extern const unsigned long client_crt_len;
+extern const unsigned char client_key[];
+extern const unsigned long client_key_len;
 
 #if NETSTACK_WITH_IPV6
 static void print_local_addresses(void)
@@ -75,25 +79,44 @@ PROCESS_THREAD(dtls_client_process, ev, data)
 
     sk = dtls_socket_register(wolfDTLSv1_2_client_method());
     if (!sk) {
-        while(1)
-            ;
+        printf ("dtls_socket_register failed\n");
+        goto process_end;
     }
-    /* Load certificate file for the DTLS client */
-    if (wolfSSL_CTX_use_certificate_buffer(sk->ctx, server_cert,
-                server_cert_len, SSL_FILETYPE_ASN1 ) != SSL_SUCCESS)
-        while(1)
-            ;
-
+    /* Load CA certificate file for verfification */
+    if (  wolfSSL_CTX_load_verify_buffer
+          (sk->ctx, CA_crt, CA_crt_len, SSL_FILETYPE_ASN1)
+       != SSL_SUCCESS
+       )
+    {
+        printf ("wolfSSL_CTX_load_verify_buffer failed\n");
+        goto cleanup;
+    }
+    /* Load client certificate */
+    if (  wolfSSL_CTX_use_certificate_buffer
+          (sk->ctx, client_crt, client_crt_len, SSL_FILETYPE_ASN1)
+       != SSL_SUCCESS
+       )
+    {
+        printf ("wolfSSL_CTX_use_certificate_buffer failed\n");
+        goto cleanup;
+    }
+    /* Load the private key */
+    if (  wolfSSL_CTX_use_PrivateKey_buffer
+          (sk->ctx, client_key, client_key_len, SSL_FILETYPE_ASN1)
+       != SSL_SUCCESS
+       )
+    {
+        printf("wolfSSL_CTX_use_PrivateKey_buffer failed\n");
+        goto cleanup;
+    }
 
     sk->ssl = wolfSSL_new(sk->ctx);
+    if (sk->ssl == NULL) {
+        printf ("wolfSSL_new failed\n");
+        goto cleanup;
+    }
     wolfSSL_SetIOReadCtx(sk->ssl, sk);
     wolfSSL_SetIOWriteCtx(sk->ssl, sk);
-    if (sk->ssl == NULL) {
-
-        while(1)
-            ;
-
-    }
 
 #ifdef NETSTACK_CONF_WITH_IPV4
     uip_ipaddr(&server, 172, 18, 0, 1);
@@ -110,6 +133,7 @@ PROCESS_THREAD(dtls_client_process, ev, data)
         printf("connecting to server...\n");
         ret = wolfSSL_connect(sk->ssl);
         if (ret != SSL_SUCCESS) {
+            printf("connection unsuccessful\n");
             free(sk->ssl);
             sk->ssl = wolfSSL_new(sk->ctx);
             wolfSSL_SetIOReadCtx(sk->ssl, sk);
@@ -127,9 +151,12 @@ PROCESS_THREAD(dtls_client_process, ev, data)
     printf("%s\r\n", buf);
 
     printf("Closing connection.\r\n");
+cleanup:
     dtls_socket_close(sk);
     sk->ssl = NULL;
     sk->peer_port = 0;
+process_end:
+    ; /* empty statement, otherwise we get a compile error */
     PROCESS_END();
 }
 /*---------------------------------------------------------------------------*/

@@ -13,8 +13,8 @@ CONTIKI_PROJECT=$(MAKECMDGOALS)
 all: $(CONTIKI_PROJECT)
 
 
-APPS=wolfssl
+APPS=wolfssl time
 
-PROJECT_SOURCEFILES += cert.c
+PROJECT_SOURCEFILES += CA.c server.c client.c
 
 include $(CONTIKI)/Makefile.include

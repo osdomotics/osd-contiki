@@ -57,6 +57,22 @@
 #define NO_RC4
 #define NO_DES3
 
+/* Define some types for wolfssl in terms of contiki types */
+typedef uint8_t byte;
+typedef uint16_t word16;
+typedef uint32_t word32;
+typedef byte     word24[3];
+typedef uint64_t word64;
+typedef word32 wolfssl_word;
+
+#define WOLFSSL_TYPES 1
+#define SIZEOF_LONG 4
+#define SIZEOF_LONG_LONG 8
+#define WORD64_AVAILABLE
+#define W64LIT(x) x##LL
+#define WOLFCRYPT_SLOW_WORD64
+#define WC_INLINE inline
+
 #include <stdlib.h>
 #include "contiki-net.h"
 #include "sys/cc.h"

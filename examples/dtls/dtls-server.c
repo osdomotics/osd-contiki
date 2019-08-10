@@ -32,9 +32,9 @@
 
 #define SERVER_PORT 11111
 #define DEBUG 1
-extern const unsigned char server_cert[788];
+extern const unsigned char server_crt[788];
 extern const unsigned char server_key[121];
-extern unsigned int server_cert_len;
+extern unsigned int server_crt_len;
 extern unsigned int server_key_len;
 
 static struct uip_wolfssl_ctx *sk = NULL;
@@ -70,8 +70,8 @@ PROCESS_THREAD(dtls_server_process, ev, data)
     PROCESS_BEGIN();
     uip_ds6_init();
     /* Wait one second */
-	uip_ip6addr(&ipaddr, 0xbbbb, 0, 0, 0, 0, 0, 0, 0x1);
-	uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
+    uip_ip6addr(&ipaddr, 0xbbbb, 0, 0, 0, 0, 0, 0, 0x1);
+    uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
 
     etimer_set(&et, CLOCK_SECOND * 4);
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
@@ -79,34 +79,42 @@ PROCESS_THREAD(dtls_server_process, ev, data)
     print_local_addresses();
     sk = dtls_socket_register(wolfDTLSv1_2_server_method());
     if (!sk) {
-        while(1)
-            ;
+        printf("dtls_socket_register failed\n");
+        goto process_end;
     }
     /* Load certificate file for the DTLS server */
-    if (wolfSSL_CTX_use_certificate_buffer(sk->ctx, server_cert,
-                server_cert_len, SSL_FILETYPE_ASN1 ) != SSL_SUCCESS)
-        while(1)
-            ;
-
-    /* Load the private key */
-    if (wolfSSL_CTX_use_PrivateKey_buffer(sk->ctx, server_key,
-                server_key_len, SSL_FILETYPE_ASN1 ) != SSL_SUCCESS)
-        while(1) {}
-
-    sk->ssl = wolfSSL_new(sk->ctx);
-    wolfSSL_CTX_set_verify(sk->ctx, SSL_VERIFY_NONE, 0);
-    wolfSSL_SetIOReadCtx(sk->ssl, sk);
-    wolfSSL_SetIOWriteCtx(sk->ssl, sk);
-    if (sk->ssl == NULL) {
-
-        while(1)
-            ;
-
+    if (  wolfSSL_CTX_use_certificate_buffer
+          (sk->ctx, server_crt, server_crt_len, SSL_FILETYPE_ASN1)
+       != SSL_SUCCESS
+       )
+    {
+        printf("wolfSSL_CTX_use_certificate_buffer failed\n");
+        goto cleanup;
     }
 
+    /* Load the private key */
+    if (   wolfSSL_CTX_use_PrivateKey_buffer
+           (sk->ctx, server_key, server_key_len, SSL_FILETYPE_ASN1 )
+       != SSL_SUCCESS
+       )
+    {
+        printf("wolfSSL_CTX_use_PrivateKey_buffer failed\n");
+        goto cleanup;
+    }
+
+    sk->ssl = wolfSSL_new(sk->ctx);
+    if (sk->ssl == NULL) {
+        printf("wolfSSL_new failed\n");
+        goto cleanup;
+    }
+    wolfSSL_CTX_set_verify
+        (sk->ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, 0);
+    wolfSSL_SetIOReadCtx(sk->ssl, sk);
+    wolfSSL_SetIOWriteCtx(sk->ssl, sk);
+
     if (udp_socket_bind(&sk->conn.udp, SERVER_PORT) < 0) {
-        while(1)
-            ;
+        printf("udp_socket_bind failed\n");
+        goto cleanup;
     }
     printf("Listening on %d\n", SERVER_PORT);
     while(1) {
@@ -128,6 +136,10 @@ PROCESS_THREAD(dtls_server_process, ev, data)
         sk->peer_port = 0;
         printf("Listening on %d\n", SERVER_PORT);
     }
+cleanup:
+        dtls_socket_close(sk);
+process_end:
+    ; /* empty statement, otherwise we get a compile error */
     PROCESS_END();
 }
 /*---------------------------------------------------------------------------*/
