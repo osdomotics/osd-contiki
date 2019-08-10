@@ -11,7 +11,7 @@
 /**
  * \file
  *         Definitions for the time module
- *      
+ *
  * \author
  *         Ralf Schlatterbeck <rsc@tux.runtux.com>
  */
@@ -69,6 +69,20 @@ struct xtm *xlocaltime_r (const xtime_t *timep, struct xtm *result);
 
 int xgettimeofday       (struct xtimeval *tv, struct timezone *tz);
 int xsettimeofday       (const struct xtimeval *tv, const struct timezone *tz);
+
+/*
+ * Unix time function, returns time in seconds since
+ * 1970-01-01 0:00:00 UTC
+ */
+inline xtime_t xtime (xtime_t *tl)
+{
+    struct xtimeval tv;
+    xgettimeofday (&tv, 0);
+    if (tl) {
+        *tl = tv.tv_sec;
+    }
+    return tv.tv_sec;
+}
 
 /*
  * Maximum length of all timezone names, this is much longer in UNIX
