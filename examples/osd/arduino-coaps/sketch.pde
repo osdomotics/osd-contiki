@@ -45,7 +45,7 @@ void setup (void)
     //#define LOOP_INTERVAL_AFTER_INIT (60 * CLOCK_SECOND)    
     //loop_periodic_set (LOOP_INTERVAL_AFTER_INIT);
 
-    mcu_sleep_set(128);
+//    mcu_sleep_set(128);
 }
 
 void loop (void)
