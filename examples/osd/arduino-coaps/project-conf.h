@@ -32,7 +32,7 @@
 #ifndef PROJECT_RPL_WEB_CONF_H_
 #define PROJECT_RPL_WEB_CONF_H_
 
-#define IEEE802154_CONF_PANID 0xAAAA
+//#define IEEE802154_CONF_PANID 0xAAAA
 
 #define LOOP_INTERVAL		(1 * CLOCK_SECOND)
 
@@ -89,7 +89,7 @@
 /*---------------------------------------------------------------------------*/
 /* DTLS                                                                      */
 /*---------------------------------------------------------------------------*/
-
+#define COAP_SERVER_PORT 5684
 #define DTLS_PEER_MAX 3
 
 #define DTLS_CONF_CONN_TIMEOUT 10
