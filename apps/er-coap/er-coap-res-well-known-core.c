@@ -170,7 +170,7 @@ well_known_core_get_handler(void *request, void *response, uint8_t *buffer,
     ADD_STRING_IF_POSSIBLE(resource->url, >=);
     ADD_CHAR_IF_POSSIBLE('>');
 
-    if(resource->attributes != NULL && resource->attributes[0]) {
+    if(resource->attributes != NULL && resource->attributes[0] && resource->attributes[0] != ';') {
       ADD_CHAR_IF_POSSIBLE(';');
       ADD_STRING_IF_POSSIBLE(resource->attributes, >);
     }
