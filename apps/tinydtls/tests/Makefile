@@ -21,7 +21,7 @@ VERSION:=0.8.6
 SHELL = /bin/sh
 MKDIR = mkdir
 
-abs_builddir = /home/harald/install/osd-contiki/apps/tinydtls/tests
+abs_builddir = /home/harald/install/6lbr/apps/tinydtls/tests
 top_builddir = ..
 top_srcdir:= ..
 

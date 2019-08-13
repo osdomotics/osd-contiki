@@ -25,7 +25,7 @@ ETAGS = /bin/false
 
 prefix = /usr/local
 exec_prefix = ${prefix}
-abs_builddir = /home/harald/install/osd-contiki/apps/tinydtls
+abs_builddir = /home/harald/install/6lbr/apps/tinydtls
 top_builddir = .
 libdir = ${exec_prefix}/lib
 includedir = ${prefix}/include/tinydtls

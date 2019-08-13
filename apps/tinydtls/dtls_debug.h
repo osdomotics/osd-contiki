@@ -24,7 +24,6 @@
 #include "global.h"
 #include "session.h"
 
-#define DEBUG DEBUG_NONE
 #ifdef WITH_CONTIKI
 # ifndef DEBUG
 #  define DEBUG DEBUG_PRINT
