@@ -12,7 +12,7 @@ CSMA ContikiMAC, channel 25 , check rate 8 Hz tx power 0
 RPL Enabled
 Routing Enabled
 Started DTLS retransmit process
-COAP-DTLS listening on port 5683
+COAP-DTLS listening on port 5684
 Online
 
 Addresses [4 max]
@@ -31,8 +31,8 @@ $ cd libcoap
 $ ./autogen.sh
 $ ./configure --with-tinydtls --disable-shared
 $ make
-$ cd example
-$ ./coap-client -m get coaps://[2a00:1158:2:7102:221:2eff:ff00:ca3c]/.well-known/core -k 'secretPSK' -u 'Client_identity' -p 5683
+$ cd examples
+$ ./coap-client -m get coaps://[2a00:1158:2:7102:221:2eff:ff00:ca3c]/.well-known/core -k 'secretPSK' -u 'Client_identity'
 
 -----------------------------------------
 
