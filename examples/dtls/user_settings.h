@@ -28,33 +28,50 @@
 #define SINGLE_THREADED
 #define NO_SIG_WRAPPER
 
-#define HAVE_FFDHE_2048
-#define HAVE_CHACHA
-#define HAVE_POLY1305
+//#define HAVE_FFDHE_2048
+//#define HAVE_CHACHA
+//#define HAVE_POLY1305
 #define HAVE_ECC
-#define HAVE_CURVE25519
-#define CURVED25519_SMALL
+//#define HAVE_CURVE25519
+//#define CURVED25519_SMALL
 #define HAVE_ONE_TIME_AUTH
 #define WOLFSSL_DH_CONST
 
-#define HAVE_ED25519
-#define HAVE_POLY1305
-#define HAVE_SHA512
-#define WOLFSSL_SHA512
+//#define HAVE_ED25519
+//#define HAVE_POLY1305
+//#define HAVE_SHA512
+//#define WOLFSSL_SHA512
+#define USE_SLOW_SHA
+#define USE_SLOW_SHA256
+#define HAVE_AESCCM
 
 #define TFM_TIMING_RESISTANT
 #define ECC_TIMING_RESISTANT
-#define WC_RSA_BLINDING
+//#define WC_RSA_BLINDING
 
 #define NO_WRITEV
 #define NO_DEV_RANDOM
 #define NO_FILESYSTEM
 #define NO_MAIN_DRIVER
 #define NO_MD4
+#define NO_MD5
 #define NO_RABBIT
 #define NO_HC128
 #define NO_RC4
 #define NO_DES3
+#define NO_SHA
+#define NO_SHA512
+#define NO_AES_192
+#define NO_AES_256
+#define NO_RSA
+#define NO_DSA
+#define NO_SHA3
+#define NO_ERROR_STRINGS
+#define NO_PSK
+//#define NO_HMAC /* seems to be needed */
+#define NO_OLD_TLS
+//#define WOLFSSL_NO_TLS12
+//#define NO_TLS /* gets us lots of errors if defined */
 
 /* Define some types for wolfssl in terms of contiki types */
 typedef uint8_t byte;
