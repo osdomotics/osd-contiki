@@ -43,5 +43,6 @@
 #define PROJECT_CONF_H_
 
 #define AES_128_HW_CONF 1
+#define NEED_AES_CBC 1
 
 #endif /* PROJECT_CONF_H_ */
