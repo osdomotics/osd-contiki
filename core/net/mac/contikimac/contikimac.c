@@ -299,28 +299,6 @@ static volatile uint8_t sync_cycle_phase;
 #endif
 /*---------------------------------------------------------------------------*/
 static void
-schedule_powercycle(struct rtimer *t, rtimer_clock_t time)
-{
-  int r;
-  rtimer_clock_t now;
-
-  if(contikimac_is_on) {
-
-    time += RTIMER_TIME(t);
-    now = RTIMER_NOW();
-    if(RTIMER_CLOCK_LT(time, now + RTIMER_GUARD_TIME)) {
-      time = now + RTIMER_GUARD_TIME;
-    }
-
-    r = rtimer_set(t, time, 1, powercycle_wrapper, NULL);
-
-    if(r != RTIMER_OK) {
-      PRINTF("schedule_powercycle: could not set rtimer\n");
-    }
-  }
-}
-/*---------------------------------------------------------------------------*/
-static void
 schedule_powercycle_fixed(struct rtimer *t, rtimer_clock_t fixed_time)
 {
   int r;
@@ -481,8 +459,6 @@ powercycle(struct rtimer *t, void *ptr)
           break;
         }
 
-      //  schedule_powercycle(t, CCA_CHECK_TIME + CCA_SLEEP_TIME);
-      //  PT_YIELD(&pt);
       }
       if(radio_is_on) {
         if(!(NETSTACK_RADIO.receiving_packet() ||
