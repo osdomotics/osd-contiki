@@ -147,6 +147,9 @@ uint8_t ack_pending,ack_seqnum;
 #warning RF230 Untested Configuration!
 #endif
 
+/* Forward declaration */
+static bool rf230_is_sleeping(void);
+
 static rtimer_clock_t rf230_last_rx_packet_timestamp;
 
 struct timestamp {
