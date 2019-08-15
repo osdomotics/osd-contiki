@@ -1,6 +1,11 @@
 Arduino compatibility example
 =============================
 
+First go to apps/tinydtls and issue the command
+./reconf.sh
+You must have autotools (automake etc.) installed.
+
+Then in this directory:
 make clean TARGET=osd-merkur-256 WITH_TINYDTLS=1 WITH_COAPSERVER=1 WITH_DTLS_COAP=1 flash
 
 Boottext:

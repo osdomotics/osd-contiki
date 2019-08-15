@@ -1,3 +1,14 @@
+# Enable DTLS (coaps) if nothing specified on command-line:
+ifeq ($(WITH_TINYDTLS),)
+WITH_TINYDTLS=1
+endif
+ifeq ($(WITH_COAPSERVER),)
+WITH_COAPSERVER=1
+endif
+ifeq ($(WITH_DTLS_COAP),)
+WITH_DTLS_COAP=1
+endif
+
 # Set this to the name of your sketch (without extension .pde)
 SKETCH=sketch
 EXE=arduino-example
