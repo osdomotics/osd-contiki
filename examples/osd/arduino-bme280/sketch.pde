@@ -46,14 +46,24 @@ void setup (void)
     bool status;
     
     // default settings
-    status = bme.begin(0x77);
+    status = bme.begin();  
     if (!status) {
-        printf("Could not find a valid BME280 sensor, check wiring!");
+        printf("Could not find a valid BME280 sensor, check wiring, address, sensor ID!\n");
+        printf("SensorID was: 0x%f\n",bme.sensorID());
+        printf("        ID of 0xFF probably means a bad address, a BMP 180 or BMP 085\n");
+        printf("   ID of 0x56-0x58 represents a BMP 280,\n");
+        printf("        ID of 0x60 represents a BME 280.\n");
+        printf("        ID of 0x61 represents a BME 680.\n");
+        while (1);
+    } else {
+        printf ("BME280 found with id: 0x%x\n", bme.sensorID());
     }
+
     // init coap resourcen
     rest_init_engine ();
     #pragma GCC diagnostic ignored "-Wwrite-strings"
     rest_activate_resource (&res_bmptemp, "s/temp");
+    rest_activate_resource (&res_bmphum, "s/hum");
     rest_activate_resource (&res_bmppress, "s/press");
     rest_activate_resource (&res_bmpatm, "s/atm");
     rest_activate_resource (&res_bmpalt, "s/alt");
