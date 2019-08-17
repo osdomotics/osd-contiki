@@ -223,13 +223,12 @@ uint8_t rf230_get_rpc(void);
 
 void rf230_set_promiscuous_mode(bool isPromiscuous);
 bool rf230_is_ready_to_send();
-static bool rf230_is_sleeping(void);
 extern int8_t rf230_last_correlation,rf230_last_rssi,rf230_smallest_rssi;
 
 uint8_t rf230_get_raw_rssi(void);
-int rf230_aes_encrypt_ebc(unsigned char *key, unsigned char *plain, unsigned char *cipher);
-int rf230_aes_decrypt_ebc(unsigned char *key, unsigned char *cipher, unsigned char *plain);
-int rf230_aes_decrypt_ebc(unsigned char *key, unsigned char *cipher, unsigned char *plain);
+int rf230_aes_encrypt_ecb(unsigned char *key, unsigned char *plain, unsigned char *cipher);
+int rf230_aes_decrypt_ecb(unsigned char *key, unsigned char *cipher, unsigned char *plain);
+int rf230_aes_encrypt_cbc(unsigned char *key, unsigned char *plain, int len, unsigned char *mic);
 
 #define rf230_rssi	rf230_get_raw_rssi
 

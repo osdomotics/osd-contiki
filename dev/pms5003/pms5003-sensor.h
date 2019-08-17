@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Institute for Pervasive Computing, ETH Zurich
+ * Copyright (c) 2017, Peter Sjodin, KTH Royal Institute of Technology
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,45 +26,33 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * This file is part of the Contiki operating system.
+ *
+ *
+ * -----------------------------------------------------------------
+ *
+ * Author  : Peter Sjodin, KTH Royal Institute of Technology
+ * Created : 2017-04-21
  */
 
-/**
- * \file
- *      CoAP module for separate responses.
- * \author
- *      Matthias Kovatsch <kovatsch@inf.ethz.ch>
- */
+#ifndef PMS5003_SENSOR_H_
+#define PMS5003_SENSOR_H_
 
-#ifndef COAP_SEPARATE_H_
-#define COAP_SEPARATE_H_
+#include "lib/sensors.h"
 
-#include "er-coap.h"
+extern const struct sensors_sensor pms5003_sensor;
 
-typedef struct coap_separate {
+#define PMS5003_SENSOR_PM1           0
+#define PMS5003_SENSOR_PM2_5         1
+#define PMS5003_SENSOR_PM10          2
+#define PMS5003_SENSOR_PM1_ATM       3
+#define PMS5003_SENSOR_PM2_5_ATM     4
+#define PMS5003_SENSOR_PM10_ATM      5
+#define PMS5003_SENSOR_DB0_3         6
+#define PMS5003_SENSOR_DB0_5         7
+#define PMS5003_SENSOR_DB1            8
+#define PMS5003_SENSOR_DB2_5         9
+#define PMS5003_SENSOR_DB5          10
+#define PMS5003_SENSOR_DB10          11
+#define PMS5003_SENSOR_TIMESTAMP    12
 
-  uip_ipaddr_t addr;
-  uint16_t port;
-  context_t * ctx;
-
-  coap_message_type_t type;
-  uint16_t mid;
-
-  uint8_t token_len;
-  uint8_t token[COAP_TOKEN_LEN];
-
-  uint32_t block1_num;
-  uint16_t block1_size;
-
-  uint32_t block2_num;
-  uint16_t block2_size;
-} coap_separate_t;
-
-int coap_separate_handler(resource_t *resource, void *request,
-                          void *response);
-void coap_separate_reject(void);
-void coap_separate_accept(void *request, coap_separate_t *separate_store);
-void coap_separate_resume(void *response, coap_separate_t *separate_store,
-                          uint8_t code);
-
-#endif /* COAP_SEPARATE_H_ */
+#endif /* PMS5003_SENSOR_H_ */

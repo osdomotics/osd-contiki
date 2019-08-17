@@ -3,3 +3,7 @@ OSDOMOTIS
 www.osdomotics.com
 
 Plattform: osd-merkur
+
+To run regression tests:
+- Change to the top-level directory "regression-tests/20-compile-osd-ports"
+- run the command "make"

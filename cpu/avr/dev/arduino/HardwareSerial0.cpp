@@ -36,6 +36,12 @@
 
 #if defined(HAVE_HWSERIAL0)
 
+// FIXME: For now we also disable the RX vector.
+//        We probably want to change it to use the Arduino serial
+//        whenever the RX side of Contiki's serial is disabled.
+//        Need to figure out how to do this. Currently we get an
+//        interrupt vector collision if we enable this.
+# if 0
 #if defined(USART_RX_vect)
   ISR(USART_RX_vect)
 #elif defined(USART0_RX_vect)
@@ -48,7 +54,12 @@
   {
     Serial._rx_complete_irq();
   }
+# endif /* 0 */
 
+/* Never install a data register empty vector for contiki: Output is
+ * handled via contiki
+ */
+#if 0
 #if defined(UART0_UDRE_vect)
 ISR(UART0_UDRE_vect)
 #elif defined(UART_UDRE_vect)
@@ -63,12 +74,19 @@ ISR(USART_UDRE_vect)
 {
   Serial._tx_udr_empty_irq();
 }
+# endif /* 0 */
 
+/* Pass a NULL pointer for UBRRH and UBRRL
+ * We special-case this in the implementation to mean:
+ * - Don't init the UART, done by something else
+ * - Don't use the TX side at all
+ */
 #if defined(UBRRH) && defined(UBRRL)
-  HardwareSerial Serial(&UBRRH, &UBRRL, &UCSRA, &UCSRB, &UCSRC, &UDR);
+  HardwareSerial Serial(NULL, NULL, &UCSRA, &UCSRB, &UCSRC, &UDR);
 #else
-  HardwareSerial Serial(&UBRR0H, &UBRR0L, &UCSR0A, &UCSR0B, &UCSR0C, &UDR0);
+  HardwareSerial Serial(NULL, NULL, &UCSR0A, &UCSR0B, &UCSR0C, &UDR0);
 #endif
+
 
 // Function that can be weakly referenced by serialEventRun to prevent
 // pulling in this file if it's not otherwise used.

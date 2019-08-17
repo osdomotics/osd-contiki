@@ -147,6 +147,9 @@ uint8_t ack_pending,ack_seqnum;
 #warning RF230 Untested Configuration!
 #endif
 
+/* Forward declaration */
+static bool rf230_is_sleeping(void);
+
 static rtimer_clock_t rf230_last_rx_packet_timestamp;
 
 struct timestamp {
@@ -2137,11 +2140,7 @@ void rf230_start_sneeze(void) {
 #ifdef AES_128_HW_CONF
 #define IEEE_VECT 0
 
-extern unsigned char aes_key[16];
-extern unsigned char aes_p[];
-extern unsigned char aes_c[];
-extern unsigned char aes_s[];
-extern unsigned char tmp[16];
+static unsigned char tmp[16];
 
 /*
   After PWR_SAVE sleep key is lost. We'll lock en/decyption to avoid
@@ -2207,6 +2206,8 @@ crypt(void)
   return 0; /* Unknown */
 }
 
+#ifdef NEED_AES_CBC /* Normally not needed */
+/* Cipher Block Chaining Mode */
 int
 rf230_aes_encrypt_cbc(unsigned char *key, unsigned char *plain, int len, unsigned char *mic)
 {
@@ -2248,10 +2249,11 @@ out:
   SREG = sreg;
   return res;
 }
+#endif /* NEED_AES_CBC */
 
-/* Electonic Code Block */
+/* Electronic Codebook Mode */
 int
-rf230_aes_encrypt_ebc(unsigned char *key, unsigned char *plain, unsigned char *cipher)
+rf230_aes_encrypt_ecb(unsigned char *key, unsigned char *plain, unsigned char *cipher)
 {
   int res;
   uint8_t sreg;
@@ -2273,7 +2275,7 @@ out:
 }
 
 int
-rf230_aes_decrypt_ebc(unsigned char *key, unsigned char *cipher, unsigned char *plain)
+rf230_aes_decrypt_ecb(unsigned char *key, unsigned char *cipher, unsigned char *plain)
 {
   int res;
   uint8_t sreg;

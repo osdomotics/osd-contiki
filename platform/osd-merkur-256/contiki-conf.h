@@ -81,7 +81,7 @@ void clock_adjust_ticks(clock_time_t howmany);
 //#define MMEM_CONF_SIZE 256
 
 /* Starting address for code received via the codeprop facility. Not tested. */
-typedef unsigned long off_t;
+//typedef unsigned long off_t;
 //#define EEPROMFS_ADDR_CODEPROP 0x8000
 
 /* Logging adds 200 bytes to program size. RS232 output slows down webserver. */
@@ -199,7 +199,7 @@ typedef unsigned short uip_stats_t;
 #define NETSTACK_CONF_RDC         sicslowmac_driver
 #define NETSTACK_CONF_FRAMER      framer_802154
 #define NETSTACK_CONF_RADIO       rf230_driver
-/* CCA theshold energy -91 to -61 dBm (default -77). Set this smaller than the $ */
+/* CCA theshold energy -91 to -61 dBm (default -77). Set this smaller than the expected minimum rssi to avoid packet collisions */
 #define RF230_CONF_CCA_THRES    -82
 /* AUTOACK receive mode gives better rssi measurements, even if ACK is never requested */
 #define RF230_CONF_AUTOACK        1

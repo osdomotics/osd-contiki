@@ -43,10 +43,11 @@
 #include "contiki-net.h"
 #include "er-coap-constants.h"
 #include "er-coap-conf.h"
+#include "er-coap-communication.h"
 
 /* sanity check for configured values */
 #define COAP_MAX_PACKET_SIZE  (COAP_MAX_HEADER_SIZE + REST_MAX_CHUNK_SIZE)
-#if COAP_MAX_PACKET_SIZE > (UIP_BUFSIZE - UIP_IPH_LEN - UIP_UDPH_LEN)
+#if COAP_MAX_PACKET_SIZE > (UIP_BUFSIZE - UIP_LLH_LEN - UIP_IPH_LEN - UIP_UDPH_LEN)
 #error "UIP_CONF_BUFFER_SIZE too small for REST_MAX_CHUNK_SIZE"
 #endif
 
@@ -182,7 +183,7 @@ uint16_t coap_get_mid(void);
 void coap_init_message(void *packet, coap_message_type_t type, uint8_t code,
                        uint16_t mid);
 size_t coap_serialize_message(void *packet, uint8_t *buffer);
-void coap_send_message(uip_ipaddr_t *addr, uint16_t port, uint8_t *data,
+void coap_send_message(context_t * ctx, uip_ipaddr_t *addr, uint16_t port, uint8_t *data,
                        uint16_t length);
 coap_status_t coap_parse_message(void *request, uint8_t *data,
                                  uint16_t data_len);
