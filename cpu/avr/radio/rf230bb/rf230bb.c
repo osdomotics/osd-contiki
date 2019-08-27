@@ -2260,6 +2260,9 @@ rf230_aes_encrypt_ecb(unsigned char *key, unsigned char *plain, unsigned char *c
 
   sreg = SREG;
   cli();
+  /* AES engine on */
+  NETSTACK_RADIO.on();
+
   rf230_aes_write_key(key);
   hal_subregister_write(SR_AES_CNTRL_MODE, 0); /* AES_MODE=0 -> ECB  for 1:st block*/
   hal_subregister_write(SR_AES_CNTRL_DIR, 0); /* AES_DIR=0 -> encryption */
@@ -2286,6 +2289,8 @@ rf230_aes_decrypt_ecb(unsigned char *key, unsigned char *cipher, unsigned char *
 
   sreg = SREG;
   cli();
+  /* AES engine on */
+  NETSTACK_RADIO.on();
 
   rf230_aes_write_key(key);
   hal_subregister_write(SR_AES_CNTRL_MODE, 0); /* AES_MODE=0 -> ECB  for 1:st block*/
