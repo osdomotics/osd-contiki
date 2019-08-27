@@ -1,0 +1,4 @@
+cd tinydtls
+autoconf
+autoheader
+./configure --without-ecc

@@ -43,8 +43,14 @@
  *         Konrad Krentz <konrad.krentz@gmail.com>
  */
 
-#include "lib/aes-128.h"
 #include <string.h>
+#include "lib/aes-128.h"
+
+/*
+ * Only compile this if platform doesn't specify an alternative
+ * Platforms may specify a hardware implementation if available
+ */
+#ifndef AES_128_CONF
 
 static const uint8_t sbox[256] =   { 
 0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
@@ -166,6 +172,14 @@ encrypt(uint8_t *state)
   }
 }
 /*---------------------------------------------------------------------------*/
+const struct aes_128_driver aes_128_driver = {
+  set_key,
+  encrypt
+};
+/*---------------------------------------------------------------------------*/
+#endif /* !AES_128_CONF */
+
+/*---------------------------------------------------------------------------*/
 void
 aes_128_set_padded_key(uint8_t *key, uint8_t key_len)
 {
@@ -175,9 +189,3 @@ aes_128_set_padded_key(uint8_t *key, uint8_t key_len)
   memcpy(block, key, key_len);
   AES_128.set_key(block);
 }
-/*---------------------------------------------------------------------------*/
-const struct aes_128_driver aes_128_driver = {
-  set_key,
-  encrypt
-};
-/*---------------------------------------------------------------------------*/

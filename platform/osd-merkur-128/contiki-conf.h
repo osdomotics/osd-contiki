@@ -314,6 +314,9 @@ typedef unsigned short uip_stats_t;
 #define CC_CONF_INLINE inline
 #endif
 
+/* AES HW support for MAC layer encryption */
+#define AES_128_CONF rf230bb_aes_128_driver
+
 /* include the project config */
 /* PROJECT_CONF_H might be defined in the project Makefile */
 #ifdef PROJECT_CONF_H

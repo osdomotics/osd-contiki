@@ -45,6 +45,11 @@
 #define AES_128_BLOCK_SIZE 16
 #define AES_128_KEY_LENGTH 16
 
+/*
+ * Platforms may specify a hardware implementation if available
+ * By defining the AES_128_CONF macro as an aes_228_driver struct
+ * (see below).
+ */
 #ifdef AES_128_CONF
 #define AES_128            AES_128_CONF
 #else /* AES_128_CONF */

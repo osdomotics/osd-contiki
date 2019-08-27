@@ -206,7 +206,7 @@ typedef void (*radio_rx_callback) (uint16_t data);
 
 /*============================ PROTOTYPES ====================================*/
 
-const struct radio_driver rf230_driver;
+extern const struct radio_driver rf230_driver;
 
 int rf230_init(void);
 void rf230_warm_reset(void);

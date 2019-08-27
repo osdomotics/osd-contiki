@@ -16,4 +16,4 @@
 	url = https://github.com/g-oikonomou/sensniff.git
 [submodule "tinydtls"]
 	path = apps/tinydtls
-	url = https://github.com/cetic/tinydtls.git
+	url = https://github.com/eclipse/tinydtls.git
