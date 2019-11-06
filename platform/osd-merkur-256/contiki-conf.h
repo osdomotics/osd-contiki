@@ -174,8 +174,8 @@ typedef unsigned short uip_stats_t;
 
 /* rpl routing settings */
 #if 1
-#define RPL_CONF_DEFAULT_LIFETIME_UNIT 5
-#define RPL_CONF_DEFAULT_LIFETIME 5
+//#define RPL_CONF_DEFAULT_LIFETIME_UNIT 5
+#define RPL_CONF_DEFAULT_LIFETIME 30
 #define RPL_CONF_WITH_MC 1
 //#define RPL_CONF_WITH_DAO_ACK 1
 //#define RPL_CONF_RPL_REPAIR_ON_DAO_NACK 1
