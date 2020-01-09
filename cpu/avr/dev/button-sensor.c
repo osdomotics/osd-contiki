@@ -43,6 +43,8 @@ unsigned char sensors_flags[1];
 
 #define PRINTF(...) printf(__VA_ARGS__)
 /*---------------------------------------------------------------------------*/
+
+/* todo make it arduino compatible
 ISR(INT4_vect)
 {
   if(BUTTON_CHECK_IRQ()) {
@@ -64,6 +66,7 @@ ISR(INT4_vect)
 #endif
   }
 }
+*/
 /*---------------------------------------------------------------------------*/
 
 static int
