@@ -16,7 +16,7 @@ extern "C" {
 #include "net/netstack.h"
 #include "ota-update.h"
 
-extern resource_t res_led, res_battery, res_cputemp;
+extern resource_t res_led, res_battery, res_cputemp, res_linkstats;
 
 uint8_t led_pin=4;
 uint8_t led_status;
@@ -34,6 +34,7 @@ void setup (void)
     rest_activate_resource (&res_led, "s/led");
     rest_activate_resource (&res_battery, "s/battery");
     rest_activate_resource (&res_cputemp, "s/cputemp");
+    rest_activate_resource (&res_linkstats, "s/min_rssi");
     OTA_ACTIVATE_RESOURCES();
     #pragma GCC diagnostic pop
 
@@ -42,7 +43,7 @@ void setup (void)
     //NETSTACK_MAC.off(1);
 
     // uncoment if you want to set the loop interval at runtime
-    //#define LOOP_INTERVAL_AFTER_INIT (60 * CLOCK_SECOND)    
+    //#define LOOP_INTERVAL_AFTER_INIT (60 * CLOCK_SECOND)
     //loop_periodic_set (LOOP_INTERVAL_AFTER_INIT);
 
     mcu_sleep_set(128);

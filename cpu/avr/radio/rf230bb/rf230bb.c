@@ -1152,13 +1152,14 @@ void rf230_warm_reset(void) {
   /* Receiver sensitivity. If nonzero rf231/128rfa1 saves 0.5ma in rx mode */
   /* Not implemented on rf230 but does not hurt to write to it */
 #ifdef RF230_MIN_RX_POWER
-#if RF230_MIN_RX_POWER > 84
-#warning rf231 power threshold clipped to -48dBm by hardware register
+ #if RF230_MIN_RX_POWER > -48
+  #warning rf231 power threshold clipped to -48dBm by hardware register
  hal_register_write(RG_RX_SYN, 0xf);
-#elif RF230_MIN_RX_POWER < 0
-#error RF230_MIN_RX_POWER can not be negative!
-#endif
-  hal_register_write(RG_RX_SYN, RF230_MIN_RX_POWER/6 + 1); //1-15 -> -90 to -48dBm
+ #elif RF230_MIN_RX_POWER < -90
+  #warning rf231 power threshold clipped to -90dBm by hardware register
+hal_register_write(RG_RX_SYN, 0x0);
+ #endif
+  hal_register_write(RG_RX_SYN, ((RF230_MIN_RX_POWER + 3 + 90) / 3)); //1-15 -> -90 to -48dBm
 #endif
 
   /* CCA energy threshold = -91dB + 2*SR_CCA_ED_THRESH. Reset defaults to -77dB */
@@ -1675,6 +1676,7 @@ PROCESS_THREAD(rf230_process, ev, data)
     HAL_LEAVE_CRITICAL_REGION();
     PRINTF("rf230_read: %u bytes lqi %u\n",len,rf230_last_correlation);
 
+#if RF230_CONF_AUTOACK
     if(is_promiscuous) {
       uint8_t i;
       unsigned const char * rxdata = packetbuf_dataptr();
@@ -1692,7 +1694,7 @@ PROCESS_THREAD(rf230_process, ev, data)
       for (i=0;i<len;i++)  putchar(rxdata[i]);
       printf("\n");
     }
-
+#endif
 #if DEBUG>1
      {
         uint8_t i;
@@ -1838,7 +1840,7 @@ rf230_read(void *buf, unsigned short bufsize)
 #else   //faster
 #if RF230_CONF_AUTOACK
  //   rf230_last_rssi = hal_subregister_read(SR_ED_LEVEL);  //0-84 resolution 1 dB
-    rf230_last_rssi = hal_register_read(RG_PHY_ED_LEVEL);  //0-84, resolution 1 dB
+    rf230_last_rssi = hal_register_read(RG_PHY_ED_LEVEL) - 90;  //0-84, resolution 1 dB
 #else
 /* last_rssi will have been set at RX_START interrupt */
 //  rf230_last_rssi = 3*hal_subregister_read(SR_RSSI);    //0-28 resolution 3 dB
@@ -1909,10 +1911,11 @@ rf230_get_txpower(void)
 }
 
 /*---------------------------------------------------------------------------*/
-uint8_t
+int8_t
 rf230_get_raw_rssi(void)
 {
-  uint8_t rssi,state;
+  int8_t rssi;
+  uint8_t state;
   bool radio_was_off = 0;
 
   /*The RSSI measurement should only be done in RX_ON or BUSY_RX.*/
@@ -1931,11 +1934,11 @@ rf230_get_raw_rssi(void)
 #if 0   // 3-clock shift and add is faster on machines with no hardware multiply
 /* avr-gcc may have an -Os bug that uses the general subroutine for multiplying by 3 */
      rssi = hal_subregister_read(SR_RSSI);      //0-28, resolution 3 dB
-     rssi = (rssi << 1)  + rssi;                //*3
+     rssi = (rssi << 1) + rssi;                 //*3
 #else  // 1 or 2 clock multiply, or compiler with correct optimization
      rssi = 3 * hal_subregister_read(SR_RSSI);
 #endif
-
+     rssi -= 90;
   }
 
   if(radio_was_off) {
@@ -1981,7 +1984,7 @@ rf230_cca(void)
     /* Disable rx transitions to busy (RX_PDT_BIT) */
     /* Note: for speed this resets rx threshold to the compiled default */
 #ifdef RF230_MIN_RX_POWER
-    hal_register_write(RG_RX_SYN, RF230_MIN_RX_POWER/6 + 0x81);
+    hal_register_write(RG_RX_SYN, ((RF230_MIN_RX_POWER + 3 + 90) / 3) + 0x80); // 0x80 = stop frame reception
 #else
     hal_register_write(RG_RX_SYN, 0x80);
 #endif
@@ -2013,9 +2016,9 @@ rf230_cca(void)
     radio_set_trx_state(RX_AACK_ON);
 #endif
 
-    /* Enable packet reception */
+    /* Enable packet reception (clr bit 7)*/
 #ifdef RF230_MIN_RX_POWER
-    hal_register_write(RG_RX_SYN, RF230_MIN_RX_POWER/6 + 0x01);
+    hal_register_write(RG_RX_SYN, ((RF230_MIN_RX_POWER + 3 + 90) / 3));
 #else
     hal_register_write(RG_RX_SYN, 0x00);
 #endif
