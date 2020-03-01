@@ -19,7 +19,7 @@ one for the source volage (solar panel) and the other for the battery
 (2 AA NiMh Cells).
 
 V_solar o-o---------o------------     ----------------o-----------------o Vbat
-          |         |            v   /                |             |
+          |         |            v   / 2N4403         |             |
           |         |            -----                |             |
           |         |              |                  |             |
           |         _              _                  _             |
