@@ -174,10 +174,10 @@ void loop (void)
       case MANUAL :
       mcu_sleep_disable();
       loop_periodic_set (LOOP_INTERVAL);
-      if (b1 == 0 && b3 == 1) {
+      if (b2 == 0 && b3 == 1) {
         valve (CLOSE);
         print_stats (1);
-      } else if (b1 == 1 && b3 == 0) {
+      } else if (b2 == 1 && b3 == 0) {
         valve (OPEN);
         print_stats (-1);
       } else {
