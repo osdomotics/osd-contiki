@@ -20,7 +20,7 @@ extern "C" {
 #include <Adafruit_SH1106.h>
 }
 
-extern resource_t res_battery, res_cputemp;
+extern resource_t res_battery, res_cputemp, res_smallest_rssi, res_nbt, res_routes;
 
 extern "C" void __cxa_pure_virtual() { while (1) printf ("xx\n"); }
 
@@ -29,9 +29,26 @@ uint16_t pulses, last_pulses;
 int16_t fade_out_counter;
 int32_t idle_counter;
 
-enum states state = FULLY_CLOSING;
+enum states state = INIT_OPENING;
+enum states next_state = IDLE;
+enum states old_state = IDLE;
+
+int16_t direction = 0;
+int16_t total_pulses = 1;
+int16_t current_position = 1;
+
+short int interrupt = 0;
+int pulseCount;
+#define PULSE_PIN 3
+
+extern int8_t rf230_last_rssi,rf230_smallest_rssi;
 
 Adafruit_SH1106 display(-1);
+
+void pulseCounter (void)
+{
+  pulseCount++;
+}
 
 void setup (void)
 {
@@ -57,7 +74,9 @@ void setup (void)
     digitalWrite (BTN_COM_PIN,    LOW); // on
     digitalWrite (PULSE_ON_PIN,  HIGH); // on
 
-    SENSORS_ACTIVATE(button_sensor);
+    pinMode (PULSE_PIN, INPUT);
+    digitalWrite(PULSE_PIN, HIGH);
+    attachInterrupt(interrupt, pulseCounter, FALLING);
 
     // init coap resourcen
     rest_init_engine ();
@@ -67,10 +86,14 @@ void setup (void)
     rest_activate_resource (&res_battery,   "s/battery");
     rest_activate_resource (&res_cputemp,   "s/cputemp");
     rest_activate_resource (&res_pulses,    "s/pulses");
-    rest_activate_resource (&res_direction, "a/direction");
+    rest_activate_resource (&res_valve,     "s/valve");
+    rest_activate_resource (&res_status,    "s/status");
     rest_activate_resource (&res_command,   "a/command");
+    rest_activate_resource (&res_smallest_rssi, "s/min_rssi");
+    rest_activate_resource (&res_nbt,           "s/nbt");
+    rest_activate_resource (&res_routes,        "s/routes");
     #pragma GCC diagnostic pop
-    NETSTACK_MAC.off(1);
+    //NETSTACK_MAC.off(1);
 }
 
 void print_stats (int8_t dir) {
@@ -81,51 +104,75 @@ void print_stats (int8_t dir) {
     display.setTextColor(WHITE);
     display.setCursor(0,0);
     display.print("pulses : ");
-    display.println (button_sensor.value (0));
+    display.println (pulseCount);
     if (dir == -1) {
         display.println ("dir: open");
     } else if (dir == 1) {
         display.println ("dir: close");
     }
+    display.print("last rssi: ");
+    display.println (rf230_last_rssi);
+    display.print("min  rssi: ");
+    display.println (rf230_smallest_rssi);
+
     display.display();
 }
 
-void valve (uint8_t direction) {
-  if (direction == CLOSE) {
+void valve (uint8_t direction_) {
+  printf ("valve(%d)\n", direction_);
+  if (direction_ == CLOSE) {
     // close
     digitalWrite (DIR_UP_PIN,     HIGH); // on
     digitalWrite (DIR_DOWN_PIN,   LOW); // off
     digitalWrite (PULSE_ON_PIN,   HIGH); // on
-  } else if (direction == OPEN) {
+    direction = -1;
+  } else if (direction_ == OPEN) {
     // open
     digitalWrite (DIR_UP_PIN,     LOW); // off
     digitalWrite (DIR_DOWN_PIN,   HIGH); // on
     digitalWrite (PULSE_ON_PIN,   HIGH); // on
-  } else if (direction == STOP){
+    direction = 1;
+  } else if (direction_ == STOP){
     // stop
     digitalWrite (DIR_UP_PIN,     LOW); // off
     digitalWrite (DIR_DOWN_PIN,   LOW); // off
     digitalWrite (PULSE_ON_PIN,   LOW); // off
+    direction = 0;
   }
 }
 
 void loop (void)
 {
+    int16_t new_pulses = 0;
+    int16_t tmp_pulses = 0;
+
     b1 = digitalRead (BTN_1_PIN);
     b2 = digitalRead (BTN_2_PIN);
     b3 = digitalRead (BTN_3_PIN);
-    pulses = button_sensor.value (0);
+    tmp_pulses = pulseCount;
+    new_pulses = tmp_pulses - pulses;
+    pulses = tmp_pulses;
 
-    printf ("%d, %d, %d, %d, %d, %d, %d\n"
-           , b1,b2,b3,state,pulses,fade_out_counter,(int16_t)idle_counter
+    current_position = current_position + direction * new_pulses;
+
+    printf ("%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d - %d, %d pulseCount: %d\n"
+           , b1,b2,b3
+           , state
+           , pulses, total_pulses, current_position, new_pulses, direction
+           , fade_out_counter, (int16_t)idle_counter
+           , rf230_last_rssi, rf230_smallest_rssi
+           , pulseCount
            );
 
-    if (b1 == 0 || b2 == 0 || b3 == 0) {
+    if (  (state == IDLE || state == WAIT_TO_CLOSE)
+       && (b2 == 0 || b3 == 0)
+       ) {
       state = MANUAL;
     }
 
     switch (state) {
       case MANUAL :
+      mcu_sleep_disable();
       loop_periodic_set (LOOP_INTERVAL);
       if (b1 == 0 && b3 == 1) {
         valve (CLOSE);
@@ -156,33 +203,73 @@ void loop (void)
       idle_counter = idle_counter / LOOP_INTERVAL_SLOW;
       loop_periodic_set (LOOP_INTERVAL_SLOW);
       state = WAIT_TO_CLOSE;
+      mcu_sleep_enable();
       break;
 
       case WAIT_TO_CLOSE :
       if (--idle_counter <= 0 ) {
         state = FULLY_CLOSING;
-        loop_periodic_set (LOOP_INTERVAL);
+        next_state = WAIT_END;
       }
       break;
 
       case FULLY_CLOSING :
       case FULLY_OPENING :
-      mcu_sleep_off();
+      old_state = state;
+      mcu_sleep_disable();
       loop_periodic_set (LOOP_INTERVAL);
       last_pulses = pulses;
-      if (state == FULLY_CLOSING)
+      if (state == FULLY_CLOSING) {
+        pulseCount = 0;
+	      pulses = 0;
         valve (CLOSE);
-      else
+      } else {
+        pulseCount = 0;
+	      pulses = 0;
         valve (OPEN);
-      state = WAIT_END;
+      }
+      state = next_state;
       break;
 
+      case INIT_OPENING :
+        pulseCount = 0;
+	      pulses = 0;
+        mcu_sleep_disable();
+        loop_periodic_set (LOOP_INTERVAL);
+        valve (OPEN);
+        old_state = state;
+        state = WAIT_END;
+        break;
+
       case WAIT_END :
+      case WAIT_INIT_FULLY_CLOSED:
       if (pulses == last_pulses) {
         valve (STOP);
-        //button_sensor.configure(4711,0);
-        mcu_sleep_on();
-        state = IDLE;
+        if (old_state == INIT_OPENING) {
+          pulseCount = 0;
+	        pulses = 0;
+          state = FULLY_CLOSING;
+          next_state = WAIT_INIT_FULLY_CLOSED;
+          break;
+        }
+        else if (state == WAIT_INIT_FULLY_CLOSED) {
+          total_pulses = pulses;
+          pulseCount = 0;
+	        pulses = 0;
+          current_position = 0;
+          state = IDLE;
+        } else {
+          state = IDLE;
+        }
+        if (old_state == FULLY_CLOSING) {
+          pulseCount = 0;
+	        pulses = 0;
+	        current_position = 0;
+	      }
+        if (old_state == FULLY_OPENING) {
+          total_pulses = pulses;
+        }
+
       }
       last_pulses = pulses;
     }

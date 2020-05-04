@@ -38,16 +38,18 @@
 
 #define LED_PIN          4
 
-extern resource_t res_pulses, res_direction, res_command;
+extern resource_t res_pulses, res_status, res_command, res_valve;
 
 enum states {
-   IDLE,
-   FULLY_CLOSING,
-   FULLY_OPENING,
-   WAIT_END,
-   WAIT_TO_CLOSE,
-   MANUAL,
-   MANUAL_FADE_OUT
+   IDLE,                   // 0
+   INIT_OPENING,           // 1
+   WAIT_INIT_FULLY_CLOSED, // 2
+   FULLY_CLOSING,          // 3
+   FULLY_OPENING,          // 4
+   WAIT_END,               // 5
+   WAIT_TO_CLOSE,          // 6 
+   MANUAL,                 // 7 
+   MANUAL_FADE_OUT         // 8 
 };
 
 #define OPEN  1
