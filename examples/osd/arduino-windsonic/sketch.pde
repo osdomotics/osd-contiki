@@ -31,7 +31,11 @@ extern resource_t
   res_wind_status,
   res_wind_speed,
   res_wind_direction,
-  res_power_supply;
+  res_power_supply,
+  res_cputemp,
+  res_nbt,
+  res_routes,
+  res_smallest_rssi;
 
 #define STX 0x02
 #define ETX 0x03
@@ -97,6 +101,10 @@ void setup (void)
     rest_activate_resource (&res_wind_direction, "s/wind_direction");
     rest_activate_resource (&res_wind_status,    "s/wind_status");
     rest_activate_resource (&res_power_supply,   "s/power_supply");
+    rest_activate_resource (&res_cputemp,        "s/cputemp");
+    rest_activate_resource (&res_nbt,           "s/nbt");
+    rest_activate_resource (&res_routes,        "s/routes");
+    rest_activate_resource (&res_smallest_rssi, "s/min_rssi");
     OTA_ACTIVATE_RESOURCES();
 #pragma GCC diagnostic pop
 

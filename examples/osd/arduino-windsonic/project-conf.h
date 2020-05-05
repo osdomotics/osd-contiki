@@ -1,4 +1,4 @@
-#/*
+/*
  * Copyright (C) 2010-2017, Swedish Institute of Computer Science.
  * All rights reserved.
  *
@@ -41,6 +41,19 @@
 #define LOOP_INTERVAL		(CLOCK_SECOND/4)
 #define WIND_SPEEDS             30
 
+/* RPL: need to turn it on in platform/osd-merkur-256/contiki-conf.h
+
+   for leaf nodes:
+     use normal contikimac and dont do rpl routing
+     uncomment the below settings
+
+   for routing nodes:
+     turn off duty cycling in contikimac by calling NETSTACK_MAC.off(1)
+     comment out the below settings
+*/
+#undef RPL_CONF_LEAF_ONLY
+#define RPL_CONF_LEAF_ONLY 0
+
 /* Save energy */
 //#define RDC_CONF_PT_YIELD_OFF
 
@@ -54,8 +67,8 @@
 //#define NETSTACK_CONF_RDC     nullrdc_driver
 
 /* Increase rpl-border-router IP-buffer when using more than 64. */
-#undef REST_MAX_CHUNK_SIZE
-#define REST_MAX_CHUNK_SIZE    64
+//#undef REST_MAX_CHUNK_SIZE
+//#define REST_MAX_CHUNK_SIZE    64
 
 /* Estimate your header size, especially when using Proxy-Uri. */
 /*
