@@ -31,7 +31,7 @@ class Upload_Info (object) :
     def _cc (self, path, output = False, m = "get", **kws) :
         cmd = ["coap-client", "-m", m]
 
-        opts = [("-%s" % k, v) for k, v in kws.items ()]
+        opts = [("-%s" % k, str (v)) for k, v in kws.items ()]
         for x in opts :
             cmd.extend (x)
 
