@@ -25,7 +25,6 @@ extern resource_t res_battery, res_cputemp, res_smallest_rssi, res_nbt, res_rout
 extern "C" void __cxa_pure_virtual() { while (1) printf ("xx\n"); }
 
 uint8_t b1,b2,b3;
-uint16_t pulses, last_pulses;
 int16_t fade_out_counter;
 int32_t idle_counter;
 
@@ -38,7 +37,8 @@ int16_t total_pulses = 1;
 int16_t current_position = 1;
 
 short int interrupt = 0;
-int pulseCount;
+int pulseCount = 0, last_pulse_count = 0;
+
 #define PULSE_PIN 3
 
 extern int8_t rf230_last_rssi,rf230_smallest_rssi;
@@ -105,9 +105,9 @@ void print_stats (int8_t dir) {
     display.setCursor(0,0);
     display.print("pulses : ");
     display.println (pulseCount);
-    if (dir == -1) {
+    if (dir == OPEN) {
         display.println ("dir: open");
-    } else if (dir == 1) {
+    } else if (dir == CLOSE) {
         display.println ("dir: close");
     }
     display.print("last rssi: ");
@@ -119,21 +119,20 @@ void print_stats (int8_t dir) {
 }
 
 void valve (uint8_t direction_) {
-  printf ("valve(%d)\n", direction_);
   if (direction_ == CLOSE) {
-    // close
+    printf ("valve(CLOSE)\n");
     digitalWrite (DIR_UP_PIN,     HIGH); // on
     digitalWrite (DIR_DOWN_PIN,   LOW); // off
     digitalWrite (PULSE_ON_PIN,   HIGH); // on
     direction = -1;
   } else if (direction_ == OPEN) {
-    // open
+    printf ("valve(OPEN)\n");
     digitalWrite (DIR_UP_PIN,     LOW); // off
     digitalWrite (DIR_DOWN_PIN,   HIGH); // on
     digitalWrite (PULSE_ON_PIN,   HIGH); // on
     direction = 1;
   } else if (direction_ == STOP){
-    // stop
+    printf ("valve(STOP)\n");
     digitalWrite (DIR_UP_PIN,     LOW); // off
     digitalWrite (DIR_DOWN_PIN,   LOW); // off
     digitalWrite (PULSE_ON_PIN,   LOW); // off
@@ -143,134 +142,152 @@ void valve (uint8_t direction_) {
 
 void loop (void)
 {
-    int16_t new_pulses = 0;
-    int16_t tmp_pulses = 0;
-
     b1 = digitalRead (BTN_1_PIN);
     b2 = digitalRead (BTN_2_PIN);
     b3 = digitalRead (BTN_3_PIN);
-    tmp_pulses = pulseCount;
-    new_pulses = tmp_pulses - pulses;
-    pulses = tmp_pulses;
 
-    current_position = current_position + direction * new_pulses;
+    printf ("b: %d, %d, %d s: ", b1,b2,b3);
+    
+    if (old_state == IDLE                  ) printf ("IDLE                  ");
+    if (old_state == INIT_OPENING          ) printf ("INIT_OPENING          ");
+    if (old_state == WAIT_INIT_FULLY_CLOSED) printf ("WAIT_INIT_FULLY_CLOSED");
+    if (old_state == FULLY_CLOSING         ) printf ("FULLY_CLOSING         ");
+    if (old_state == FULLY_OPENING         ) printf ("FULLY_OPENING         ");
+    if (old_state == WAIT_END              ) printf ("WAIT_END              ");
+    if (old_state == WAIT_TO_CLOSE         ) printf ("WAIT_TO_CLOSE         ");
 
-    printf ("%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d - %d, %d pulseCount: %d\n"
-           , b1,b2,b3
-           , state
-           , pulses, total_pulses, current_position, new_pulses, direction
+    if (state == IDLE                  ) printf ("IDLE                  ");
+    if (state == INIT_OPENING          ) printf ("INIT_OPENING          ");
+    if (state == WAIT_INIT_FULLY_CLOSED) printf ("WAIT_INIT_FULLY_CLOSED");
+    if (state == FULLY_CLOSING         ) printf ("FULLY_CLOSING         ");
+    if (state == FULLY_OPENING         ) printf ("FULLY_OPENING         ");
+    if (state == WAIT_END              ) printf ("WAIT_END              ");
+    if (state == WAIT_TO_CLOSE         ) printf ("WAIT_TO_CLOSE         ");
+
+    if (next_state == IDLE                  ) printf ("IDLE                  ");
+    if (next_state == INIT_OPENING          ) printf ("INIT_OPENING          ");
+    if (next_state == WAIT_INIT_FULLY_CLOSED) printf ("WAIT_INIT_FULLY_CLOSED");
+    if (next_state == FULLY_CLOSING         ) printf ("FULLY_CLOSING         ");
+    if (next_state == FULLY_OPENING         ) printf ("FULLY_OPENING         ");
+    if (next_state == WAIT_END              ) printf ("WAIT_END              ");
+    if (next_state == WAIT_TO_CLOSE         ) printf ("WAIT_TO_CLOSE         ");
+
+    printf (", p: %d, %d, %d, %d, c: %d, %d rssi: %d, %d\n"
+           , total_pulses, pulseCount, current_position, direction
            , fade_out_counter, (int16_t)idle_counter
            , rf230_last_rssi, rf230_smallest_rssi
-           , pulseCount
            );
 
     if (  (state == IDLE || state == WAIT_TO_CLOSE)
-       && (b2 == 0 || b3 == 0)
+       && (b2 == 1 && b3 == 0)
        ) {
-      state = MANUAL;
+      printf ("manually closing\n");
+      state = FULLY_CLOSING;
+      next_state = WAIT_END;
+    }
+
+    if (  (state == IDLE || state == WAIT_TO_CLOSE)
+       && (b2 == 0 && b3 == 1)
+       ) {
+      printf ("manually opening\n");
+      state = FULLY_OPENING;
+      next_state = WAIT_END;
     }
 
     switch (state) {
-      case MANUAL :
-      mcu_sleep_disable();
-      loop_periodic_set (LOOP_INTERVAL);
-      if (b2 == 0 && b3 == 1) {
-        valve (CLOSE);
-        print_stats (1);
-      } else if (b2 == 1 && b3 == 0) {
-        valve (OPEN);
-        print_stats (-1);
-      } else {
-        valve (STOP);
-        print_stats (0);
-        fade_out_counter =
-          (DISPLAY_FADE_OUT_SECONDS*CLOCK_SECOND) / LOOP_INTERVAL;
-        state = MANUAL_FADE_OUT;
-      }
-      break;
-
-      case MANUAL_FADE_OUT :
-      //print_stats (0);
-      if (--fade_out_counter <= 0) {
-        state = IDLE;
-        digitalWrite (OLED_ON_PIN, LOW);
-      }
-      break;
-
       case IDLE :
-      idle_counter = WAIT_TO_CLOSE_SECONDS;
-      idle_counter = idle_counter * CLOCK_SECOND;
-      idle_counter = idle_counter / LOOP_INTERVAL_SLOW;
-      loop_periodic_set (LOOP_INTERVAL_SLOW);
-      state = WAIT_TO_CLOSE;
-      mcu_sleep_enable();
+        printf ("IDLE\n");
+	pulseCount = 0;
+        idle_counter = WAIT_TO_CLOSE_SECONDS;
+        idle_counter = idle_counter * CLOCK_SECOND;
+        idle_counter = idle_counter / LOOP_INTERVAL_SLOW;
+        loop_periodic_set (LOOP_INTERVAL_SLOW);
+        state = WAIT_TO_CLOSE;
+        digitalWrite (OLED_ON_PIN, LOW);
+        mcu_sleep_enable();
       break;
 
       case WAIT_TO_CLOSE :
-      if (--idle_counter <= 0 ) {
-        state = FULLY_CLOSING;
-        next_state = WAIT_END;
-      }
+        printf ("WAIT_TO_CLOSE\n");
+        if (--idle_counter <= 0 ) {
+          state = FULLY_CLOSING;
+          next_state = WAIT_END;
+        }
+        digitalWrite (OLED_ON_PIN, LOW);
       break;
 
       case FULLY_CLOSING :
       case FULLY_OPENING :
-      old_state = state;
-      mcu_sleep_disable();
-      loop_periodic_set (LOOP_INTERVAL);
-      last_pulses = pulses;
-      if (state == FULLY_CLOSING) {
-        pulseCount = 0;
-	      pulses = 0;
-        valve (CLOSE);
-      } else {
-        pulseCount = 0;
-	      pulses = 0;
-        valve (OPEN);
-      }
-      state = next_state;
+        printf ("FULLY_CLOSING or FULLY_OPENING\n");
+        old_state = state;
+        mcu_sleep_disable();
+        loop_periodic_set (LOOP_INTERVAL);
+        if (state == FULLY_CLOSING) {
+          print_stats (CLOSE);
+          valve (CLOSE);
+        } else {
+          print_stats (OPEN);
+          valve (OPEN);
+        }
+        state = next_state;
       break;
 
       case INIT_OPENING :
-        pulseCount = 0;
-	      pulses = 0;
+        printf ("INIT_OPENING\n");
         mcu_sleep_disable();
         loop_periodic_set (LOOP_INTERVAL);
         valve (OPEN);
         old_state = state;
         state = WAIT_END;
-        break;
+      break;
 
       case WAIT_END :
       case WAIT_INIT_FULLY_CLOSED:
-      if (pulses == last_pulses) {
-        valve (STOP);
-        if (old_state == INIT_OPENING) {
-          pulseCount = 0;
-	        pulses = 0;
-          state = FULLY_CLOSING;
-          next_state = WAIT_INIT_FULLY_CLOSED;
-          break;
-        }
-        else if (state == WAIT_INIT_FULLY_CLOSED) {
-          total_pulses = pulses;
-          pulseCount = 0;
-	        pulses = 0;
-          current_position = 0;
-          state = IDLE;
-        } else {
-          state = IDLE;
+        printf ("WAIT_END or WAIT_INIT_FULLY_CLOSED\n");
+        if (pulseCount == last_pulse_count) {
+	  printf ("stop\n");
+          valve (STOP);
+          if (old_state == INIT_OPENING) {
+            printf ("1\n");
+            print_stats (OPEN);
+	    pulseCount = 0;
+            last_pulse_count = pulseCount;
+            state = FULLY_CLOSING;
+            next_state = WAIT_INIT_FULLY_CLOSED;
+            break;
+          }
+          else if (state == WAIT_INIT_FULLY_CLOSED) {
+            printf ("2\n");
+            print_stats (CLOSE);
+            total_pulses = pulseCount;
+            pulseCount = 0;
+            last_pulse_count = pulseCount;
+            current_position = 0;
+            state = IDLE;
+	    next_state = IDLE;
+            break;
+          } else {
+            printf ("3\n");
+            if (old_state == FULLY_CLOSING) {
+              pulseCount = 0;
+              current_position = 0;
+            }
+            if (old_state == FULLY_OPENING) {
+              pulseCount = 0;
+              current_position = 100;
+            }
+            last_pulse_count = pulseCount;
+            state = IDLE;
+	    next_state = IDLE;
+            break;
+          }
         }
         if (old_state == FULLY_CLOSING) {
-          pulseCount = 0;
-	        pulses = 0;
-	        current_position = 0;
-	      }
-        if (old_state == FULLY_OPENING) {
-          total_pulses = pulses;
+          print_stats (CLOSE);
         }
-
-      }
-      last_pulses = pulses;
-    }
+        if (old_state == FULLY_OPENING) {
+          print_stats (OPEN);
+        }
+        last_pulse_count = pulseCount;
+    } // switch state
 }

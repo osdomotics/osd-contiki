@@ -23,11 +23,12 @@
 
 extern enum states state, next_state;
 
-extern int16_t current_position, total_pulses;
+extern int16_t current_position, pulseCount;
 
 int pulses_reset
     (const char *name, const char *uri, const char *query, const char *s)
 {
+  printf ("pulses_reset\n");
   state = INIT_OPENING;
   return 0;
 }
@@ -41,7 +42,7 @@ pulses_to_string
     , size_t bufsize
     )
 {
-  return snprintf (buf, bufsize, "%d", button_sensor.value (0));
+  return snprintf (buf, bufsize, "%d", pulseCount);
 }
 
 GENERIC_RESOURCE \
@@ -83,12 +84,6 @@ state_to_string
   if (state == WAIT_TO_CLOSE) 
     return snprintf (buf, bufsize, "%s", "WAIT_TO_CLOSE");
   
-  if (state == MANUAL) 
-    return snprintf (buf, bufsize, "%s", "MANUAL");
-  
-  if (state == MANUAL_FADE_OUT) 
-    return snprintf (buf, bufsize, "%s", "MANUAL_FADE_OUT");
-
   return snprintf (buf, bufsize, "%s", "unknown");
 }
 
@@ -110,11 +105,7 @@ valve_to_string
     , size_t bufsize
     )
 {
-  int16_t position = (int16_t)((int32_t)current_position * 100 / (int32_t)total_pulses);
-  printf ("%d %d %d\n", current_position, total_pulses, position);
-  if (position < 0) position = 0;
-
-  return snprintf (buf, bufsize, "%d", position);
+  return snprintf (buf, bufsize, "%d", current_position);
 }
 
 GENERIC_RESOURCE \
@@ -131,10 +122,20 @@ int command_from_string
 {
     //int32_t tmp = strtol (s, NULL, 10);
     if (*s == 'o' || *s == 'O') {
+      printf ("o\n");
+      if (state == INIT_OPENING || state == WAIT_INIT_FULLY_CLOSED) {
+        printf ("not ready, ignoring command\n");
+	return 0;
+      }
       state = FULLY_OPENING;
       next_state = WAIT_END;
     }
     else if (*s == 'c' || *s == 'C') {
+      printf ("c\n");
+      if (state == INIT_OPENING || state == WAIT_INIT_FULLY_CLOSED) {
+        printf ("not ready, ignoring command\n");
+	return 0;
+      }
       state = FULLY_CLOSING;
       next_state = WAIT_END;
     }

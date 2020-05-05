@@ -47,9 +47,7 @@ enum states {
    FULLY_CLOSING,          // 3
    FULLY_OPENING,          // 4
    WAIT_END,               // 5
-   WAIT_TO_CLOSE,          // 6 
-   MANUAL,                 // 7 
-   MANUAL_FADE_OUT         // 8 
+   WAIT_TO_CLOSE           // 6 
 };
 
 #define OPEN  1
