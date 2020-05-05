@@ -68,7 +68,42 @@ res_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferr
     REST.set_response_payload(response, buffer, strlen((char *)buffer));
   } else if(accept == REST.type.APPLICATION_JSON) {
     REST.set_header_content_type(response, REST.type.APPLICATION_JSON);
-    snprintf((char *)buffer, REST_MAX_CHUNK_SIZE, "{'temperature':%s}", soilcap_s);
+    snprintf((char *)buffer, REST_MAX_CHUNK_SIZE, "{'soil_moisture':%s}", soilcap_s);
+
+    REST.set_response_payload(response, buffer, strlen((char *)buffer));
+  } else {
+    REST.set_response_status(response, REST.status.NOT_ACCEPTABLE);
+    const char *msg = "Supporting content-types text/plain and application/json";
+    REST.set_response_payload(response, msg, strlen(msg));
+  }
+}
+static void res2_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
+
+/* A simple getter example. Returns the reading from the sensor with a simple etag */
+RESOURCE(res_soilcapp,
+         "title=\"soil status %\";rt=\"atm\"",
+         res2_get_handler,
+         NULL,
+         NULL,
+         NULL);
+
+extern  char soilcapp_s[8];
+
+static void
+res2_get_handler(void *request, void *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
+{
+  
+  unsigned int accept = -1;
+  REST.get_header_accept(request, &accept);
+
+  if(accept == -1 || accept == REST.type.TEXT_PLAIN) {
+    REST.set_header_content_type(response, REST.type.TEXT_PLAIN);
+    snprintf((char *)buffer, REST_MAX_CHUNK_SIZE, "%s", soilcapp_s);
+
+    REST.set_response_payload(response, buffer, strlen((char *)buffer));
+  } else if(accept == REST.type.APPLICATION_JSON) {
+    REST.set_header_content_type(response, REST.type.APPLICATION_JSON);
+    snprintf((char *)buffer, REST_MAX_CHUNK_SIZE, "{'soil_moisture':%s}", soilcapp_s);
 
     REST.set_response_payload(response, buffer, strlen((char *)buffer));
   } else {

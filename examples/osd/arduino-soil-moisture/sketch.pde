@@ -20,7 +20,8 @@ extern "C" {
 #include "rest-engine.h"
 #include "ota-update.h"
 
-extern resource_t res_soiltemp,res_soilcap,res_soillight, res_battery;
+extern resource_t res_soiltemp,res_soilcap,res_soilcapp,res_soillight, res_battery,
+       res_smallest_rssi, res_nbt, res_routes;
 
 float  soilcap;
 float  soiltemp;
@@ -29,6 +30,7 @@ float  soillight;
 uint8_t    soiladdr;
 uint8_t    soilversion;
 
+char   soilcapp_s[16]; // percent absolute values range from 200 (0%) to 700 (100%)
 char   soilcap_s[16];
 char   soiltemp_s[16];
 char   soillight_s[16];
@@ -56,8 +58,12 @@ void setup (void)
     #pragma GCC diagnostic ignored "-Wwrite-strings"
     rest_activate_resource (&res_soiltemp, "s/temp");
     rest_activate_resource (&res_soilcap, "s/soil");
+    rest_activate_resource (&res_soilcapp, "s/soil_percent");
     rest_activate_resource (&res_soillight, "s/light");
     rest_activate_resource (&res_battery, "s/battery");
+    rest_activate_resource (&res_smallest_rssi, "s/min_rssi");
+    rest_activate_resource (&res_nbt, "s/nbt");
+    rest_activate_resource (&res_routes, "s/routes");
     OTA_ACTIVATE_RESOURCES();
     #pragma GCC diagnostic pop
 
@@ -116,11 +122,16 @@ void loop (void)
           sensor.sleep(); // available since FW 2.3
           // convert to string
           dtostrf(soilcap   , 3, 2, soilcap_s   );
+	  if (soilcap < 200) soilcap = 200;
+	  if (soilcap > 700) soilcap = 700;
+
+          dtostrf((soilcap-200)/(700-200)*100 , 3, 2, soilcapp_s   );
           dtostrf(soiltemp  , 3, 2, soiltemp_s  );
           dtostrf(soillight , 3, 2, soillight_s );
           // Debug Print
           printf("Temp: %s",soiltemp_s);
           printf("\t\tSoil: %s",soilcap_s);
+          printf("\t\tSoil%%: %s",soilcapp_s);
           printf("\t\tLight: %s\n",soillight_s);
           printf ("turn power off\n");
           SOIL_OFF
