@@ -66,7 +66,7 @@ void setup (void)
 
 // at project-conf.h
 // LOOP_INTERVAL		(3 * CLOCK_SECOND)
-#define MEASURE_INTERVALL   6
+#define MEASURE_INTERVALL   120
 
 void loop (void)
 {
@@ -123,7 +123,7 @@ void loop (void)
           printf("\t\tSoil: %s",soilcap_s);
           printf("\t\tLight: %s\n",soillight_s);
           printf ("turn power off\n");
-          //SOIL_OFF
+          SOIL_OFF
           measured = 1;
         }
       } else {

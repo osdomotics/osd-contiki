@@ -36,25 +36,28 @@
 //#define PLATFORM_HAS_BUTTON  1
 #define PLATFORM_HAS_BATTERY 1
 
-#define SICSLOWPAN_CONF_FRAG	1
+#define LOOP_INTERVAL		(1 * CLOCK_SECOND)
 
-#define LOOP_INTERVAL		(10 * CLOCK_SECOND)
+/* RPL: need to turn it on in platform/osd-merkur-256/contiki-conf.h
 
-/* Save energy */
-//#define RDC_CONF_PT_YIELD_OFF
+   for leaf nodes:
+     use normal contikimac and dont do rpl routing
+     uncomment the below settings
+
+   for routing nodes:
+     turn off duty cycling in contikimac by calling NETSTACK_MAC.off(1)
+     comment out the below settings
+*/
+#undef RPL_CONF_LEAF_ONLY
+#define RPL_CONF_LEAF_ONLY 1
 
 /* For Debug: Dont allow MCU sleeping between channel checks */
 //#undef RDC_CONF_MCU_SLEEP
 //#define RDC_CONF_MCU_SLEEP       0
 
-/* Disabling RDC for demo purposes. Core updates often require more memory. */
-/* For projects, optimize memory and enable RDC again. */
-// #undef NETSTACK_CONF_RDC
-//#define NETSTACK_CONF_RDC     nullrdc_driver
-
 /* Increase rpl-border-router IP-buffer when using more than 64. */
-#undef REST_MAX_CHUNK_SIZE
-#define REST_MAX_CHUNK_SIZE    64
+//#undef REST_MAX_CHUNK_SIZE
+//#define REST_MAX_CHUNK_SIZE    64
 
 /* Estimate your header size, especially when using Proxy-Uri. */
 /*
@@ -82,25 +85,6 @@
 /*
 #undef COAP_LINK_FORMAT_FILTERING
 #define COAP_LINK_FORMAT_FILTERING      0
-*/
-
-/* Save some memory for the sky platform. */
-/*
-#undef NBR_TABLE_CONF_MAX_NEIGHBORS
-#define NBR_TABLE_CONF_MAX_NEIGHBORS     10
-#undef UIP_CONF_MAX_ROUTES
-#define UIP_CONF_MAX_ROUTES   10
-*/
-
-/* Reduce 802.15.4 frame queue to save RAM. */
-/*
-#undef QUEUEBUF_CONF_NUM
-#define QUEUEBUF_CONF_NUM       4
-*/
-
-/*
-#undef SICSLOWPAN_CONF_FRAG
-#define SICSLOWPAN_CONF_FRAG	1
 */
 
 #endif /* PROJECT_RPL_WEB_CONF_H_ */
