@@ -17,8 +17,11 @@
 extern "C" {
 #include "arduino-process.h"
 #include "rest-engine.h"
+#include "ota-update.h"
 
-extern resource_t res_bmptemp, res_bmphum, res_bmppress,res_bmpatm,res_bmpalt, res_battery;
+extern resource_t res_bmptemp, res_bmphum, res_bmppress,res_bmpatm,res_bmpalt, res_battery,res_nbt,
+  res_routes,
+  res_smallest_rssi;
 
 float bmptemp;
 float bmppress;
@@ -49,14 +52,14 @@ void setup (void)
     status = bme.begin();  
     if (!status) {
         printf("Could not find a valid BME280 sensor, check wiring, address, sensor ID!\n");
-        printf("SensorID was: 0x%f\n",bme.sensorID());
+        printf("SensorID was: 0x%lx\n",bme.sensorID());
         printf("        ID of 0xFF probably means a bad address, a BMP 180 or BMP 085\n");
         printf("   ID of 0x56-0x58 represents a BMP 280,\n");
         printf("        ID of 0x60 represents a BME 280.\n");
         printf("        ID of 0x61 represents a BME 680.\n");
         while (1);
     } else {
-        printf ("BME280 found with id: 0x%x\n", bme.sensorID());
+        printf ("BME280 found with id: 0x%lx\n", bme.sensorID());
     }
 
     // init coap resourcen
@@ -68,6 +71,10 @@ void setup (void)
     rest_activate_resource (&res_bmpatm, "s/atm");
     rest_activate_resource (&res_bmpalt, "s/alt");
     rest_activate_resource (&res_battery, "s/battery");
+    rest_activate_resource (&res_nbt,           "s/nbt");
+    rest_activate_resource (&res_routes,        "s/routes");
+    rest_activate_resource (&res_smallest_rssi, "s/min_rssi");
+    OTA_ACTIVATE_RESOURCES();
     #pragma GCC diagnostic pop
 }
 
