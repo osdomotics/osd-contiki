@@ -667,7 +667,7 @@ ISR(TRX24_RX_START_vect)
 //	DEBUGFLOW('3');
 /* Save RSSI for this packet if not in extended mode, scaling to 1dB resolution */
 #if !RF230_CONF_AUTOACK
-    rf230_last_rssi = 3 * hal_subregister_read(SR_RSSI);
+    rf230_last_rssi = 90 - 3 * hal_subregister_read(SR_RSSI);
 #endif
     rf230_get_last_rx_packet_timestamp();
 }
@@ -751,6 +751,7 @@ HAL_RF230_ISR()
 #else  // Faster with 1-clock multiply. Raven and Jackdaw have 2-clock multiply so same speed while saving 2 bytes of program memory
         rf230_last_rssi = 3 * hal_subregister_read(SR_RSSI);
 #endif
+      rf230_last_rssi -= 90;
 #endif
 
     }
@@ -768,7 +769,7 @@ HAL_RF230_ISR()
          /* Save the rssi for printing in the main loop */
 #if RF230_CONF_AUTOACK
          //rf230_last_rssi=hal_subregister_read(SR_ED_LEVEL);
-         rf230_last_rssi=hal_register_read(RG_PHY_ED_LEVEL);
+         rf230_last_rssi=90 - hal_register_read(RG_PHY_ED_LEVEL);
 #endif
          if (rf230_last_rssi >= RF230_MIN_RX_POWER) {
 #endif

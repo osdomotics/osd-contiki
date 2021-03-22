@@ -40,7 +40,7 @@
  * non-zero value indicates that the function has completed and that
  * the web server should move along to the next script line.
  *
- */ 
+ */
 
 #include <stdio.h>
 #include <string.h>
@@ -113,10 +113,11 @@ static const char *states[] = {
 #if RADIOSTATS
   extern unsigned long radioontime;
   static unsigned long savedradioontime;
-  extern uint8_t RF230_radio_on, rf230_last_rssi;
+  extern uint8_t RF230_radio_on;
+  extern int8_t rf230_last_rssi;
   extern uint16_t RF230_sendpackets,RF230_receivepackets,RF230_sendfail,RF230_receivefail;
 #endif
-  
+
 #if 0
 void
 web_set_temp(char *s)
@@ -184,7 +185,7 @@ generate_file_stats(void *arg)
 
       /* Get the linked list file entry into RAM from from wherever it is*/
       httpd_memcpy(&fram,f,sizeof(fram));
- 
+
       /* Get the file name from whatever memory it is in */
       httpd_fs_cpy(&tmp, fram.name, sizeof(tmp));
 #if HTTPD_FS_STATISTICS==1
@@ -212,9 +213,9 @@ PT_THREAD(file_stats(struct httpd_state *s, char *ptr))
   PSOCK_BEGIN(&s->sout);
 
   thisfilename=&s->filename[0]; //temporary way to pass filename to generate_file_stats
-  
+
   PSOCK_GENERATOR_SEND(&s->sout, generate_file_stats, (void *) ptr);
-  
+
   PSOCK_END(&s->sout);
 }
 #endif /*HTTPD_FS_STATISTICS*/
@@ -249,7 +250,7 @@ make_tcp_stats(void *arg)
 static
 PT_THREAD(tcp_stats(struct httpd_state *s, char *ptr))
 {
-  
+
   PSOCK_BEGIN(&s->sout);
 
   for(s->u.count = 0; s->u.count < UIP_CONNS; ++s->u.count) {
@@ -302,11 +303,11 @@ uint16_t numprinted;
     if (uip_ds6_if.addr_list[i].isused) {
       j++;
       numprinted += httpd_cgi_sprint_ip6(uip_ds6_if.addr_list[i].ipaddr, uip_appdata + numprinted);
-      numprinted += httpd_snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, httpd_cgi_addrb); 
+      numprinted += httpd_snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, httpd_cgi_addrb);
     }
   }
 //if (j==0) numprinted += httpd_snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, httpd_cgi_addrn);
-  numprinted += httpd_snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, httpd_cgi_addrf, UIP_DS6_ADDR_NB-j); 
+  numprinted += httpd_snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, httpd_cgi_addrf, UIP_DS6_ADDR_NB-j);
   return numprinted;
 }
 /*---------------------------------------------------------------------------*/
@@ -319,7 +320,7 @@ PT_THREAD(addresses(struct httpd_state *s, char *ptr))
 
   PSOCK_END(&s->sout);
 }
-/*---------------------------------------------------------------------------*/	
+/*---------------------------------------------------------------------------*/
 static unsigned short
 make_neighbors(void *p)
 {
@@ -344,11 +345,11 @@ PT_THREAD(neighbors(struct httpd_state *s, char *ptr))
 {
   PSOCK_BEGIN(&s->sout);
 
-  PSOCK_GENERATOR_SEND(&s->sout, make_neighbors, s->u.ptr);  
-  
+  PSOCK_GENERATOR_SEND(&s->sout, make_neighbors, s->u.ptr);
+
   PSOCK_END(&s->sout);
 }
-/*---------------------------------------------------------------------------*/			
+/*---------------------------------------------------------------------------*/
 static unsigned short
 make_routes(void *p)
 {
@@ -382,9 +383,9 @@ static
 PT_THREAD(routes(struct httpd_state *s, char *ptr))
 {
   PSOCK_BEGIN(&s->sout);
- 
-  PSOCK_GENERATOR_SEND(&s->sout, make_routes, s->u.ptr); 
- 
+
+  PSOCK_GENERATOR_SEND(&s->sout, make_routes, s->u.ptr);
+
   PSOCK_END(&s->sout);
 }
 /*---------------------------------------------------------------------------*/
@@ -402,7 +403,7 @@ generate_sensor_readings(void *arg)
   static const char httpd_cgi_sensr12[] HTTPD_STRING_ATTR = "<em>Temperature:</em> %s    <em>Battery:<em> %s<br>";
   static const char httpd_cgi_sensor3[] HTTPD_STRING_ATTR = "<em>Elapsed timer :</em> %02d:%02d:%02d<br>";
   static const char httpd_cgi_sensor4[] HTTPD_STRING_ATTR = "<em>Sleeping time :</em> %02d:%02d:%02d (%d%%)<br>";
-  
+
   numprinted=0;
 //  if (last_tempupdate) {
 //    numprinted =httpd_snprintf((char *)uip_appdata, uip_mss(), httpd_cgi_sensor0,seconds-last_tempupdate);
@@ -417,7 +418,7 @@ generate_sensor_readings(void *arg)
   ADMUX =0xc9;              // Select internal 1.6 volt ref, temperature sensor ADC channel
   ADCSRA=0x85;              //Enable ADC, not free running, interrupt disabled, clock divider 32 (250 KHz@ 8 MHz)
 //  while ((ADCSRB&(1<<AVDDOK))==0);  //wait for AVDD ok
-//  while ((ADCSRB&(1<<REFOK))==0);  //wait for ref ok 
+//  while ((ADCSRB&(1<<REFOK))==0);  //wait for ref ok
   ADCSRA|=1<<ADSC;          //Start throwaway conversion
   while (ADCSRA&(1<<ADSC)); //Wait till done
   ADCSRA|=1<<ADSC;          //Start another conversion
@@ -425,7 +426,7 @@ generate_sensor_readings(void *arg)
   h=ADC;                    //Read adc
   h=11*h-2728+(h>>2);       //Convert to celcius*10 (should be 11.3*h, approximate with 11.25*h)
   ADCSRA=0;                 //disable ADC
-  ADMUX=0;                  //turn off internal vref      
+  ADMUX=0;                  //turn off internal vref
   m=h/10;s=h-10*m;
   httpd_snprintf(sensor_temperature,sizeof(sensor_temperature),httpd_cgi_sensor1_printf,m,s);
 #endif
@@ -486,7 +487,7 @@ generate_radio_stats(void *arg)
 
 #if RF230BB
   numprinted+=httpd_snprintf((char *)uip_appdata + numprinted, uip_mss() - numprinted, httpd_cgi_sensor11,\
-    RF230_sendpackets,RF230_receivepackets,RF230_sendfail,RF230_receivefail,-92+rf230_last_rssi);
+    RF230_sendpackets,RF230_receivepackets,RF230_sendfail,RF230_receivefail,rf230_last_rssi);
 #else
   p1=0;
   radio_get_rssi_value(&p1);
@@ -494,7 +495,7 @@ generate_radio_stats(void *arg)
   numprinted+=httpd_snprintf((char *)uip_appdata + numprinted, uip_mss() - numprinted, httpd_cgi_sensor11,\
     RF230_sendpackets,RF230_receivepackets,RF230_sendfail,RF230_receivefail,p1);
 #endif
- 
+
   return numprinted;
 }
 #endif
@@ -509,7 +510,7 @@ PT_THREAD(sensor_readings(struct httpd_state *s, char *ptr))
   PSOCK_GENERATOR_SEND(&s->sout, generate_radio_stats, s);
 #endif
 
-  
+
   PSOCK_END(&s->sout);
 }
 /*---------------------------------------------------------------------------*/
@@ -599,4 +600,3 @@ uint8_t httpd_cgi_sprint_ip6(uip_ip6addr_t addr, char * result)
 
     return (result - starting);
         }
-

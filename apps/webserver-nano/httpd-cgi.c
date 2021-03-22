@@ -38,7 +38,7 @@
  * non-zero value indicates that the function has completed and that
  * the web server should move along to the next script line.
  *
- */ 
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -135,11 +135,12 @@ static const char *states[] = {
 #if RADIOSTATS
   extern unsigned long radioontime;
   static unsigned long savedradioontime;
-  extern uint8_t RF230_radio_on, rf230_last_rssi;
+  extern uint8_t RF230_radio_on;
+  extern int8_t rf230_last_rssi;
   extern uint16_t RF230_sendpackets,RF230_receivepackets,RF230_sendfail,RF230_receivefail;
 #endif
 #endif
- 
+
 #if 0
 void
 web_set_temp(char *s)
@@ -272,7 +273,7 @@ PT_THREAD(header(struct httpd_state *s, char *ptr))
   PSOCK_BEGIN(&s->sout);
 
   PSOCK_GENERATOR_SEND(&s->sout, generate_header, (void *) ptr);
-  
+
   PSOCK_END(&s->sout);
 }
 #endif /* WEBSERVER_CONF_HEADER */
@@ -298,10 +299,10 @@ generate_file_stats(void *arg)
   httpd_fs_cpy(&tmp, s->u.ptr, 20);
 
   /* Count for this page, with common page footer */
-  if (tmp[0]=='.') { 
+  if (tmp[0]=='.') {
 #if WEBSERVER_CONF_LOADTIME
     s->pagetime = clock_time() - s->pagetime;
-    numprinted=httpd_snprintf((char *)uip_appdata, uip_mss(), httpd_cgi_filestat1, httpd_fs_open(s->filename, 0), 
+    numprinted=httpd_snprintf((char *)uip_appdata, uip_mss(), httpd_cgi_filestat1, httpd_fs_open(s->filename, 0),
             (unsigned int)s->pagetime/CLOCK_SECOND,(100*((unsigned int)s->pagetime%CLOCK_SECOND))/CLOCK_SECOND);
 #else
     numprinted=httpd_snprintf((char *)uip_appdata, uip_mss(), httpd_cgi_filestat1, httpd_fs_open(s->filename, 0));
@@ -343,7 +344,7 @@ PT_THREAD(file_stats(struct httpd_state *s, char *ptr))
   /* Pass string after cgi invocation to the generator */
   s->u.ptr = ptr;
   PSOCK_GENERATOR_SEND(&s->sout, generate_file_stats, s);
-  
+
   PSOCK_END(&s->sout);
 }
 #endif /* WEBSERVER_CONF_FILESTATS*/
@@ -361,7 +362,7 @@ make_tcp_stats(void *arg)
   struct httpd_state *s = (struct httpd_state *)arg;
   char tstate[20];
   uint16_t numprinted;
-  
+
   if (s->u.count==UIP_CONNS){
     for(numprinted = 0; numprinted < UIP_CONNS; numprinted++ ) {
 	    if((uip_conns[numprinted].tcpstateflags & UIP_TS_MASK) != UIP_CLOSED) s->u.count--;
@@ -394,7 +395,7 @@ PT_THREAD(tcp_stats(struct httpd_state *s, char *ptr))
 
   s->u.count=UIP_CONNS;
   PSOCK_GENERATOR_SEND(&s->sout, make_tcp_stats, s);
-  
+
   for(s->u.count = 0; s->u.count < UIP_CONNS; ++s->u.count) {
     if((uip_conns[s->u.count].tcpstateflags & UIP_TS_MASK) != UIP_CLOSED) {
       PSOCK_GENERATOR_SEND(&s->sout, make_tcp_stats, s);
@@ -480,7 +481,7 @@ PT_THREAD(addresses(struct httpd_state *s, char *ptr))
 #endif /* WEBSERVER_CONF_ADDRESSES */
 
 #if WEBSERVER_CONF_NEIGHBORS
-/*---------------------------------------------------------------------------*/	
+/*---------------------------------------------------------------------------*/
 static unsigned short
 make_neighbors(void *p)
 {
@@ -533,7 +534,7 @@ static const char httpd_cgi_nbrs5[] HTTPD_STRING_ATTR = " NBR_PROBE";
 #endif
 
   /* Signal that this was the last segment */
-  s->savei = 0;  
+  s->savei = 0;
   return numprinted;
 }
 /*---------------------------------------------------------------------------*/
@@ -548,8 +549,8 @@ PT_THREAD(neighbors(struct httpd_state *s, char *ptr))
   do {
 	PSOCK_GENERATOR_SEND(&s->sout, make_neighbors, (void *)s);
 	s->starti=s->savei+1;s->startj=s->savej;
-  } while(s->savei);  
-  
+  } while(s->savei);
+
   PSOCK_END(&s->sout);
 }
 #endif
@@ -560,7 +561,7 @@ static const char httpd_cgi_rtesl1[] HTTPD_STRING_ATTR = "<a href=http://[";
 static const char httpd_cgi_rtesl2[] HTTPD_STRING_ATTR = "]/status.shtml>";
 static const char httpd_cgi_rtesl3[] HTTPD_STRING_ATTR = "</a>";
 #endif
-/*---------------------------------------------------------------------------*/			
+/*---------------------------------------------------------------------------*/
 static unsigned short
 make_routes(void *p)
 {
@@ -617,32 +618,32 @@ uip_ds6_route_t *r;
 #if 0
   uip_ip6addr_t *nexthop = uip_ds6_defrt_choose();
   if (nexthop) {
-    numprinted += httpd_snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, httpd_cgi_defr1);   
+    numprinted += httpd_snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, httpd_cgi_defr1);
     numprinted += httpd_cgi_sprint_ip6(*nexthop, uip_appdata + numprinted);
-    numprinted += httpd_snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, httpd_cgi_defr2,nexthop->lifetime.start+nexthop->lifetime.interval-clock_seconds()); 
+    numprinted += httpd_snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, httpd_cgi_defr2,nexthop->lifetime.start+nexthop->lifetime.interval-clock_seconds());
   }
 #else
 uip_ds6_defrt_t *locdefrt;
 extern uip_ds6_defrt_t uip_ds6_defrt_list[UIP_DS6_DEFRT_NB];
     for(locdefrt = uip_ds6_defrt_list;
       locdefrt < uip_ds6_defrt_list + UIP_DS6_DEFRT_NB; locdefrt++) {
-    if(locdefrt->isused) {    
+    if(locdefrt->isused) {
         numprinted += httpd_snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, httpd_cgi_defr1);
 
 #if WEBSERVER_CONF_ROUTE_LINKS && 0
         numprinted += httpd_snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, httpd_cgi_rtesl1);
-        numprinted += httpd_cgi_sprint_ip6(locdefrt->ipaddr, uip_appdata + numprinted); 
+        numprinted += httpd_cgi_sprint_ip6(locdefrt->ipaddr, uip_appdata + numprinted);
         numprinted += httpd_snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, httpd_cgi_rtesl2);
-        numprinted += httpd_cgi_sprint_ip6(locdefrt->ipaddr, uip_appdata + numprinted); 
+        numprinted += httpd_cgi_sprint_ip6(locdefrt->ipaddr, uip_appdata + numprinted);
         numprinted += httpd_snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, httpd_cgi_rtesl3);
 #else
-        numprinted += httpd_cgi_sprint_ip6(locdefrt->ipaddr, uip_appdata + numprinted); 
-#endif   
+        numprinted += httpd_cgi_sprint_ip6(locdefrt->ipaddr, uip_appdata + numprinted);
+#endif
         numprinted += httpd_snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, httpd_cgi_defr2,locdefrt->lifetime.start+locdefrt->lifetime.interval-clock_seconds());
   //      break;
         }
    }
- 
+
 #endif
 }
   /* Signal that this was the last segment */
@@ -662,7 +663,7 @@ PT_THREAD(routes(struct httpd_state *s, char *ptr))
     PSOCK_GENERATOR_SEND(&s->sout, make_routes, s);
     s->starti=s->savei+1;s->startj=s->savej;
   } while(s->savei);
- 
+
   PSOCK_END(&s->sout);
 }
 #endif /* WEBSERVER_CONF_ROUTES */
@@ -682,7 +683,7 @@ generate_sensor_readings(void *arg)
   static const char httpd_cgi_sensor3d[] HTTPD_STRING_ATTR = "<em>Uptime    :</em> %u days %02u:%02u:%02u\n";
 
   /* Generate temperature and voltage strings for each platform */
-#if CONTIKI_TARGET_AVR_ATMEGA128RFA1  
+#if CONTIKI_TARGET_AVR_ATMEGA128RFA1
 {uint8_t i;
   BATMON = 16; //give BATMON time to stabilize at highest range and lowest voltage
 
@@ -695,7 +696,7 @@ generate_sensor_readings(void *arg)
   ADMUX =0xc9;              // Select internal 1.6 volt ref, temperature sensor ADC channel
   ADCSRA=0x85;              //Enable ADC, not free running, interrupt disabled, clock divider 32 (250 KHz@ 8 MHz)
 //  while ((ADCSRB&(1<<AVDDOK))==0);  //wait for AVDD ok
-//  while ((ADCSRB&(1<<REFOK))==0);  //wait for ref ok 
+//  while ((ADCSRB&(1<<REFOK))==0);  //wait for ref ok
   ADCSRA|=1<<ADSC;          //Start throwaway conversion
   while (ADCSRA&(1<<ADSC)); //Wait till done
   ADCSRA|=1<<ADSC;          //Start another conversion
@@ -703,7 +704,7 @@ generate_sensor_readings(void *arg)
   h=ADC;                    //Read adc
   h=11*h-2728+(h>>2);       //Convert to celcius*10 (should be 11.3*h, approximate with 11.25*h)
   ADCSRA=0;                 //disable ADC
-  ADMUX=0;                  //turn off internal vref      
+  ADMUX=0;                  //turn off internal vref
   m=h/10;s=h-10*m;
   static const char httpd_cgi_sensor1_printf[] HTTPD_STRING_ATTR = "%d.%d C";
   httpd_snprintf(sensor_temperature,sizeof(sensor_temperature),httpd_cgi_sensor1_printf,m,s);
@@ -735,7 +736,7 @@ generate_sensor_readings(void *arg)
 //h=1126400UL/ADC;          //Get supply voltage (factor nominally 1100*1024)
   h=1198070UL/ADC;          //My Raven
   ADCSRA=0;                 //disable ADC
-  ADMUX=0;                  //turn off internal vref    
+  ADMUX=0;                  //turn off internal vref
 
   static const char httpd_cgi_sensor2_printf[] HTTPD_STRING_ATTR = "%u mv";
   httpd_snprintf(sensor_extvoltage,sizeof(sensor_extvoltage),httpd_cgi_sensor2_printf,h);
@@ -789,7 +790,7 @@ uint8_t c;
   if (days == 0) {
     numprinted+=httpd_snprintf((char *)uip_appdata + numprinted, uip_mss() - numprinted, httpd_cgi_sensor3, h,m,s);
   } else {
-  	h=h-days*24;	
+  	h=h-days*24;
 	numprinted+=httpd_snprintf((char *)uip_appdata + numprinted, uip_mss() - numprinted, httpd_cgi_sensor3d, days,h,m,s);
   }
   return numprinted;
@@ -803,7 +804,7 @@ generate_stats(void *arg)
   uint16_t h,m,s;
   uint8_t p1,p2;
   uint32_t seconds=clock_seconds();
-  
+
   static const char httpd_cgi_stats[] HTTPD_STRING_ATTR = "\n<big><b>Statistics</b></big>\n";
   numprinted=httpd_snprintf((char *)uip_appdata, uip_mss(), httpd_cgi_stats);
 
@@ -883,7 +884,7 @@ generate_stats(void *arg)
 
 #if RF230BB
   numprinted+=httpd_snprintf((char *)uip_appdata + numprinted, uip_mss() - numprinted, httpd_cgi_sensor11,\
-    RF230_sendpackets,RF230_receivepackets,RF230_sendfail,RF230_receivefail,-92+rf230_last_rssi);
+    RF230_sendpackets,RF230_receivepackets,RF230_sendfail,RF230_receivefail,rf230_last_rssi);
 #else
   p1=0;
   radio_get_rssi_value(&p1);
@@ -905,7 +906,7 @@ PT_THREAD(sensor_readings(struct httpd_state *s, char *ptr))
 #if WEBSERVER_CONF_STATISTICS
   PSOCK_GENERATOR_SEND(&s->sout, generate_stats, s);
 #endif
- 
+
   PSOCK_END(&s->sout);
 }
 #endif /* WEBSERVER_CONF_SENSORS */
@@ -952,7 +953,7 @@ make_tictactoe(void *p)
   uint8_t i,newgame,iwon,uwon,nx,no;
   char me,you,locater;
   unsigned short numprinted=0;
-  
+
  /* If no query string restart game, else put into proper form */
   newgame=0;httpd_query[9]=0;
   if ((httpd_query[0]==0)||(httpd_query[0]==' ')) {
@@ -976,7 +977,7 @@ make_tictactoe(void *p)
   uwon=whowon(you);
 
   if (newgame||iwon||uwon||(nx+no)>=9) goto showboard;
- 
+
   /* Make a move */
   if (me=='x') nx++;else no++;
   if (httpd_query[4]=='b') httpd_query[4]=me;
@@ -988,18 +989,18 @@ make_tictactoe(void *p)
   else if (httpd_query[3]=='b') httpd_query[3]=me;
   else if (httpd_query[5]=='b') httpd_query[5]=me;
   else if (httpd_query[7]=='b') httpd_query[7]=me;
-  
+
   /* Did I win? */
   iwon=whowon(me);
 
-  showboard: 
+  showboard:
   for (i=0;i<9;i++) {
-  
+
     if (i==4) locater='c';
     else if ((i==1)||(i==7)) locater='v';
     else if ((i==3)||(i==5)) locater='h';
     else locater=0;
-    
+
     if ((httpd_query[i]=='b')&&(!(iwon||uwon))) {
         httpd_query[i]=you;
         numprinted+=snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, "<a href=ttt.shtml?%s><img src=b",httpd_query);
@@ -1011,19 +1012,19 @@ make_tictactoe(void *p)
         numprinted+=snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, "%c",locater);
     }
     numprinted+=snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, ".gif>");
-    if (httpd_query[i]=='b') {       
-        numprinted+=snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, "</a>");       
+    if (httpd_query[i]=='b') {
+        numprinted+=snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, "</a>");
     }
     if ((i==2)||(i==5)) {
       numprinted+=snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, "<br>");
     }
   }
-  
+
   if ((nx>(no+1))||(no>(nx+1))) {
      numprinted+=snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, "<br><h2>You cheated!!!</h2>");
   } else if (iwon) {
      numprinted+=snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, "<br><h2>I Win!</h2>");
-  } else if (uwon) { 
+  } else if (uwon) {
      numprinted+=snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, "<br><h2>You Win!</h2>");
   } else if ((nx+no)==9) {
      numprinted+=snprintf((char *)uip_appdata+numprinted, uip_mss()-numprinted, "<br><h2>Draw!</h2>");
@@ -1080,7 +1081,7 @@ PT_THREAD(ajax_call(struct httpd_state *s, char *ptr))
 #endif
 
   iter = 0;
-  
+
   while(1) {
   	iter++;
 
@@ -1097,12 +1098,12 @@ PT_THREAD(ajax_call(struct httpd_state *s, char *ptr))
     SENSORS_DEACTIVATE(light_sensor);
 
 #elif CONTIKI_TARGET_MB851
-  SENSORS_ACTIVATE(acc_sensor);    
+  SENSORS_ACTIVATE(acc_sensor);
   numprinted = snprintf(buf, sizeof(buf),"t(%d);ax(%d);ay(%d);az(%d);",
 	     temperature_sensor.value(0),
 	     acc_sensor.value(ACC_X_AXIS),
 	     acc_sensor.value(ACC_Y_AXIS),
-	     acc_sensor.value(ACC_Z_AXIS));   
+	     acc_sensor.value(ACC_Z_AXIS));
   SENSORS_DEACTIVATE(acc_sensor);
 
 #elif CONTIKI_TARGET_REDBEE_ECONOTAG
@@ -1183,7 +1184,7 @@ static uint16_t c0=0x3ff,c1=0x3ff,c2=0x3ff,c3=0x3ff,c4=0x3ff,c5=0x3ff,c6=0x3ff,c
   ADMUX =0xc9;              // Select internal 1.6 volt ref, temperature sensor ADC channel
   ADCSRA=0x85;              //Enable ADC, not free running, interrupt disabled, clock divider 32 (250 KHz@ 8 MHz)
 //  while ((ADCSRB&(1<<AVDDOK))==0);  //wait for AVDD ok
-//  while ((ADCSRB&(1<<REFOK))==0);  //wait for ref ok 
+//  while ((ADCSRB&(1<<REFOK))==0);  //wait for ref ok
   ADCSRA|=1<<ADSC;          //Start throwaway conversion
   while (ADCSRA&(1<<ADSC)); //Wait till done
   ADCSRA|=1<<ADSC;          //Start another conversion
@@ -1191,7 +1192,7 @@ static uint16_t c0=0x3ff,c1=0x3ff,c2=0x3ff,c3=0x3ff,c4=0x3ff,c5=0x3ff,c6=0x3ff,c
   tmp=ADC;                  //Read adc
   tmp=11*tmp-2728+(tmp>>2); //Convert to celcius*10 (should be 11.3*h, approximate with 11.25*h)
   ADCSRA=0;                 //disable ADC
-  ADMUX=0;                  //turn off internal vref      
+  ADMUX=0;                  //turn off internal vref
 #endif
 /* Bandgap can't be measured against supply voltage in this chip. */
 /* Use BATMON register instead */
@@ -1238,11 +1239,11 @@ static uint16_t c0=0x3ff,c1=0x3ff,c2=0x3ff,c3=0x3ff,c4=0x3ff,c5=0x3ff,c6=0x3ff,c
   ADCSRA=0;                 //disable ADC
   ADMUX=0;                  //turn off internal vref
 #else
-  bat=3300;  
+  bat=3300;
 #endif
-   
+
   tmp=420;
-  
+
   static const char httpd_cgi_ajax10[] HTTPD_STRING_ATTR ="t(%u),b(%u);adc(%d,%d,%u,%u,%u,%u,%u,%lu);";
   numprinted = httpd_snprintf(buf, sizeof(buf),httpd_cgi_ajax10,tmp,bat,iter,tmp,bat,sleepcount,OCR2A,0,clock_time(),clock_seconds());
   if (iter<3) {
@@ -1288,7 +1289,7 @@ static uint16_t c0=0x3ff,c1=0x3ff,c2=0x3ff,c3=0x3ff,c4=0x3ff,c5=0x3ff,c6=0x3ff,c
   }
 }
 #endif
- 
+
 #if CONTIKIMAC_CONF_COMPOWER
 #include "sys/compower.h"
 {
@@ -1324,7 +1325,7 @@ static uint16_t c0=0x3ff,c1=0x3ff,c2=0x3ff,c3=0x3ff,c4=0x3ff,c5=0x3ff,c6=0x3ff,c
 	delta_time=RTIMER_NOW()-last_send;
 	if (RTIMER_CLOCK_LT(RTIMER_NOW(),last_send)) delta_time+=RTIMER_ARCH_SECOND;
 	last_send=RTIMER_NOW();
-    static const char httpd_cgi_ajaxe1[] HTTPD_STRING_ATTR = "p(%lu,%lu,%lu,%lu);";	
+    static const char httpd_cgi_ajaxe1[] HTTPD_STRING_ATTR = "p(%lu,%lu,%lu,%lu);";
     numprinted += httpd_snprintf(buf+numprinted, sizeof(buf)-numprinted,httpd_cgi_ajaxe1,
         (10000UL*(energest_total_time[ENERGEST_TYPE_CPU].current - last_cpu))/delta_time,
         (10000UL*(energest_total_time[ENERGEST_TYPE_LPM].current - last_lpm))/delta_time,
@@ -1351,12 +1352,12 @@ static uint16_t c0=0x3ff,c1=0x3ff,c2=0x3ff,c3=0x3ff,c4=0x3ff,c5=0x3ff,c6=0x3ff,c
     sl=energest_total_time[ENERGEST_TYPE_LISTEN].current/RTIMER_ARCH_SECOND;
     rxp=(10000UL*sl)/clockseconds;
 
-    static const char httpd_cgi_ajaxe2[] HTTPD_STRING_ATTR = "ener(%u,%u,%u);";	
+    static const char httpd_cgi_ajaxe2[] HTTPD_STRING_ATTR = "ener(%u,%u,%u);";
     numprinted += httpd_snprintf(buf+numprinted, sizeof(buf)-numprinted,httpd_cgi_ajaxe2,cpp,txp,rxp);
 #endif
 }
 #endif /* ENERGEST_CONF_ON */
- 
+
     PSOCK_SEND_STR(&s->sout, buf);
     /* Can do fixed intervals or fixed starting points */
 #if FIXED_INTERVALS

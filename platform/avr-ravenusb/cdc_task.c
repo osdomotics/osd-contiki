@@ -705,10 +705,10 @@ extern uip_ds6_netif_t uip_ds6_if;
 				PRINTF_P(PSTR("  * TX Power(0=+3dBm, 15=-17.2dBm): %d\n\r"), rf230_get_txpower());
 #endif
 				if (rf230_smallest_rssi) {
-					PRINTF_P(PSTR("  * Current/Last/Smallest RSSI: %d/%d/%ddBm\n\r"), -91+(rf230_rssi()-1), -91+(rf230_last_rssi-1),-91+(rf230_smallest_rssi-1));
+					PRINTF_P(PSTR("  * Current/Last/Smallest RSSI: %d/%d/%ddBm\n\r"), rf230_rssi(), rf230_last_rssi,rf230_smallest_rssi);
 					rf230_smallest_rssi=0;
 				} else {
-					PRINTF_P(PSTR("  * Current/Last/Smallest RSSI: %d/%d/--dBm\n\r"), -91+(rf230_rssi()-1), -91+(rf230_last_rssi-1));
+					PRINTF_P(PSTR("  * Current/Last/Smallest RSSI: %d/%d/--dBm\n\r"), rf230_rssi(), rf230_last_rssi);
 				}
 
 #else /* RF230BB */
@@ -718,7 +718,7 @@ extern uip_ds6_netif_t uip_ds6_if;
 					PRINTF_P(PSTR("  * Current RSSI: "));
 					int8_t rssi = 0;
 					if(radio_get_rssi_value(&rssi)==RADIO_SUCCESS)
-						PRINTF_P(PSTR("%ddB\n\r"), -91+3*(rssi-1));
+						PRINTF_P(PSTR("%ddBm\n\r"), rssi);
 					else
 						PRINTF_P(PSTR("Unknown\n\r"));
 				}
@@ -892,4 +892,3 @@ void vcptx_end_led(void)
     led3_timer = 5;
 }
 /** @}  */
-
